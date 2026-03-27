@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>WMC Tithes | Treasury SPUC</title>
+  <link rel="stylesheet" href="../../Styles/Tithe/WMCtithe.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet"/>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+  <header>
+    <div class="logo-area">
+      <img src="../../Assets/logo.png" alt="Logo" class="logo-img"/>
+      <div class="org-name">
+        <strong>Southwestern Philippine</strong> Union Conference
+      </div>
+    </div>
+    <button class="btn-back" onclick="location.href='../Tithes.html'">&#8592; Back</button>
+  </header>
+
+  <main>
+    <div class="page-header">
+      <h1 class="page-title">TITHES</h1>
+      <p class="page-subtitle">Western Mindanao Conference</p>
+    </div>
+
+    <div class="chart-card">
+      <canvas id="wmcChart"></canvas>
+    </div>
+  </main>
+
+  <footer>
+    <div class="footer-bottom">
+      <button class="btn-home" onclick="location.href='../../index.html'">
+        <span class="icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V9.5z"/><path d="M9 21V12h6v9"/></svg>
+        </span>
+        <span class="label">HOMEPAGE</span>
+      </button>
+      <div class="footer-divider"></div>
+      <div class="nav-buttons">
+        <button class="btn-nav" onclick="location.href='NCMCtithe.html'">NORTH CENTRAL<br/>MINDANAO MISSION</button>
+        <button class="btn-nav" onclick="location.href='CMMtithe.html'">CENTRAL<br/>MINDANAO MISSION</button>
+        <button class="btn-nav" onclick="location.href='NMMtithe.html'">NORTHEASTERN<br/>MINDANAO MISSION</button>
+        <button class="btn-nav active" onclick="location.href='WMCtithe.html'">WESTERN<br/>MINDANAO CONFERENCE</button>
+        <button class="btn-nav" onclick="location.href='ZPMtithe.html'">ZAMBOANGA<br/>PENINSULAR MISSION</button>
+      </div>
+      <a href="https://spucadventist.org" class="footer-link">spucadventist.org</a>
+    </div>
+  </footer>
+
+  <script>
+    const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    const data2025 = [4.0, 4.3, 4.9, 5.2, 5.8, 5.1, 6.7, 6.3, 5.0, 4.6, 5.5, 7.2];
+    const data2026 = [4.5, 4.8, 5.4, 5.7, 6.3, 5.6, 7.2, 6.8, 5.5, 5.1, 6.0, 7.7];
+
+    new Chart(document.getElementById('wmcChart').getContext('2d'), {
+      type: 'bar',
+      data: {
+        labels: months,
+        datasets: [
+          { label: '2025', data: data2025, backgroundColor: '#1a237e', borderRadius: 5 },
+          { label: '2026', data: data2026, backgroundColor: '#f5a623', borderRadius: 5 }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: 'top', align: 'end',
+            labels: { font: { family: 'Inter', weight: '600', size: 12 }, color: '#1e293b', usePointStyle: true, pointStyleWidth: 14 }
+          },
+          tooltip: { callbacks: { label: ctx => ` ${ctx.dataset.label}: ₱${ctx.parsed.y}M` } }
+        },
+        scales: {
+          y: { beginAtZero: true, ticks: { callback: v => '₱' + v + 'M', font: { weight: '600', size: 11 }, color: '#1e293b' }, grid: { color: 'rgba(0,0,0,0.06)' } },
+          x: { grid: { display: false }, ticks: { font: { weight: '600', size: 11 }, color: '#1e293b' } }
+        }
+      }
+    });
+  </script>
+</body>
+</html>
