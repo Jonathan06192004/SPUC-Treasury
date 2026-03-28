@@ -9,7 +9,7 @@
 body {
   height: 100vh;
   overflow: hidden;
-  background: #0a1e6e url('../Assets/Background.png') center/100% 100% no-repeat;
+  background: #0a1e6e url('../Assets/Background.png') center bottom/cover no-repeat;
   color: #fff;
   display: flex;
   flex-direction: column;
@@ -125,9 +125,10 @@ main {
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
-  padding: 10px 60px 10px;
-  gap: 10px;
+  padding: 0px 60px 10px;
+  gap: 6px;
   overflow: hidden;
+  margin-top: -20px;
 }
 
 /* LEFT */
@@ -136,28 +137,19 @@ main {
 }
 
 .title-img {
-  width: 420px;
-  margin-left: 150px;
+  width: 840px;
+  margin-left: 25px;
   display: block;
+  margin-top: 80px;
 }
 
 /* RIGHT */
 .right-panel {
-  display: grid;
-  grid-template-columns: 1fr 280px;
-  gap: 20px;
+  display: flex;
+  justify-content: flex-end;
   width: 100%;
-  padding-left: 100px;
   padding-right: 100px;
-}
-
-/* CHART */
-.chart-card {
-  background: rgba(255,255,255,0.92);
-  border-radius: 10px;
-  padding: 20px;
-  height: calc(100vh - 360px);
-  box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+  margin-top: -40px;
 }
 
 /* BOTTOM */

@@ -7,7 +7,6 @@
 
   <link rel="stylesheet" href="Styles/index.css" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;800&display=swap" rel="stylesheet"/>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
 <body>
@@ -25,15 +24,11 @@
 
   <!-- LEFT -->
   <div class="left-panel">
-    <img src="Assets/Treasury Dep.png" class="title-img"/>
+    <img src="Assets/Treasury Dep1.png" class="title-img"/>
   </div>
 
   <!-- RIGHT -->
   <div class="right-panel">
-
-    <div class="chart-card">
-      <canvas id="barChart"></canvas>
-    </div>
 
     <div class="bottom-widgets">
       <div class="live-clock" id="liveClock"></div>
@@ -85,50 +80,6 @@
 </footer>
 
 <script>
-const barCtx = document.getElementById('barChart').getContext('2d');
-
-new Chart(barCtx, {
-  type: 'bar',
-  data: {
-    labels: ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sept','Oct','Nov','Dec'],
-    datasets: [
-      {
-        label: 'Offerings',
-        data: [1.2, 4.8, 2.5, 5.0, 7.8, 4.2, 9.8, 8.5, 4.2, 3.8, 4.5, 9.2],
-        backgroundColor: '#1a237e',
-        borderRadius: 6
-      },
-      {
-        label: 'Tithes',
-        data: [0.5, 2.0, 0.8, 2.2, 3.5, 2.0, 4.5, 3.8, 2.0, 1.8, 2.2, 4.0],
-        backgroundColor: '#f5a623',
-        borderRadius: 6
-      }
-    ]
-  },
-  options: {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      legend: {
-        position: 'top',
-        align: 'end'
-      }
-    },
-    scales: {
-      y: {
-        beginAtZero: true,
-        ticks: {
-          callback: v => v + 'M'
-        }
-      },
-      x: {
-        grid: { display: false }
-      }
-    }
-  }
-});
-
 // CLOCK
 function updateClock() {
   const now = new Date();
