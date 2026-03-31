@@ -43,17 +43,34 @@ main {
   gap: 16px;
 }
 
+.title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  position: relative;
+  z-index: 3;
+  margin-bottom: -20px;
+  padding: 0 60px;
+}
+
 .page-title {
   font-size: 4.5rem;
   font-weight: 800;
   color: #f5a623;
   letter-spacing: 4px;
-  text-align: right;
-  width: 100%;
-  margin-bottom: -20px;
-  position: relative;
-  z-index: 3;
-  margin-left: -220px;
+  margin: 0;
+  margin-right: 80px;
+}
+
+.page-subtitle {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: rgba(255,255,255,0.75);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin: 0;
+  white-space: nowrap;
 }
 
 /* ---- Chart Card ---- */
@@ -72,8 +89,10 @@ main {
   display: flex;
   justify-content: flex-end;
   gap: 16px;
-  margin-bottom: 10px;
   flex-shrink: 0;
+  padding: 0 4px;
+  margin-top: -10px;
+  margin-bottom: 8px;
 }
 
 .legend-item {
@@ -103,6 +122,14 @@ main {
   overflow: hidden;
 }
 
+.right-col {
+  display: flex;
+  flex-direction: column;
+  width: 420px;
+  flex-shrink: 0;
+  padding-top: 10px;
+}
+
 .chart-scroll {
   overflow-x: auto;
   overflow-y: hidden;
@@ -119,13 +146,12 @@ main {
 }
 
 .excel-table-wrap {
-  width: 420px;
-  flex-shrink: 0;
-  overflow: auto;
+  overflow: hidden;
   background: rgba(255,255,255,0.95);
   border-radius: 10px;
   padding: 12px;
   box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+  height: fit-content;
 }
 
 .excel-table {
@@ -136,20 +162,26 @@ main {
 }
 
 .excel-table th {
-  background: #1a237e;
-  color: #fff;
-  padding: 8px 10px;
+  padding: 5px 8px;
   text-align: center;
   font-weight: 700;
   white-space: nowrap;
   border: 1px solid #c7d0e8;
+  font-size: 0.72rem;
+  color: #fff;
 }
 
+.th-offerings { background: #2e3f8f; }
+.th-2025 { background: #0a1e6e; }
+.th-2026 { background: #f59e0b; }
+.th-budget { background: #ef4444; }
+
 .excel-table td {
-  padding: 7px 10px;
+  padding: 4px 8px;
   text-align: right;
   border: 1px solid #dde3f0;
   white-space: nowrap;
+  font-size: 0.72rem;
 }
 
 .month-cell {
@@ -160,6 +192,7 @@ main {
 
 .cell-2025 { background: #eef2ff; }
 .cell-2026 { background: #fff8ed; }
+.cell-budget { background: #fff0f0; color: #b91c1c; font-weight: 600; }
 
 .total-row td { background: #dbeafe !important; font-weight: 700 !important; color: #1a237e; }
 

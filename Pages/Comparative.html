@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Comparative | Treasury SPUC</title>
+  <link rel="stylesheet" href="../Styles/Comparative.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet"/>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+  <header>
+    <div class="logo-area">
+      <img src="../Assets/logo.png" alt="Logo" class="logo-img"/>
+      <div class="org-name">
+        <strong>Southwestern Philippine</strong> Union Conference
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <div class="title-row">
+      <p class="page-subtitle">Southwestern Philippine Union Conference</p>
+      <h1 class="page-title">COMPARATIVE</h1>
+    </div>
+
+    <div class="content-area">
+
+      <!-- Chart Section -->
+      <div class="chart-card">
+        <div class="chart-legend" id="chartLegend"></div>
+        <div class="chart-scroll">
+          <canvas id="comparativeChart"></canvas>
+        </div>
+      </div>
+
+      <!-- Summary Table -->
+      <div class="summary-table-wrap">
+        <table class="summary-table">
+          <thead>
+            <tr>
+              <th class="th-month">MONTH</th>
+              <th class="th-tithes">TITHES 2025</th>
+              <th class="th-offerings">OFFERINGS 2025</th>
+              <th class="th-total">TOTAL</th>
+              <th class="th-diff">DIFFERENCE</th>
+            </tr>
+          </thead>
+          <tbody id="summaryBody"></tbody>
+        </table>
+      </div>
+
+    </div>
+  </main>
+
+  <footer>
+    <div class="footer-bottom">
+      <button class="btn-home" onclick="location.href='../index.html'">
+        <span class="icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V9.5z"/><path d="M9 21V12h6v9"/></svg>
+        </span>
+        <span class="label">HOMEPAGE</span>
+      </button>
+      <div class="footer-divider"></div>
+      <div class="nav-buttons">
+        <button class="btn-page" onclick="location.href='Tithes.html'">
+          <span class="btn-page-icon">📋</span>
+          <span class="btn-page-label">TITHES</span>
+        </button>
+        <button class="btn-page" onclick="location.href='Offering.html'">
+          <span class="btn-page-icon">🙏</span>
+          <span class="btn-page-label">OFFERINGS</span>
+        </button>
+        <button class="btn-page" onclick="location.href='FinancialStatement.html'">
+          <span class="btn-page-icon">📄</span>
+          <span class="btn-page-label">FINANCIAL STATEMENT</span>
+        </button>
+        <button class="btn-page" onclick="location.href='Reconciliation.html'">
+          <span class="btn-page-icon">✔</span>
+          <span class="btn-page-label">RECONCILIATION</span>
+        </button>
+      </div>
+      <a href="https://spucadventist.org" class="footer-link">spucadventist.org</a>
+    </div>
+  </footer>
+
+  <script>
+    const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+    const dataTithes   = [61301229.98, null, null, null, null, null, null, null, null, null, null, null];
+    const dataOfferings = [23721985.6, null, null, null, null, null, null, null, null, null, null, null];
+
+    const VISIBLE_MONTHS = 4;
+    const canvas = document.getElementById('comparativeChart');
+    const containerWidth = canvas.parentElement.clientWidth;
+    const containerHeight = canvas.parentElement.clientHeight;
+    const barWidth = containerWidth / VISIBLE_MONTHS;
+    canvas.style.width = (barWidth * months.length) + 'px';
+    canvas.style.minWidth = (barWidth * months.length) + 'px';
+    canvas.style.height = containerHeight + 'px';
+
+    const datasets = [
+      { label: 'Tithes 2025',    data: dataTithes,    backgroundColor: '#0a1e6e', borderRadius: 4 },
+      { label: 'Offerings 2025', data: dataOfferings, backgroundColor: '#f59e0b', borderRadius: 4 }
+    ];
+
+    const chart = new Chart(canvas.getContext('2d'), {
+      type: 'bar',
+      data: { labels: months, datasets },
+      options: {
+        responsive: false,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: { callbacks: { label: ctx => ` ${ctx.dataset.label}: ₱${ctx.parsed.y.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}` } }
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: { callback: v => v >= 1000000 ? '₱' + (v/1000000).toFixed(1) + 'M' : '₱' + v, font: { weight: '700', size: 11 }, color: '#ffffff' },
+            grid: { color: 'rgba(255,255,255,0.5)', lineWidth: 2 }
+          },
+          x: {
+            grid: { display: false },
+            ticks: { font: { weight: '700', size: 11 }, color: '#ffffff' }
+          }
+        }
+      }
+    });
+
+    // Legend
+    const legendEl = document.getElementById('chartLegend');
+    datasets.forEach((ds, i) => {
+      const item = document.createElement('div');
+      item.className = 'legend-item';
+      item.innerHTML = `<span class="legend-dot" style="background:${ds.backgroundColor}"></span><span class="legend-label">${ds.label}</span>`;
+      item.addEventListener('click', () => {
+        const meta = chart.getDatasetMeta(i);
+        meta.hidden = !meta.hidden;
+        item.classList.toggle('legend-hidden');
+        chart.update();
+      });
+      legendEl.appendChild(item);
+    });
+
+    // Summary Table
+    const fmt = v => v != null ? '₱' + v.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}) : '-';
+    const tbody = document.getElementById('summaryBody');
+    let grandTithes = 0, grandOfferings = 0;
+
+    tbody.innerHTML = months.map((m, i) => {
+      const t = dataTithes[i] || 0;
+      const o = dataOfferings[i] || 0;
+      const total = (dataTithes[i] != null || dataOfferings[i] != null) ? t + o : null;
+      const diff  = (dataTithes[i] != null && dataOfferings[i] != null) ? t - o : null;
+      grandTithes += t;
+      grandOfferings += o;
+      const diffClass = diff != null ? (diff >= 0 ? 'diff-positive' : 'diff-negative') : '';
+      return `<tr>
+        <td class="month-cell">${m}</td>
+        <td class="cell-tithes">${fmt(dataTithes[i])}</td>
+        <td class="cell-offerings">${fmt(dataOfferings[i])}</td>
+        <td class="cell-total">${total != null ? fmt(total) : '-'}</td>
+        <td class="cell-diff ${diffClass}">${diff != null ? fmt(diff) : '-'}</td>
+      </tr>`;
+    }).join('') + `
+      <tr class="total-row">
+        <td class="month-cell">TOTAL</td>
+        <td class="total-cell">${fmt(grandTithes)}</td>
+        <td class="total-cell">${fmt(grandOfferings)}</td>
+        <td class="total-cell">${fmt(grandTithes + grandOfferings)}</td>
+        <td class="total-cell">${fmt(grandTithes - grandOfferings)}</td>
+      </tr>
+    `;
+  </script>
+</body>
+</html>

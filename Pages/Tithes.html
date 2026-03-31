@@ -20,21 +20,26 @@
   </header>
 
   <main>
-    <h1 class="page-title">TITHES</h1>
+    <div class="title-row">
+      <p class="page-subtitle">Southwestern Philippine Union Conference</p>
+      <h1 class="page-title"><img src="../Assets/Tithes.png" alt="Tithes" class="page-title-img"/></h1>
+    </div>
 
     <div class="chart-card">
-      <div class="chart-legend" id="chartLegend"></div>
       <div class="chart-table-row">
         <div class="chart-scroll">
           <canvas id="tithesChart"></canvas>
         </div>
-        <div class="excel-table-wrap">
-          <table class="excel-table">
-            <thead>
-              <tr><th>TITHES</th><th>2025</th><th>2026</th></tr>
-            </thead>
-            <tbody id="excelBody"></tbody>
-          </table>
+        <div class="right-col">
+          <div class="chart-legend" id="chartLegend"></div>
+          <div class="excel-table-wrap">
+            <table class="excel-table">
+              <thead>
+                <tr><th class="th-tithes">TITHES</th><th class="th-2024">2024</th><th class="th-2025">2025</th><th class="th-budget">BUDGET</th></tr>
+              </thead>
+              <tbody id="excelBody"></tbody>
+            </table>
+          </div>
         </div>
       </div>
     </div>
@@ -88,7 +93,7 @@
     const datasets = [
       { label: '2024', data: [69617914.36, 61596239.55, 65948798.45, 79607269.42, 67373242.37, 81624204.69, 74988549.33, 64439238.42, 81572737.88, 63549232.84, 68980414.58, 90367744.52], backgroundColor: '#0a1e6e', borderRadius: 4 },
       { label: '2025', data: [61301229.98, null, null, null, null, null, null, null, null, null, null, null], backgroundColor: '#f59e0b', borderRadius: 4 },
-      { label: 'Target', data: [75000000, 70000000, 72000000, 80000000, 75000000, 82000000, 78000000, 72000000, 80000000, 70000000, 75000000, 88000000], backgroundColor: '#ef4444', borderRadius: 4 }
+      { label: 'Budget', data: [75000000, 70000000, 72000000, 80000000, 75000000, 82000000, 78000000, 72000000, 80000000, 70000000, 75000000, 88000000], backgroundColor: '#ef4444', borderRadius: 4 }
     ];
 
     const chart = new Chart(canvas.getContext('2d'), {
@@ -127,22 +132,26 @@
     });
 
     const fmt = v => v != null ? '₱' + v.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}) : '-';
-    const data2025 = datasets[0].data;
-    const data2026 = datasets[1].data;
+    const data2024 = datasets[0].data;
+    const data2025 = datasets[1].data;
+    const dataBudget = datasets[2].data;
+    const total2024 = data2024.reduce((a, b) => a + (b || 0), 0);
     const total2025 = data2025.reduce((a, b) => a + (b || 0), 0);
-    const total2026 = data2026.reduce((a, b) => a + (b || 0), 0);
+    const totalBudget = dataBudget.reduce((a, b) => a + (b || 0), 0);
     const tbody = document.getElementById('excelBody');
     tbody.innerHTML = labels.map((m, i) => `
       <tr>
         <td class="month-cell">${m}</td>
+        <td class="cell-2024">${fmt(data2024[i])}</td>
         <td class="cell-2025">${fmt(data2025[i])}</td>
-        <td class="cell-2026">${fmt(data2026[i])}</td>
+        <td class="cell-budget">${fmt(dataBudget[i])}</td>
       </tr>
     `).join('') + `
       <tr class="total-row">
         <td class="month-cell">Total</td>
+        <td class="total-cell">${fmt(total2024)}</td>
         <td class="total-cell">${fmt(total2025)}</td>
-        <td class="total-cell">${fmt(total2026)}</td>
+        <td class="total-cell">${fmt(totalBudget)}</td>
       </tr>
     `;
   </script>
