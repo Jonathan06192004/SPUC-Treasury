@@ -24,12 +24,7 @@
 
   <!-- LEFT -->
   <div class="left-panel">
-    <img src="Assets/Treasury Dep1.png" class="title-img"/>
-  </div>
-
-  <!-- RIGHT -->
-  <div class="right-panel">
-
+    <img src="Assets/Treasury Dep.png" class="title-img"/>
     <div class="bottom-widgets">
       <div class="live-clock" id="liveClock"></div>
       
@@ -56,13 +51,17 @@
         </div>
 
         <div class="rate-info">
+          <input class="amount-input" id="amountInput" type="number" value="1" min="0" placeholder="Amount"/>
           <p class="rate-text" id="rateText"><strong>Loading...</strong></p>
           <p class="rate-sub">Mid-market exchange rate</p>
         </div>
 
       </div>
     </div>
+  </div>
 
+  <!-- RIGHT -->
+  <div class="right-panel">
   </div>
 </main>
 
@@ -71,8 +70,9 @@
 
   <div class="footer-buttons">
 
-    <button class="btn-nav" onclick="location.href='Pages/Offering.html'">OFFERINGS</button>
     <button class="btn-nav" onclick="location.href='Pages/Tithes.html'">TITHES</button>
+    <button class="btn-nav" onclick="location.href='Pages/Offering.html'">OFFERINGS</button>
+    <button class="btn-nav" onclick="location.href='Pages/Comparative.html'">COMPARATIVE</button>
     <button class="btn-nav" onclick="location.href='Pages/FinancialStatement.html'">FINANCIAL STATEMENT</button>
     <button class="btn-nav" onclick="location.href='Pages/Reconciliation.html'">RECONCILIATION</button>
 
@@ -227,6 +227,7 @@ function swapCurrencies() {
 
 function fetchRate() {
   const rateText = document.getElementById('rateText');
+  const amount = parseFloat(document.getElementById('amountInput').value) || 1;
   rateText.innerHTML = '<strong>Loading...</strong>';
   fetch(`https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/${fromCurrency.code.toLowerCase()}.json`)
     .then(r => r.json())
@@ -235,8 +236,8 @@ function fetchRate() {
       if (rate === undefined) {
         rateText.innerHTML = '<strong>Rate unavailable</strong>';
       } else {
-        const rounded = parseFloat(rate.toPrecision(6));
-        rateText.innerHTML = `<strong>1 ${fromCurrency.code} = ${rounded} ${toCurrency.code}</strong>`;
+        const converted = parseFloat((rate * amount).toPrecision(8));
+        rateText.innerHTML = `<strong>${amount} ${fromCurrency.code} = ${converted} ${toCurrency.code}</strong>`;
       }
     })
     .catch(() => {
@@ -245,6 +246,7 @@ function fetchRate() {
 }
 
 document.getElementById('currencySearch').addEventListener('input', e => renderDropdown(e.target.value));
+document.getElementById('amountInput').addEventListener('input', fetchRate);
 
 document.addEventListener('click', e => {
   const widget = document.querySelector('.currency-widget');

@@ -27,7 +27,18 @@
     </div>
 
     <div class="chart-card">
-      <canvas id="wmcChart"></canvas>
+      <div class="chart-legend" id="chartLegend"></div>
+      <div class="chart-table-row">
+        <div class="chart-scroll">
+          <canvas id="wmcChart"></canvas>
+        </div>
+        <div class="excel-table-wrap">
+          <table class="excel-table">
+            <thead><tr><th>WMC</th><th>2025</th><th>2026</th></tr></thead>
+            <tbody id="excelBody"></tbody>
+          </table>
+        </div>
+      </div>
     </div>
   </main>
 
@@ -41,7 +52,7 @@
       </button>
       <div class="footer-divider"></div>
       <div class="nav-buttons">
-        <button class="btn-nav" onclick="location.href='NCMCtithe.html'">NORTH CENTRAL<br/>MINDANAO MISSION</button>
+        <button class="btn-nav" onclick="location.href='NCMCtithe.html'">NORTH CENTRAL<br/>MINDANAO CONFERENCE</button>
         <button class="btn-nav" onclick="location.href='CMMtithe.html'">CENTRAL<br/>MINDANAO MISSION</button>
         <button class="btn-nav" onclick="location.href='NMMtithe.html'">NORTHEASTERN<br/>MINDANAO MISSION</button>
         <button class="btn-nav active" onclick="location.href='WMCtithe.html'">WESTERN<br/>MINDANAO CONFERENCE</button>
@@ -52,35 +63,62 @@
   </footer>
 
   <script>
+    const VISIBLE_MONTHS = 4;
     const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-    const data2025 = [4.0, 4.3, 4.9, 5.2, 5.8, 5.1, 6.7, 6.3, 5.0, 4.6, 5.5, 7.2];
-    const data2026 = [4.5, 4.8, 5.4, 5.7, 6.3, 5.6, 7.2, 6.8, 5.5, 5.1, 6.0, 7.7];
+    const data2025 = [21470361.40, 15298976.00, 14811539.90, 19149807.77, 16873462.51, 21203105.61, 18036761.13, 14558798.10, 17601704.97, 17197806.26, 17023040.69, 22382871.58];
+    const data2026 = [19785800.9, null, null, null, null, null, null, null, null, null, null, null];
+    const dataTarget = [22000000, 16000000, 15500000, 20000000, 17500000, 22000000, 19000000, 15500000, 18500000, 18000000, 18000000, 23000000];
 
-    new Chart(document.getElementById('wmcChart').getContext('2d'), {
+    const canvas = document.getElementById('wmcChart');
+    const containerWidth = canvas.parentElement.clientWidth;
+    const containerHeight = canvas.parentElement.clientHeight;
+    const barWidth = containerWidth / VISIBLE_MONTHS;
+    canvas.style.width = (barWidth * months.length) + 'px';
+    canvas.style.minWidth = (barWidth * months.length) + 'px';
+    canvas.style.height = containerHeight + 'px';
+
+    const datasets = [
+      { label: '2025', data: data2025, backgroundColor: '#1a237e', borderRadius: 5 },
+      { label: '2026', data: data2026, backgroundColor: '#f5a623', borderRadius: 5 },
+      { label: 'Target', data: dataTarget, backgroundColor: '#ef4444', borderRadius: 5 }
+    ];
+
+    const chart = new Chart(canvas.getContext('2d'), {
       type: 'bar',
-      data: {
-        labels: months,
-        datasets: [
-          { label: '2025', data: data2025, backgroundColor: '#1a237e', borderRadius: 5 },
-          { label: '2026', data: data2026, backgroundColor: '#f5a623', borderRadius: 5 }
-        ]
-      },
+      data: { labels: months, datasets },
       options: {
-        responsive: true,
+        responsive: false,
         maintainAspectRatio: false,
         plugins: {
-          legend: {
-            position: 'top', align: 'end',
-            labels: { font: { family: 'Inter', weight: '600', size: 12 }, color: '#1e293b', usePointStyle: true, pointStyleWidth: 14 }
-          },
-          tooltip: { callbacks: { label: ctx => ` ${ctx.dataset.label}: ₱${ctx.parsed.y}M` } }
+          legend: { display: false },
+          tooltip: { callbacks: { label: ctx => ` ${ctx.dataset.label}: ₱${ctx.parsed.y.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}` } }
         },
         scales: {
-          y: { beginAtZero: true, ticks: { callback: v => '₱' + v + 'M', font: { weight: '600', size: 11 }, color: '#1e293b' }, grid: { color: 'rgba(0,0,0,0.06)' } },
-          x: { grid: { display: false }, ticks: { font: { weight: '600', size: 11 }, color: '#1e293b' } }
+          y: { beginAtZero: true, ticks: { callback: v => v >= 1000000 ? '₱' + (v / 1000000).toFixed(1) + 'M' : v >= 1000 ? '₱' + (v / 1000).toFixed(1) + 'K' : '₱' + v, font: { weight: '600', size: 11 }, color: '#ffffff' }, grid: { color: 'rgba(255,255,255,0.5)', lineWidth: 2 } },
+          x: { grid: { display: false }, ticks: { font: { weight: '600', size: 11 }, color: '#ffffff' } }
         }
       }
     });
+
+    const legendEl = document.getElementById('chartLegend');
+    datasets.forEach((ds, i) => {
+      const item = document.createElement('div');
+      item.className = 'legend-item';
+      item.innerHTML = `<span class="legend-dot" style="background:${ds.backgroundColor}"></span><span class="legend-label">${ds.label}</span>`;
+      item.addEventListener('click', () => {
+        const meta = chart.getDatasetMeta(i);
+        meta.hidden = !meta.hidden;
+        item.classList.toggle('legend-hidden');
+        chart.update();
+      });
+      legendEl.appendChild(item);
+    });
+
+    const fmt = v => v != null ? '₱' + v.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}) : '-';
+    const t2025 = data2025.reduce((a,b) => a+(b||0),0), t2026 = data2026.reduce((a,b) => a+(b||0),0);
+    document.getElementById('excelBody').innerHTML = months.map((m,i) =>
+      `<tr><td class="month-cell">${m}</td><td class="cell-2025">${fmt(data2025[i])}</td><td class="cell-2026">${fmt(data2026[i])}</td></tr>`
+    ).join('') + `<tr class="total-row"><td class="month-cell">Total</td><td class="total-cell">${fmt(t2025)}</td><td class="total-cell">${fmt(t2026)}</td></tr>`;
   </script>
 </body>
 </html>

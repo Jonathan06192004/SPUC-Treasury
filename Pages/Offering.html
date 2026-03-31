@@ -23,15 +23,24 @@
     <h1 class="page-title">OFFERINGS</h1>
 
     <div class="chart-card">
-      <div class="chart-scroll">
-        <canvas id="offeringChart"></canvas>
+      <div class="chart-legend" id="chartLegend"></div>
+      <div class="chart-table-row">
+        <div class="chart-scroll">
+          <canvas id="offeringChart"></canvas>
+        </div>
+        <div class="excel-table-wrap">
+          <table class="excel-table">
+            <thead><tr><th>OFFERINGS</th><th>2025</th><th>2026</th></tr></thead>
+            <tbody id="excelBody"></tbody>
+          </table>
+        </div>
       </div>
     </div>
   </main>
 
   <footer>
     <div class="district-buttons">
-      <button class="btn-district" onclick="location.href='Offering/NCMCoffering.html'">NORTH CENTRAL<br/>MINDANAO MISSION</button>
+      <button class="btn-district" onclick="location.href='Offering/NCMCoffering.html'">NORTH CENTRAL<br/>MINDANAO CONFERENCE</button>
       <button class="btn-district" onclick="location.href='Offering/CMMoffering.html'">CENTRAL<br/>MINDANAO MISSION</button>
       <button class="btn-district" onclick="location.href='Offering/NMMoffering.html'">NORTHEASTERN<br/>MINDANAO MISSION</button>
       <button class="btn-district" onclick="location.href='Offering/WMCoffering.html'">WESTERN<br/>MINDANAO CONFERENCE</button>
@@ -65,7 +74,7 @@
 
   <script>
     const VISIBLE_MONTHS = 4;
-    const labels = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct'];
+    const labels = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
     const canvas = document.getElementById('offeringChart');
     const containerWidth = canvas.parentElement.clientWidth;
     const containerHeight = canvas.parentElement.clientHeight;
@@ -74,54 +83,53 @@
     canvas.style.minWidth = (barWidth * labels.length) + 'px';
     canvas.style.height = containerHeight + 'px';
 
-    new Chart(canvas.getContext('2d'), {
+    const datasets = [
+      { label: '2025', data: [29938070.07, 25572581.73, 26943637.1, 34327859.77, 27915369.4, 33272114.27, 30302696.7, 25934152.67, 33973938.9, 24600448.63, 24742424.3, 33009367.4], backgroundColor: '#0a1e6e', borderRadius: 4 },
+      { label: '2026', data: [23721985.6, null, null, null, null, null, null, null, null, null, null, null], backgroundColor: '#f59e0b', borderRadius: 4 },
+      { label: 'Target', data: [32000000, 28000000, 30000000, 35000000, 30000000, 34000000, 32000000, 28000000, 34000000, 27000000, 28000000, 35000000], backgroundColor: '#ef4444', borderRadius: 4 }
+    ];
+
+    const chart = new Chart(canvas.getContext('2d'), {
       type: 'bar',
-      data: {
-        labels,
-        datasets: [
-          {
-            label: 'Dataset 1',
-            data: [7.5, 10, 6, 8, 5, 5, 5, 5, 5, 5],
-            backgroundColor: '#3b82f6',
-            borderRadius: 4
-          },
-          {
-            label: 'Dataset 2',
-            data: [5, 8, 7, 12, 12, 12, 12, 5, 12, 12],
-            backgroundColor: '#ef4444',
-            borderRadius: 4
-          },
-          {
-            label: 'Dataset 3',
-            data: [3, 4, 8, 5, 7, 7, 7, 7, 7, 7],
-            backgroundColor: '#f59e0b',
-            borderRadius: 4
-          }
-        ]
-      },
+      data: { labels, datasets },
       options: {
         responsive: false,
         maintainAspectRatio: false,
-        plugins: { legend: { display: false } },
+        plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => ` ${ctx.dataset.label}: ₱${ctx.parsed.y.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}` } } },
         scales: {
           y: { 
             beginAtZero: true,
-            max: 12.5,
-            ticks: { 
-              callback: v => '₱' + v + 'M',
-              font: { weight: '700', size: 11 },
-              color: '#1e293b',
-              stepSize: 2.5
-            },
-            grid: { color: 'rgba(0,0,0,0.08)' }
+            ticks: { callback: v => v >= 1000000 ? '₱' + (v / 1000000).toFixed(1) + 'M' : v >= 1000 ? '₱' + (v / 1000).toFixed(1) + 'K' : '₱' + v, font: { weight: '700', size: 11 }, color: '#ffffff' },
+            grid: { color: 'rgba(255,255,255,0.5)', lineWidth: 2 }
           },
           x: { 
             grid: { display: false },
-            ticks: { font: { weight: '700', size: 11 }, color: '#1e293b' }
+            ticks: { font: { weight: '700', size: 11 }, color: '#ffffff' }
           }
         }
       }
     });
+
+    const legendEl = document.getElementById('chartLegend');
+    datasets.forEach((ds, i) => {
+      const item = document.createElement('div');
+      item.className = 'legend-item';
+      item.innerHTML = `<span class="legend-dot" style="background:${ds.backgroundColor}"></span><span class="legend-label">${ds.label}</span>`;
+      item.addEventListener('click', () => {
+        const meta = chart.getDatasetMeta(i);
+        meta.hidden = !meta.hidden;
+        item.classList.toggle('legend-hidden');
+        chart.update();
+      });
+      legendEl.appendChild(item);
+    });
+
+    const fmt = v => v != null ? '₱' + v.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}) : '-';
+    const d2025 = datasets[0].data, d2026 = datasets[1].data;
+    const t2025 = d2025.reduce((a,b) => a+(b||0),0), t2026 = d2026.reduce((a,b) => a+(b||0),0);
+    document.getElementById('excelBody').innerHTML = labels.map((m,i) =>
+      `<tr><td class="month-cell">${m}</td><td class="cell-2025">${fmt(d2025[i])}</td><td class="cell-2026">${fmt(d2026[i])}</td></tr>`
+    ).join('') + `<tr class="total-row"><td class="month-cell">Total</td><td class="total-cell">${fmt(t2025)}</td><td class="total-cell">${fmt(t2026)}</td></tr>`;
   </script>
 </body>
 </html>
