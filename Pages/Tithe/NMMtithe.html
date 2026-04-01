@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>NMM Tithes | Treasury SPUC</title>
   <link rel="stylesheet" href="../../Styles/Tithe/NMMtithe.css" />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Montserrat:wght@700;800;900&display=swap" rel="stylesheet"/>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
@@ -22,11 +22,12 @@
 
   <main>
     <div class="title-row">
+      <div class="title-left"></div>
       <p class="page-subtitle">Northeastern Mindanao Mission</p>
       <h1 class="page-title"><img src="../../Assets/Tithes.png" alt="Tithes" class="page-title-img"/></h1>
     </div>
 
-    <div class="chart-card">
+    <div class="chart-card" id="mainChartCard">
       <div class="chart-table-row">
         <div class="chart-scroll">
           <canvas id="nmmChart"></canvas>
@@ -44,6 +45,20 @@
               <tbody id="excelBody"></tbody>
             </table>
           </div>
+          <button class="btn-toggle-main" id="toggleMainBtn" onclick="toggleMain()">&#9660; VIEW ALL MONTHS</button>
+          <div class="side-clock" id="sideClock"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="overview-card hidden" id="overviewCard">
+      <button class="btn-toggle-back" onclick="toggleMain()">&#9650; BACK TO DETAIL VIEW</button>
+      <div class="overview-charts-row">
+        <div class="overview-chart-wrap">
+          <canvas id="overviewChart"></canvas>
+        </div>
+        <div class="overview-chart-wrap">
+          <canvas id="lineChart"></canvas>
         </div>
       </div>
     </div>
@@ -128,6 +143,95 @@
     document.getElementById('excelBody').innerHTML = months.map((m,i) =>
       `<tr><td class="month-cell">${m}</td><td class="cell-2025">${fmt(data2025[i])}</td><td class="cell-2026">${fmt(data2026[i])}</td><td class="cell-budget">${fmt(dataTarget[i])}</td></tr>`
     ).join('') + `<tr class="total-row"><td class="month-cell">Total</td><td class="total-cell">${fmt(t2025)}</td><td class="total-cell">${fmt(t2026)}</td><td class="total-cell">${fmt(tBudget)}</td></tr>`;
+
+    function updateSideClock() {
+      const now = new Date();
+      const date = now.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+      let hours = now.getHours();
+      const ampm = hours >= 12 ? 'PM' : 'AM';
+      hours = hours % 12 || 12;
+      const hh = String(hours).padStart(2, '0');
+      const mm = String(now.getMinutes()).padStart(2, '0');
+      const ss = String(now.getSeconds()).padStart(2, '0');
+      document.getElementById('sideClock').innerHTML = `
+        <div class="side-clock-time">${hh}:${mm}:${ss} <span class="side-clock-ampm">${ampm}</span></div>
+        <div class="side-clock-date">${date}</div>
+      `;
+    }
+    updateSideClock();
+    setInterval(updateSideClock, 1000);
+
+    let overviewChart = null;
+    let lineChart = null;
+
+    function toggleMain() {
+      const mainCard = document.getElementById('mainChartCard');
+      const overviewCard = document.getElementById('overviewCard');
+      const isOverview = !overviewCard.classList.contains('hidden');
+      if (isOverview) {
+        overviewCard.style.animation = 'fadeSlideOut 0.3s ease forwards';
+        setTimeout(() => {
+          overviewCard.classList.add('hidden');
+          overviewCard.style.animation = '';
+          mainCard.classList.remove('hidden');
+          mainCard.style.animation = 'fadeSlideIn 0.4s ease forwards';
+          setTimeout(() => mainCard.style.animation = '', 400);
+        }, 300);
+      } else {
+        mainCard.style.animation = 'fadeSlideOut 0.3s ease forwards';
+        setTimeout(() => {
+          mainCard.classList.add('hidden');
+          mainCard.style.animation = '';
+          overviewCard.classList.remove('hidden');
+          overviewCard.style.animation = 'fadeSlideIn 0.4s ease forwards';
+          setTimeout(() => overviewCard.style.animation = '', 400);
+          if (!overviewChart) {
+            const barCanvas = document.getElementById('overviewChart');
+            const barWrap = barCanvas.parentElement;
+            barCanvas.style.width = (barWrap.clientWidth - 16) + 'px';
+            barCanvas.style.height = (barWrap.clientHeight - 30) + 'px';
+            overviewChart = new Chart(barCanvas.getContext('2d'), {
+              type: 'bar',
+              data: { labels: months, datasets: [
+                { label: '2025', data: data2025, backgroundColor: '#1a237e', borderRadius: 5 },
+                { label: '2026', data: data2026, backgroundColor: '#f5a623', borderRadius: 5 },
+                { label: 'Budget', data: dataTarget, backgroundColor: '#ef4444', borderRadius: 5 }
+              ]},
+              options: {
+                responsive: false, maintainAspectRatio: false,
+                plugins: { legend: { display: true, position: 'top', labels: { color: '#fff', font: { weight: '700', size: 11 } } }, tooltip: { callbacks: { label: ctx => ` ${ctx.dataset.label}: ₱${ctx.parsed.y.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}` } } },
+                scales: {
+                  y: { beginAtZero: true, ticks: { callback: v => v >= 1000000 ? '₱' + (v/1000000).toFixed(1) + 'M' : '₱' + v, font: { weight: '700', size: 11 }, color: '#fff' }, grid: { color: 'rgba(255,255,255,0.3)' } },
+                  x: { grid: { display: false }, ticks: { font: { weight: '700', size: 11 }, color: '#fff' } }
+                }
+              }
+            });
+          }
+          if (!lineChart) {
+            const lineCanvas = document.getElementById('lineChart');
+            const lineWrap = lineCanvas.parentElement;
+            lineCanvas.style.width = (lineWrap.clientWidth - 16) + 'px';
+            lineCanvas.style.height = (lineWrap.clientHeight - 30) + 'px';
+            lineChart = new Chart(lineCanvas.getContext('2d'), {
+              type: 'line',
+              data: { labels: months, datasets: [
+                { label: '2025', data: data2025, borderColor: '#4f7cff', backgroundColor: 'rgba(79,124,255,0.15)', pointBackgroundColor: '#4f7cff', tension: 0.4, fill: true, pointRadius: 4 },
+                { label: '2026', data: data2026, borderColor: '#f5a623', backgroundColor: 'rgba(245,166,35,0.15)', pointBackgroundColor: '#f5a623', tension: 0.4, fill: true, pointRadius: 4 },
+                { label: 'Budget', data: dataTarget, borderColor: '#ef4444', backgroundColor: 'rgba(239,68,68,0.1)', pointBackgroundColor: '#ef4444', tension: 0.4, fill: false, borderDash: [6,3], pointRadius: 4 }
+              ]},
+              options: {
+                responsive: false, maintainAspectRatio: false,
+                plugins: { legend: { display: true, position: 'top', labels: { color: '#fff', font: { weight: '700', size: 11 } } }, tooltip: { callbacks: { label: ctx => ` ${ctx.dataset.label}: ₱${ctx.parsed.y.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}` } } },
+                scales: {
+                  y: { beginAtZero: true, ticks: { callback: v => v >= 1000000 ? '₱' + (v/1000000).toFixed(1) + 'M' : '₱' + v, font: { weight: '700', size: 11 }, color: '#fff' }, grid: { color: 'rgba(255,255,255,0.3)' } },
+                  x: { grid: { color: 'rgba(255,255,255,0.1)' }, ticks: { font: { weight: '700', size: 11 }, color: '#fff' } }
+                }
+              }
+            });
+          }
+        }, 300);
+      }
+    }
   </script>
 </body>
 </html>
