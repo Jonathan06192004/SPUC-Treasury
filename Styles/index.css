@@ -52,13 +52,13 @@ header {
 
 .live-clock {
   text-align: center;
-  background: linear-gradient(160deg, rgba(255,255,255,0.18) 0%, rgba(10,30,110,0.82) 100%);
-  backdrop-filter: blur(8px);
+  background: linear-gradient(160deg, rgba(255,255,255,0.08) 0%, rgba(10,30,110,0.35) 100%);
+  backdrop-filter: blur(-30px); /* Adjust opacity*/
   padding: 30px 36px;
   border-radius: 10px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
   min-width: 320px;
-  border: 1px solid rgba(255,255,255,0.2);
+  border: 1px solid rgba(255,255,255,0.1);
 }
 
 .clock-segments {
@@ -175,14 +175,14 @@ main {
 
 /* CURRENCY */
 .currency-widget {
-  background: linear-gradient(160deg, rgba(255,255,255,0.18) 0%, rgba(10,30,110,0.82) 100%);
-  backdrop-filter: blur(8px);
+  background: linear-gradient(160deg, rgba(255,255,255,0.08) 0%, rgba(10,30,110,0.35) 100%);
+  backdrop-filter: blur(-30px); /* Adjust opacity*/
   color: #fff;
   padding: 28px;
   border-radius: 10px;
   width: 100%;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-  border: 1px solid rgba(255,255,255,0.2);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  border: 1px solid rgba(255,255,255,0.1);
 }
 
 .currency-top {
@@ -315,35 +315,38 @@ footer {
   gap: 8px;
   border: none;
   cursor: pointer;
-  font-weight: 600;
-  font-size: 0.82rem;
-  letter-spacing: 1px;
-  background: linear-gradient(135deg, #f5a623, #e8920f);
+  font-family: 'Cinzel', serif;
+  font-weight: 700;
+  font-size: 0.78rem;
+  letter-spacing: 2px;
+  background: linear-gradient(to bottom, #f5c842 0%, #e8a020 50%, #7a4500 100%);
   padding: 14px 28px;
   border-radius: 8px;
-  color: #fff;
+  color: #fff5d6;
   overflow: hidden;
-  box-shadow: 0 4px 15px rgba(245, 166, 35, 0.4);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.5), 0 2px 8px rgba(245,166,35,0.4), inset 0 1px 0 rgba(255,235,120,0.4);
+  text-shadow: 0 1px 3px rgba(0,0,0,0.5);
   transition: transform 0.25s ease, box-shadow 0.25s ease;
+  border: 1px solid rgba(245, 180, 40, 0.4);
 }
 
 .btn-nav::before {
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(135deg, rgba(255,255,255,0.25), transparent);
+  background: linear-gradient(135deg, rgba(255,220,80,0.2), transparent);
   opacity: 0;
   transition: opacity 0.25s ease;
 }
 
 .btn-nav:hover {
   transform: translateY(-3px) scale(1.04);
-  box-shadow: 0 8px 24px rgba(245, 166, 35, 0.6);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.7), 0 4px 16px rgba(245,166,35,0.6), inset 0 1px 0 rgba(255,220,80,0.4);
 }
 
 .btn-nav:hover::before { opacity: 1; }
 
 .btn-nav:active {
   transform: translateY(0px) scale(0.98);
-  box-shadow: 0 3px 10px rgba(245, 166, 35, 0.4);
+  box-shadow: 0 3px 10px rgba(0,0,0,0.5);
 }
