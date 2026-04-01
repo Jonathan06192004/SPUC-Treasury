@@ -78,6 +78,121 @@ main {
   margin: 0;
 }
 
+.btn-toggle-main {
+  margin-top: 8px;
+  width: 100%;
+  padding: 8px;
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.25);
+  border-radius: 6px;
+  color: #fff;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 700;
+  font-size: 0.72rem;
+  letter-spacing: 2px;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.2s;
+}
+
+.btn-toggle-main:hover { background: rgba(255,255,255,0.2); transform: translateY(-2px); }
+
+.side-clock {
+  margin-top: 10px;
+  flex: 1;
+  background: linear-gradient(160deg, rgba(255,255,255,0.08) 0%, rgba(10,30,110,0.35) 100%);
+  backdrop-filter: blur(6px);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 16px;
+}
+
+.side-clock-time {
+  font-size: 2rem;
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: 3px;
+  font-variant-numeric: tabular-nums;
+}
+
+.side-clock-ampm {
+  font-size: 1rem;
+  font-weight: 600;
+  color: rgba(255,255,255,0.7);
+}
+
+.side-clock-date {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: rgba(255,255,255,0.7);
+  text-align: center;
+  line-height: 1.4;
+}
+
+#mainChartCard.hidden { display: none; }
+
+@keyframes fadeSlideOut {
+  from { opacity: 1; transform: translateX(0); }
+  to   { opacity: 0; transform: translateX(-30px); }
+}
+
+@keyframes fadeSlideIn {
+  from { opacity: 0; transform: translateX(30px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+.overview-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background: rgba(255,255,255,0.15);
+  border-radius: 10px;
+  padding: 12px;
+  overflow: hidden;
+  height: calc(97vh - 320px);
+  flex-shrink: 0;
+}
+
+.overview-card.hidden { display: none; }
+
+.overview-charts-row {
+  display: flex;
+  flex: 1;
+  gap: 12px;
+  overflow: hidden;
+}
+
+.overview-chart-wrap {
+  flex: 1;
+  min-width: 0;
+  background: rgba(255,255,255,0.35);
+  border-radius: 10px;
+  padding: 12px;
+  overflow: hidden;
+}
+
+.btn-toggle-back {
+  flex-shrink: 0;
+  padding: 5px 12px;
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.25);
+  border-radius: 6px;
+  color: #fff;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 700;
+  font-size: 0.65rem;
+  letter-spacing: 1.5px;
+  cursor: pointer;
+  align-self: flex-end;
+  transition: background 0.2s;
+}
+
+.btn-toggle-back:hover { background: rgba(255,255,255,0.2); }
+
 /* ---- Chart Card ---- */
 .chart-card {
   border-radius: 10px;
