@@ -315,8 +315,8 @@ footer {
   gap: 8px;
   border: none;
   cursor: pointer;
-  font-family: 'Cinzel', serif;
-  font-weight: 700;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 800;
   font-size: 0.78rem;
   letter-spacing: 2px;
   background: linear-gradient(to bottom, #f5c842 0%, #e8a020 50%, #7a4500 100%);
@@ -324,8 +324,8 @@ footer {
   border-radius: 8px;
   color: #fff5d6;
   overflow: hidden;
-  box-shadow: 0 6px 20px rgba(0,0,0,0.5), 0 2px 8px rgba(245,166,35,0.4), inset 0 1px 0 rgba(255,235,120,0.4);
-  text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+  box-shadow: none;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.5), 0 0 12px rgba(0,0,0,0.4);
   transition: transform 0.25s ease, box-shadow 0.25s ease;
   border: 1px solid rgba(245, 180, 40, 0.4);
 }
@@ -341,7 +341,7 @@ footer {
 
 .btn-nav:hover {
   transform: translateY(-3px) scale(1.04);
-  box-shadow: 0 10px 30px rgba(0,0,0,0.7), 0 4px 16px rgba(245,166,35,0.6), inset 0 1px 0 rgba(255,220,80,0.4);
+  box-shadow: none;
 }
 
 .btn-nav:hover::before { opacity: 1; }
