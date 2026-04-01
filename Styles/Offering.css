@@ -54,6 +54,8 @@ main {
   padding: 0 60px;
 }
 
+.title-left { flex: 1; }
+
 .page-title {
   font-size: 4.5rem;
   font-weight: 800;
@@ -61,16 +63,27 @@ main {
   letter-spacing: 4px;
   margin: 0;
   margin-right: 80px;
+  margin-top: -20px;
+}
+
+.page-title-img {
+  height: 6rem;
+  width: auto;
+  display: inline-block;
 }
 
 .page-subtitle {
-  font-size: 1.5rem;
+  font-size: 1.8rem;
   font-weight: 800;
   color: rgba(255,255,255,0.75);
   letter-spacing: 1px;
   text-transform: uppercase;
-  margin: 0;
+  font-family: 'Montserrat', sans-serif;
+  flex: 1;
+  text-align: center;
   white-space: nowrap;
+  margin-right: 120px;
+  margin-top: -10px;
 }
 
 /* ---- Chart Card ---- */
