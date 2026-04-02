@@ -352,22 +352,15 @@ footer {
 .footer-bottom {
   display: flex;
   align-items: center;
-  justify-content: flex-start;
+  justify-content: center;
   gap: 16px;
   position: relative;
-}
-
-.footer-nav-wrap {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
-
-.footer-nav-wrap.hidden {
-  display: none;
+  min-height: 48px;
 }
 
 .btn-arrow {
+  position: absolute;
+  left: 0;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -381,8 +374,18 @@ footer {
   transition: background 0.2s, transform 0.3s ease;
 }
 
+.footer-nav-wrap {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.footer-nav-wrap.hidden { display: none; }
+
 .btn-arrow:hover { background: rgba(255,255,255,0.2); }
 .btn-arrow.active { transform: rotate(180deg); }
+
+.footer-nav-wrap.hidden { display: none; }
 
 .footer-divider {
   width: 1px;

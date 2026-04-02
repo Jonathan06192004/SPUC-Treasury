@@ -313,7 +313,36 @@ footer {
   align-items: center;
   justify-content: center;
   gap: 16px;
+  position: relative;
+  min-height: 48px;
 }
+
+.footer-nav-wrap {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.footer-nav-wrap.hidden { display: none; }
+
+.btn-arrow {
+  position: absolute;
+  left: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.25);
+  border-radius: 50%;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.2s, transform 0.3s ease;
+}
+
+.btn-arrow:hover { background: rgba(255,255,255,0.2); }
+.btn-arrow.active { transform: rotate(180deg); }
 
 .footer-divider { width: 1px; height: 32px; background: rgba(255,255,255,0.2); flex-shrink: 0; }
 .nav-buttons { display: flex; gap: 10px; }

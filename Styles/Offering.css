@@ -353,9 +353,10 @@ footer {
 .footer-bottom {
   display: flex;
   align-items: center;
-  justify-content: flex-start;
+  justify-content: center;
   gap: 16px;
   position: relative;
+  min-height: 48px;
 }
 
 .footer-nav-wrap {
@@ -367,6 +368,8 @@ footer {
 .footer-nav-wrap.hidden { display: none; }
 
 .btn-arrow {
+  position: absolute;
+  left: 0;
   display: flex;
   align-items: center;
   justify-content: center;

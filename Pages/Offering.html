@@ -76,7 +76,7 @@
       <button class="btn-arrow" id="hamburgerBtn" onclick="toggleFooterNav()">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
       </button>
-      <div class="footer-nav-wrap hidden" id="footerNavWrap">
+      <div class="footer-nav-wrap" id="footerNavWrap">
         <button class="btn-home" onclick="location.href='../index.html'">
           <span class="icon">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V9.5z"/><path d="M9 21V12h6v9"/></svg>
@@ -248,17 +248,6 @@
       }
     }
 
-    function alignFooterToNCMC() {
-      const ncmc = document.querySelector('.btn-district');
-      const footer = document.querySelector('.footer-bottom');
-      if (ncmc && footer) {
-        const rect = ncmc.getBoundingClientRect();
-        footer.style.paddingLeft = (rect.left - 40) + 'px';
-      }
-    }
-    alignFooterToNCMC();
-    window.addEventListener('resize', alignFooterToNCMC);
-
     function toggleFooterNav() {
       const wrap = document.getElementById('footerNavWrap');
       const btn = document.getElementById('hamburgerBtn');
@@ -266,7 +255,7 @@
       const items = wrap.querySelectorAll('.btn-home, .footer-divider, .btn-page');
       if (isHidden) {
         wrap.classList.remove('hidden');
-        btn.classList.add('active');
+        btn.classList.remove('active');
         items.forEach((el, i) => {
           el.style.opacity = '0';
           el.style.transform = 'translateX(-20px)';
@@ -277,7 +266,7 @@
           }, i * 80);
         });
       } else {
-        btn.classList.remove('active');
+        btn.classList.add('active');
         const reversed = Array.from(items).reverse();
         reversed.forEach((el, i) => {
           setTimeout(() => {
