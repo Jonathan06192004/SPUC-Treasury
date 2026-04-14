@@ -49,12 +49,51 @@
     </div>
 
     <div class="overview-card hidden" id="overviewCard">
-      <button class="btn-toggle-back" onclick="toggleMain()">&#9650; BACK TO DETAIL VIEW</button>
-      <div class="overview-charts-row">
-        <div class="overview-chart-wrap">
+      <div class="overview-top-bar">
+        <div class="month-filter-wrap">
+          <button class="btn-month-filter" id="monthFilterBtn" onclick="toggleMonthDropdown()">&#128197; FILTER MONTHS <span class="filter-arrow">&#9660;</span></button>
+          <div class="month-filter-dropdown hidden" id="monthFilterDropdown">
+            <div class="mfd-row">
+              <div class="mfd-group">
+                <label class="mfd-label">FROM</label>
+                <select class="mfd-select" id="fromMonth">
+                  <option value="0">January</option><option value="1">February</option><option value="2">March</option>
+                  <option value="3">April</option><option value="4">May</option><option value="5">June</option>
+                  <option value="6">July</option><option value="7">August</option><option value="8">September</option>
+                  <option value="9">October</option><option value="10">November</option><option value="11">December</option>
+                </select>
+              </div>
+              <span class="mfd-arrow">&#8594;</span>
+              <div class="mfd-group">
+                <label class="mfd-label">TO</label>
+                <select class="mfd-select" id="toMonth">
+                  <option value="0">January</option><option value="1">February</option><option value="2">March</option>
+                  <option value="3">April</option><option value="4">May</option><option value="5">June</option>
+                  <option value="6">July</option><option value="7">August</option><option value="8">September</option>
+                  <option value="9">October</option><option value="10">November</option><option value="11" selected>December</option>
+                </select>
+              </div>
+            </div>
+            <div class="mfd-actions">
+              <button class="mfd-btn-apply" onclick="applyMonthFilter()">APPLY</button>
+              <button class="mfd-btn-reset" onclick="resetMonthFilter()">RESET</button>
+            </div>
+          </div>
+          <span class="filter-active-pill hidden" id="filterActivePill"></span>
+        </div>
+        <button class="btn-toggle-back" onclick="toggleMain()">&#9650; BACK TO DETAIL VIEW</button>
+      </div>
+      <div class="overview-charts-row" id="overviewChartsRow">
+        <div class="overview-chart-wrap" id="wrap-bar" onclick="expandChart('wrap-bar')">
+          <button class="chart-close-btn" id="close-bar" onclick="event.stopPropagation(); collapseChart()">&#10005;</button>
           <canvas id="overviewChart"></canvas>
         </div>
-        <div class="overview-chart-wrap">
+        <div class="overview-chart-wrap" id="wrap-pie" onclick="expandChart('wrap-pie')">
+          <button class="chart-close-btn" id="close-pie" onclick="event.stopPropagation(); collapseChart()">&#10005;</button>
+          <canvas id="pieChart"></canvas>
+        </div>
+        <div class="overview-chart-wrap" id="wrap-line" onclick="expandChart('wrap-line')">
+          <button class="chart-close-btn" id="close-line" onclick="event.stopPropagation(); collapseChart()">&#10005;</button>
           <canvas id="lineChart"></canvas>
         </div>
       </div>
@@ -158,6 +197,7 @@
 
     let overviewChart = null;
     let lineChart = null;
+    let pieChart = null;
 
     function toggleMain() {
       const mainCard = document.getElementById('mainChartCard');
@@ -183,9 +223,6 @@
           setTimeout(() => overviewCard.style.animation = '', 400);
           if (!overviewChart) {
             const barCanvas = document.getElementById('overviewChart');
-            const barWrap = barCanvas.parentElement;
-            barCanvas.style.width = (barWrap.clientWidth - 16) + 'px';
-            barCanvas.style.height = (barWrap.clientHeight - 30) + 'px';
             overviewChart = new Chart(barCanvas.getContext('2d'), {
               type: 'bar',
               data: { labels, datasets: [
@@ -194,7 +231,7 @@
                 { label: 'Budget', data: datasets[2].data, backgroundColor: '#ef4444', borderRadius: 4 }
               ]},
               options: {
-                responsive: false, maintainAspectRatio: false,
+                responsive: true, maintainAspectRatio: false,
                 plugins: { legend: { display: true, position: 'top', labels: { color: '#fff', font: { weight: '700', size: 11 } } }, tooltip: { callbacks: { label: ctx => ` ${ctx.dataset.label}: ₱${ctx.parsed.y.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}` } } },
                 scales: {
                   y: { beginAtZero: true, ticks: { callback: v => v >= 1000000 ? '₱' + (v/1000000).toFixed(1) + 'M' : '₱' + v, font: { weight: '700', size: 11 }, color: '#fff' }, grid: { color: 'rgba(255,255,255,0.3)' } },
@@ -205,9 +242,6 @@
           }
           if (!lineChart) {
             const lineCanvas = document.getElementById('lineChart');
-            const lineWrap = lineCanvas.parentElement;
-            lineCanvas.style.width = (lineWrap.clientWidth - 16) + 'px';
-            lineCanvas.style.height = (lineWrap.clientHeight - 30) + 'px';
             lineChart = new Chart(lineCanvas.getContext('2d'), {
               type: 'line',
               data: { labels, datasets: [
@@ -216,11 +250,35 @@
                 { label: 'Budget', data: datasets[2].data, borderColor: '#ef4444', backgroundColor: 'rgba(239,68,68,0.1)', pointBackgroundColor: '#ef4444', tension: 0.4, fill: false, borderDash: [6,3], pointRadius: 4 }
               ]},
               options: {
-                responsive: false, maintainAspectRatio: false,
+                responsive: true, maintainAspectRatio: false,
                 plugins: { legend: { display: true, position: 'top', labels: { color: '#fff', font: { weight: '700', size: 11 } } }, tooltip: { callbacks: { label: ctx => ` ${ctx.dataset.label}: ₱${ctx.parsed.y.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}` } } },
                 scales: {
                   y: { beginAtZero: true, ticks: { callback: v => v >= 1000000 ? '₱' + (v/1000000).toFixed(1) + 'M' : '₱' + v, font: { weight: '700', size: 11 }, color: '#fff' }, grid: { color: 'rgba(255,255,255,0.3)' } },
                   x: { grid: { color: 'rgba(255,255,255,0.1)' }, ticks: { font: { weight: '700', size: 11 }, color: '#fff' } }
+                }
+              }
+            });
+          }
+          if (!pieChart) {
+            const pieCanvas = document.getElementById('pieChart');
+            pieChart = new Chart(pieCanvas.getContext('2d'), {
+              type: 'doughnut',
+              data: {
+                labels: ['NCMC', 'CMM', 'NMM', 'WMC', 'ZPM'],
+                datasets: [{
+                  data: missionData.map(m => m.slice(activeFrom, activeTo + 1).reduce((a,b)=>a+b,0)),
+                  backgroundColor: ['#1a3a8f', '#f5a623', '#22c55e', '#a855f7', '#ef4444'],
+                  borderColor: 'rgba(255,255,255,0.25)',
+                  borderWidth: 2,
+                  hoverOffset: 10
+                }]
+              },
+              options: {
+                responsive: true, maintainAspectRatio: false,
+                cutout: '52%',
+                plugins: {
+                  legend: { display: true, position: 'bottom', labels: { color: '#fff', font: { weight: '700', size: 10 }, padding: 8, boxWidth: 12 } },
+                  tooltip: { callbacks: { label: ctx => ` ${ctx.label}: ₱${ctx.parsed.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}` } }
                 }
               }
             });
@@ -301,6 +359,105 @@
         <td class="total-cell">${fmt(totalBudget)}</td>
       </tr>
     `;
+    // ---- Mission monthly data (for pie filtering) ----
+    const missionData = [
+      [22621870.89,18578687.78,17162301.27,20294803.38,15619823.58,18203978.14,21189228.22,18660639.55,20985045.33,15892071.06,14178110.09,23315279.12], // NCMC
+      [4443619.05,11007216.37,18569355.76,18946323.34,17035848.15,19364276.52,15573564.14,15496542.12,23435771.52,13356756.36,19743514.55,20649250.17],  // CMM
+      [8979630.22,6906975.54,7603812.43,8247275.91,7698935.23,10050505.87,9562060.72,7703403.70,8311743.70,8332417.55,9272742.38,10979424.34],           // NMM
+      [21470361.40,15298976.00,14811539.90,19149807.77,16873462.51,21203105.61,18036761.13,14558798.10,17601704.97,17197806.26,17023040.69,22382871.58], // WMC
+      [12102432.80,9804383.86,7801789.09,12969059.02,10145172.90,12802338.55,10626935.12,8019854.95,11238472.36,8770181.61,8763006.87,13040919.31]       // ZPM
+    ];
+
+    // ---- Month filter ----
+    let activeFrom = 0, activeTo = 11;
+
+    function toggleMonthDropdown() {
+      const dd = document.getElementById('monthFilterDropdown');
+      dd.classList.toggle('hidden');
+    }
+
+    function applyMonthFilter() {
+      const from = parseInt(document.getElementById('fromMonth').value);
+      const to   = parseInt(document.getElementById('toMonth').value);
+      if (from > to) { alert('"From" month cannot be after "To" month.'); return; }
+      activeFrom = from; activeTo = to;
+      document.getElementById('monthFilterDropdown').classList.add('hidden');
+      const pill = document.getElementById('filterActivePill');
+      if (from === 0 && to === 11) {
+        pill.classList.add('hidden');
+      } else {
+        pill.textContent = labels[from] + (from === to ? '' : ' – ' + labels[to]);
+        pill.classList.remove('hidden');
+      }
+      updateOverviewCharts(from, to);
+    }
+
+    function resetMonthFilter() {
+      document.getElementById('fromMonth').value = '0';
+      document.getElementById('toMonth').value   = '11';
+      applyMonthFilter();
+    }
+
+    function updateOverviewCharts(from, to) {
+      const slicedLabels = labels.slice(from, to + 1);
+      if (overviewChart) {
+        overviewChart.data.labels = slicedLabels;
+        overviewChart.data.datasets[0].data = datasets[0].data.slice(from, to + 1);
+        overviewChart.data.datasets[1].data = datasets[1].data.slice(from, to + 1);
+        overviewChart.data.datasets[2].data = datasets[2].data.slice(from, to + 1);
+        overviewChart.update('active');
+      }
+      if (lineChart) {
+        lineChart.data.labels = slicedLabels;
+        lineChart.data.datasets[0].data = datasets[0].data.slice(from, to + 1);
+        lineChart.data.datasets[1].data = datasets[1].data.slice(from, to + 1);
+        lineChart.data.datasets[2].data = datasets[2].data.slice(from, to + 1);
+        lineChart.update('active');
+      }
+      if (pieChart) {
+        pieChart.data.datasets[0].data = missionData.map(m => m.slice(from, to + 1).reduce((a, b) => a + b, 0));
+        pieChart.update('active');
+      }
+    }
+
+    // ---- Chart expand / collapse ----
+    let expandedWrap = null;
+
+    function expandChart(wrapId) {
+      if (expandedWrap === wrapId) { collapseChart(); return; }
+      const row = document.getElementById('overviewChartsRow');
+      const wraps = row.querySelectorAll('.overview-chart-wrap');
+      expandedWrap = wrapId;
+      wraps.forEach(w => {
+        if (w.id === wrapId) {
+          w.classList.add('chart-expanded');
+          w.classList.remove('chart-shrunk');
+          w.querySelector('.chart-close-btn').classList.add('visible');
+        } else {
+          w.classList.add('chart-shrunk');
+          w.classList.remove('chart-expanded');
+          w.querySelector('.chart-close-btn').classList.remove('visible');
+        }
+      });
+      // Resize the chart canvas after transition
+      setTimeout(() => resizeAllCharts(), 380);
+    }
+
+    function collapseChart() {
+      const row = document.getElementById('overviewChartsRow');
+      const wraps = row.querySelectorAll('.overview-chart-wrap');
+      expandedWrap = null;
+      wraps.forEach(w => {
+        w.classList.remove('chart-expanded', 'chart-shrunk');
+        w.querySelector('.chart-close-btn').classList.remove('visible');
+      });
+      setTimeout(() => resizeAllCharts(), 380);
+    }
+
+    function resizeAllCharts() {
+      [overviewChart, lineChart, pieChart].forEach(c => { if (c) c.resize(); });
+    }
+
   </script>
 </body>
 </html>

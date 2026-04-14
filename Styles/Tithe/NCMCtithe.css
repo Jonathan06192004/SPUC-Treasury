@@ -247,7 +247,7 @@ main {
 .overview-charts-row {
   display: flex;
   flex: 1;
-  gap: 12px;
+  gap: 10px;
   overflow: hidden;
 }
 
@@ -256,8 +256,38 @@ main {
   min-width: 0;
   background: rgba(255,255,255,0.35);
   border-radius: 10px;
-  padding: 12px;
+  padding: 10px;
   overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  cursor: pointer;
+  transition: flex 0.38s cubic-bezier(0.4,0,0.2,1), opacity 0.38s ease, transform 0.38s cubic-bezier(0.4,0,0.2,1), box-shadow 0.25s ease, border-color 0.25s ease;
+  border: 2px solid transparent;
+}
+
+.overview-chart-wrap:hover { border-color: rgba(255,255,255,0.5); box-shadow: 0 0 22px rgba(255,255,255,0.18), 0 0 8px rgba(79,124,255,0.25); transform: translateY(-2px); }
+.overview-chart-wrap.chart-expanded { flex: 4; border-color: rgba(255,255,255,0.6); box-shadow: 0 0 36px rgba(255,255,255,0.22), 0 0 16px rgba(79,124,255,0.35); animation: chartZoomIn 0.38s cubic-bezier(0.4,0,0.2,1) forwards; cursor: default; transform: none; }
+.overview-chart-wrap.chart-shrunk { flex: 0.3; opacity: 0.35; transform: scale(0.97); pointer-events: none; }
+
+@keyframes chartZoomIn {
+  from { opacity: 0.6; transform: scale(0.96); }
+  to   { opacity: 1;   transform: scale(1); }
+}
+
+.chart-close-btn {
+  position: absolute; top: 8px; right: 8px; width: 26px; height: 26px; border-radius: 50%;
+  background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.35); color: #fff;
+  font-size: 0.7rem; font-weight: 700; cursor: pointer; display: none; align-items: center;
+  justify-content: center; z-index: 10; transition: background 0.2s, transform 0.2s; line-height: 1;
+}
+.chart-close-btn.visible { display: flex; animation: fadeInBtn 0.25s ease forwards; }
+.chart-close-btn:hover { background: rgba(255,255,255,0.35); transform: scale(1.15); }
+
+@keyframes fadeInBtn {
+  from { opacity: 0; transform: scale(0.6); }
+  to   { opacity: 1; transform: scale(1); }
 }
 
 .btn-toggle-back {
@@ -272,11 +302,63 @@ main {
   font-size: 0.65rem;
   letter-spacing: 1.5px;
   cursor: pointer;
-  align-self: flex-end;
   transition: background 0.2s;
 }
-
 .btn-toggle-back:hover { background: rgba(255,255,255,0.2); }
+
+.overview-top-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.month-filter-wrap { position: relative; display: flex; align-items: center; gap: 8px; }
+
+.btn-month-filter {
+  padding: 5px 12px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.25);
+  border-radius: 6px; color: #fff; font-family: 'Montserrat', sans-serif; font-weight: 700;
+  font-size: 0.65rem; letter-spacing: 1.5px; cursor: pointer; transition: background 0.2s; white-space: nowrap;
+}
+.btn-month-filter:hover { background: rgba(255,255,255,0.2); }
+.filter-arrow { font-size: 0.55rem; margin-left: 4px; }
+
+.month-filter-dropdown {
+  position: absolute; top: calc(100% + 6px); left: 0;
+  background: rgba(10,20,80,0.97); backdrop-filter: blur(12px);
+  border: 1px solid rgba(255,255,255,0.2); border-radius: 10px;
+  padding: 14px 16px 12px; z-index: 100; min-width: 260px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+  animation: dropdownIn 0.2s cubic-bezier(0.4,0,0.2,1) forwards;
+}
+.month-filter-dropdown.hidden { display: none; }
+
+@keyframes dropdownIn {
+  from { opacity: 0; transform: translateY(-8px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.mfd-row { display: flex; align-items: flex-end; gap: 10px; }
+.mfd-group { display: flex; flex-direction: column; gap: 4px; flex: 1; }
+.mfd-label { font-family: 'Montserrat', sans-serif; font-size: 0.6rem; font-weight: 700; letter-spacing: 2px; color: rgba(255,255,255,0.6); }
+.mfd-select { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.25); border-radius: 6px; color: #fff; font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 0.7rem; padding: 5px 8px; cursor: pointer; outline: none; width: 100%; transition: border-color 0.2s; }
+.mfd-select:focus { border-color: rgba(255,255,255,0.6); }
+.mfd-select option { background: #0a1e6e; color: #fff; }
+.mfd-arrow { color: rgba(255,255,255,0.5); font-size: 1rem; padding-bottom: 4px; flex-shrink: 0; }
+.mfd-actions { display: flex; gap: 8px; margin-top: 12px; }
+.mfd-btn-apply { flex: 1; padding: 6px; background: linear-gradient(135deg, #1a3a8f, #0a1e6e); border: 1px solid rgba(255,255,255,0.3); border-radius: 6px; color: #fff; font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 0.65rem; letter-spacing: 1.5px; cursor: pointer; transition: background 0.2s, transform 0.15s; }
+.mfd-btn-apply:hover { background: linear-gradient(135deg, #2a4aaf, #1a2e7e); transform: translateY(-1px); }
+.mfd-btn-reset { padding: 6px 14px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.2); border-radius: 6px; color: rgba(255,255,255,0.7); font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 0.65rem; letter-spacing: 1.5px; cursor: pointer; transition: background 0.2s; }
+.mfd-btn-reset:hover { background: rgba(255,255,255,0.15); }
+
+.filter-active-pill { background: linear-gradient(135deg, #f5a623, #e8920f); color: #fff; font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 0.6rem; letter-spacing: 1px; padding: 3px 10px; border-radius: 20px; white-space: nowrap; animation: pillIn 0.2s ease forwards; }
+.filter-active-pill.hidden { display: none; }
+
+@keyframes pillIn {
+  from { opacity: 0; transform: scale(0.8); }
+  to   { opacity: 1; transform: scale(1); }
+}
 
 .chart-scroll {
   overflow-x: auto;

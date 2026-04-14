@@ -33,14 +33,14 @@
 
         <!-- Tab Nav -->
         <div class="tab-nav">
-          <button class="tab-btn active" onclick="switchTab('income', this)">INCOME STATEMENT</button>
-          <button class="tab-btn" onclick="switchTab('balance', this)">BALANCE SHEET</button>
+          <button class="tab-btn active" onclick="switchTab('balance', this)">BALANCE SHEET</button>
+          <button class="tab-btn" onclick="switchTab('income', this)">INCOME STATEMENT</button>
           <button class="tab-btn" onclick="switchTab('cashflow', this)">CASH FLOW</button>
-          <button class="tab-btn" onclick="switchTab('equity', this)">EQUITY</button>
+          <button class="tab-btn" onclick="switchTab('equity', this)">FINANCIAL LIQUIDITY</button>
         </div>
 
         <!-- INCOME STATEMENT -->
-        <div class="fs-panel active" id="tab-income">
+        <div class="fs-panel" id="tab-income">
           <div class="fs-panel-header">
             <span class="fs-panel-title">STATEMENT OF INCOME</span>
             <span class="fs-panel-period">For the Period Ended January 31, 2025</span>
@@ -71,7 +71,7 @@
         </div>
 
         <!-- BALANCE SHEET -->
-        <div class="fs-panel" id="tab-balance">
+        <div class="fs-panel active" id="tab-balance">
           <div class="fs-panel-header">
             <span class="fs-panel-title">STATEMENT OF FINANCIAL POSITION</span>
             <span class="fs-panel-period">As of January 31, 2025</span>
@@ -146,10 +146,10 @@
           </div>
         </div>
 
-        <!-- EQUITY -->
+        <!-- FINANCIAL LIQUIDITY -->
         <div class="fs-panel" id="tab-equity">
           <div class="fs-panel-header">
-            <span class="fs-panel-title">STATEMENT OF CHANGES IN NET ASSETS</span>
+            <span class="fs-panel-title">STATEMENT OF FINANCIAL LIQUIDITY</span>
             <span class="fs-panel-period">For the Period Ended January 31, 2025</span>
           </div>
           <div class="fs-table-scroll">
