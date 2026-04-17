@@ -164,6 +164,86 @@ main {
   letter-spacing: 0.5px;
 }
 
+/* ---- Balance Sheet month selector ---- */
+.bs-month-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+}
+
+.bs-month-select {
+  background: rgba(255,255,255,0.12);
+  border: 1px solid rgba(245,166,35,0.5);
+  border-radius: 6px;
+  color: #f5a623;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 700;
+  font-size: 0.65rem;
+  letter-spacing: 1px;
+  padding: 5px 10px;
+  cursor: pointer;
+  outline: none;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.bs-month-select:hover { background: rgba(245,166,35,0.2); border-color: #f5a623; }
+.bs-month-select option { background: #0a1e6e; color: #fff; }
+
+.bs-zoom-wrap {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(245,166,35,0.35);
+  border-radius: 6px;
+  padding: 2px 6px;
+}
+
+.bs-zoom-btn {
+  background: none;
+  border: none;
+  color: #f5a623;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: background 0.15s;
+  line-height: 1;
+}
+
+.bs-zoom-btn:hover { background: rgba(245,166,35,0.2); }
+
+.bs-zoom-label {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 700;
+  font-size: 0.6rem;
+  color: rgba(255,255,255,0.7);
+  min-width: 32px;
+  text-align: center;
+  letter-spacing: 0.5px;
+}
+
+/* ---- Balance Sheet zoom outer container ---- */
+.bs-zoom-outer {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: auto;
+  min-height: 0;
+  position: relative;
+}
+
+.bs-zoom-outer .fs-table-scroll {
+  overflow: visible;
+  border-radius: 0 0 8px 8px;
+  transform-origin: top left;
+}
+
 /* ---- FS Table ---- */
 .fs-table-wrap {
   flex: 1;
@@ -293,6 +373,451 @@ main {
 }
 
 .spacer td { height: 8px; background: #f8faff !important; border: none !important; }
+
+/* ---- Income Statement specific rows ---- */
+.income-budget-row td {
+  background: #fff8dc;
+  color: #7a4500;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 700;
+  font-size: 0.72rem;
+  letter-spacing: 0.5px;
+  border-top: 1px solid #f5c842;
+  border-bottom: 1px solid #f5c842;
+  padding: 6px 14px;
+  text-transform: uppercase;
+}
+
+.income-highlight-row td {
+  background: #ffe600;
+  color: #0a1e6e;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 900;
+  font-size: 0.74rem;
+  letter-spacing: 1px;
+  border-top: 2px solid #d4c000;
+  border-bottom: 1px solid #d4c000;
+  padding: 8px 14px;
+  text-transform: uppercase;
+}
+
+/* ---- Income Statement — same design as Balance Sheet ---- */
+#tab-income .fs-table-scroll {
+  background: #fff;
+  border-radius: 0 0 10px 10px;
+  box-shadow: 0 4px 24px rgba(10,30,110,0.18);
+}
+
+#tab-income .fs-table { font-size: 0.73rem; }
+
+#tab-income .fs-th {
+  background: #0a1e6e;
+  color: #f5a623;
+  font-size: 0.68rem;
+  letter-spacing: 1.5px;
+  padding: 10px 16px;
+  border-bottom: 3px solid #f5a623;
+  text-transform: uppercase;
+}
+
+#tab-income .section-header td {
+  background: #ffe600;
+  color: #0a1e6e;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 900;
+  font-size: 0.72rem;
+  letter-spacing: 2px;
+  padding: 8px 16px;
+  border-left: none;
+  border-top: 2px solid #d4c000;
+  border-bottom: 1px solid #d4c000;
+  text-transform: uppercase;
+}
+
+#tab-income .fs-label.indent {
+  padding-left: 24px !important;
+  font-weight: 600;
+  color: #1a237e;
+  text-transform: uppercase;
+  font-size: 0.7rem;
+}
+
+#tab-income tbody tr td {
+  border-bottom: 1px solid #e8ecf4;
+  padding: 6px 16px;
+}
+
+#tab-income tbody tr:nth-child(even) td { background: #fafbff; }
+#tab-income tbody tr:hover td { background: #f0f4ff; transition: background 0.15s; }
+
+#tab-income .subtotal-row td {
+  background: #fce4ec;
+  color: #880e4f;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 800;
+  font-size: 0.71rem;
+  letter-spacing: 0.5px;
+  border-top: 2px solid #f48fb1;
+  border-bottom: 2px solid #f48fb1;
+  padding: 7px 16px;
+  text-transform: uppercase;
+}
+
+#tab-income .subtotal-row .fs-label.indent-sub {
+  padding-left: 32px !important;
+  color: #880e4f;
+}
+
+#tab-income .income-budget-row td {
+  background: #fffde7;
+  color: #7a4500;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 700;
+  font-size: 0.71rem;
+  border-top: 1px solid #f5c842;
+  border-bottom: 1px solid #f5c842;
+  padding: 6px 16px;
+  text-transform: uppercase;
+}
+
+#tab-income .income-highlight-row td {
+  background: #ffe600;
+  color: #0a1e6e;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 900;
+  font-size: 0.74rem;
+  letter-spacing: 1px;
+  border-top: 2px solid #d4c000;
+  border-bottom: 1px solid #d4c000;
+  padding: 8px 16px;
+  text-transform: uppercase;
+}
+
+#tab-income .total-row.highlight td {
+  background: #0a1e6e;
+  color: #f5a623;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 900;
+  font-size: 0.75rem;
+  letter-spacing: 1px;
+  border-top: 3px solid #f5a623;
+  border-bottom: 3px solid #f5a623;
+  padding: 9px 16px;
+  text-transform: uppercase;
+}
+
+#tab-income .total-row.highlight .fs-amount.gold {
+  color: #ffe600;
+  font-size: 0.78rem;
+  text-shadow: 0 0 8px rgba(255,230,0,0.4);
+}
+
+#tab-income .spacer td {
+  height: 10px;
+  background: #f0f4ff !important;
+  border: none !important;
+}
+
+/* ---- Balance Sheet specific styles ---- */
+#tab-balance .fs-table-scroll {
+  background: #fff;
+  border-radius: 0 0 10px 10px;
+  box-shadow: 0 4px 24px rgba(10,30,110,0.18);
+}
+
+#tab-balance .fs-table {
+  font-size: 0.73rem;
+}
+
+#tab-balance .fs-th {
+  background: #0a1e6e;
+  color: #f5a623;
+  font-size: 0.68rem;
+  letter-spacing: 1.5px;
+  padding: 10px 16px;
+  border-bottom: 3px solid #f5a623;
+  text-transform: uppercase;
+}
+
+/* Yellow section headers (CURRENT ASSETS, FIXED ASSETS, etc.) */
+#tab-balance .section-header td {
+  background: #ffe600;
+  color: #0a1e6e;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 900;
+  font-size: 0.72rem;
+  letter-spacing: 2px;
+  padding: 8px 16px;
+  border-left: none;
+  border-top: 2px solid #d4c000;
+  border-bottom: 1px solid #d4c000;
+  text-transform: uppercase;
+}
+
+/* Regular data rows */
+#tab-balance .fs-label.indent {
+  padding-left: 24px !important;
+  font-weight: 600;
+  color: #1a237e;
+  text-transform: uppercase;
+  font-size: 0.7rem;
+}
+
+#tab-balance tbody tr td {
+  border-bottom: 1px solid #e8ecf4;
+  padding: 6px 16px;
+}
+
+#tab-balance tbody tr:nth-child(even) td { background: #fafbff; }
+#tab-balance tbody tr:hover td { background: #f0f4ff; transition: background 0.15s; }
+
+/* Pink subtotal rows */
+#tab-balance .subtotal-row td {
+  background: #fce4ec;
+  color: #880e4f;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 800;
+  font-size: 0.71rem;
+  letter-spacing: 0.5px;
+  border-top: 2px solid #f48fb1;
+  border-bottom: 2px solid #f48fb1;
+  padding: 7px 16px;
+  text-transform: uppercase;
+}
+
+#tab-balance .subtotal-row .fs-label.indent-sub {
+  padding-left: 32px !important;
+  color: #880e4f;
+}
+
+/* Inline section rows (FIXED ASSETS, OTHER ASSETS, OTHER LIABILITIES) */
+#tab-balance .section-header td.fs-label {
+  background: #ffe600;
+  color: #0a1e6e;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+#tab-balance .section-header td.fs-amount {
+  background: #ffe600;
+  color: #0a1e6e;
+  font-weight: 900;
+  text-align: center;
+}
+
+/* Divider row between ASSETS and LIABILITIES headers */
+#tab-balance tr th.fs-th {
+  background: #0a1e6e;
+  color: #f5a623;
+  font-size: 0.68rem;
+  letter-spacing: 1.5px;
+  padding: 10px 16px;
+  border-top: 3px solid #f5a623;
+  border-bottom: 3px solid #f5a623;
+  text-transform: uppercase;
+}
+
+/* NET ASSETS section header (no yellow, use blue) */
+#tab-balance .section-header:has(td[colspan="3"]:not(:first-child)) td {
+  background: #e8eaf6;
+  color: #1a237e;
+}
+
+/* Total rows — dark blue with gold text + bold border */
+#tab-balance .total-row.highlight td {
+  background: #0a1e6e;
+  color: #f5a623;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 900;
+  font-size: 0.75rem;
+  letter-spacing: 1px;
+  border-top: 3px solid #f5a623;
+  border-bottom: 3px solid #f5a623;
+  padding: 9px 16px;
+  text-transform: uppercase;
+}
+
+#tab-balance .total-row.highlight .fs-amount.gold {
+  color: #ffe600;
+  font-size: 0.78rem;
+  text-shadow: 0 0 8px rgba(255,230,0,0.4);
+}
+
+#tab-balance .spacer td {
+  height: 10px;
+  background: #f0f4ff !important;
+  border: none !important;
+}
+
+/* ---- Drilldown clickable rows ---- */
+.bs-drilldown-row {
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.bs-drilldown-row:hover td {
+  background: #fff9c4 !important;
+  color: #0a1e6e !important;
+}
+
+.drill-icon {
+  font-size: 0.55rem;
+  color: #f5a623;
+  margin-left: 6px;
+  vertical-align: middle;
+  opacity: 0.8;
+  transition: transform 0.2s;
+}
+
+.bs-drilldown-row:hover .drill-icon {
+  transform: translateX(3px);
+  opacity: 1;
+}
+
+/* ---- Note Modal Overlay ---- */
+.note-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(5, 10, 40, 0.65);
+  backdrop-filter: blur(4px);
+  z-index: 200;
+}
+
+.note-overlay.hidden { display: none; }
+
+/* ---- Note Modal ---- */
+.note-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 201;
+  width: 1430px;
+  max-width: 96vw;
+  max-height: 95vh;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.5), 0 0 0 2px #f5a623;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.note-modal.hidden { display: none; }
+
+@keyframes noteModalIn {
+  from { opacity: 0; transform: translate(-50%, -46%) scale(0.95); }
+  to   { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+}
+
+@keyframes noteModalOut {
+  from { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+  to   { opacity: 0; transform: translate(-50%, -46%) scale(0.95); }
+}
+
+.note-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #ffe600;
+  padding: 23px 36px;
+  border-bottom: 3px solid #d4c000;
+  flex-shrink: 0;
+}
+
+.note-modal-title {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 900;
+  font-size: 1.3rem;
+  letter-spacing: 1.5px;
+  color: #0a1e6e;
+  text-transform: uppercase;
+}
+
+.note-modal-close {
+  background: rgba(10,30,110,0.12);
+  border: 1px solid rgba(10,30,110,0.25);
+  border-radius: 50%;
+  width: 44px;
+  height: 44px;
+  color: #0a1e6e;
+  font-size: 1.17rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+}
+
+.note-modal-close:hover { background: rgba(10,30,110,0.25); }
+
+.note-modal-body {
+  overflow-y: auto;
+  flex: 1;
+  padding: 0;
+}
+
+/* ---- Note Table ---- */
+.note-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 1.17rem;
+  color: #1e293b;
+}
+
+.note-table thead th {
+  background: #0a1e6e;
+  color: #f5a623;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 700;
+  font-size: 1.04rem;
+  letter-spacing: 1.5px;
+  padding: 17px 31px;
+  text-align: center;
+  border-bottom: 2px solid #f5a623;
+  text-transform: uppercase;
+}
+
+.note-table thead th.nt-label { text-align: left; }
+
+.note-table tbody tr td {
+  padding: 13px 31px;
+  border-bottom: 1px solid #e8ecf4;
+  font-size: 1.17rem;
+}
+
+.note-table tbody tr:nth-child(even) td { background: #fafbff; }
+.note-table tbody tr:hover td { background: #f0f4ff; }
+
+.nt-label { font-weight: 600; color: #1a237e; text-transform: uppercase; font-size: 1.17rem; }
+.nt-indent { padding-left: 48px !important; font-weight: 500; color: #374151; font-size: 1.17rem; }
+.nt-val { text-align: right; font-weight: 600; white-space: nowrap; font-size: 1.17rem; }
+.nt-neg-val { color: #dc2626; font-size: 1.17rem; }
+
+.nt-group td {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 800;
+  font-size: 1.17rem;
+  color: #0a1e6e;
+  background: #e8eaf6;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  border-bottom: 1px solid #c5cae9;
+}
+
+.nt-subtotal td {
+  background: #fce4ec;
+  color: #880e4f;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 800;
+  font-size: 1.17rem;
+  border-top: 2px solid #f48fb1;
+  border-bottom: 2px solid #f48fb1;
+  text-transform: uppercase;
+}
+
+.nt-neg td, .nt-neg .nt-val { color: #dc2626; font-weight: 700; font-size: 1.17rem; }
 
 /* ---- RIGHT ---- */
 .fs-right {
@@ -432,7 +957,7 @@ footer {
   position: relative;
   z-index: 2;
   padding: 14px 40px;
-  background: rgba(0,0,0,0.4);
+  background: rgba(0,0,0,0.3);
 }
 
 .footer-bottom {

@@ -42,71 +42,78 @@
         <!-- INCOME STATEMENT -->
         <div class="fs-panel" id="tab-income">
           <div class="fs-panel-header">
-            <span class="fs-panel-title">STATEMENT OF INCOME</span>
-            <span class="fs-panel-period">For the Period Ended January 31, 2025</span>
+            <span class="fs-panel-title">FINANCIAL ACTIVITY</span>
+            <div class="bs-month-wrap">
+              <span class="fs-panel-period" id="isPeriodLabel">JANUARY 2026</span>
+              <select class="bs-month-select" id="isMonthSelect" onchange="renderIncomeStatement()">
+                <option value="0">January</option><option value="1">February</option><option value="2">March</option>
+                <option value="3">April</option><option value="4">May</option><option value="5">June</option>
+                <option value="6">July</option><option value="7">August</option><option value="8">September</option>
+                <option value="9">October</option><option value="10">November</option><option value="11">December</option>
+              </select>
+              <div class="bs-zoom-wrap">
+                <button class="bs-zoom-btn" onclick="isZoom(-1)" title="Zoom Out">&#8722;</button>
+                <span class="bs-zoom-label" id="isZoomLabel">100%</span>
+                <button class="bs-zoom-btn" onclick="isZoom(1)" title="Zoom In">&#43;</button>
+              </div>
+            </div>
           </div>
-          <div class="fs-table-scroll">
-          <table class="fs-table">
-            <tbody>
-              <tr class="section-header"><td colspan="2">REVENUES</td></tr>
-              <tr><td class="fs-label indent">Tithes Received</td><td class="fs-amount">₱ 61,301,229.98</td></tr>
-              <tr><td class="fs-label indent">Offerings Received</td><td class="fs-amount">₱ 23,721,985.60</td></tr>
-              <tr><td class="fs-label indent">Other Income</td><td class="fs-amount">₱ 0.00</td></tr>
-              <tr class="subtotal-row"><td class="fs-label">Total Revenues</td><td class="fs-amount">₱ 85,023,215.58</td></tr>
-
-              <tr class="spacer"><td colspan="2"></td></tr>
-              <tr class="section-header"><td colspan="2">EXPENSES</td></tr>
-              <tr><td class="fs-label indent">Administrative Expenses</td><td class="fs-amount">₱ 12,450,000.00</td></tr>
-              <tr><td class="fs-label indent">Ministry & Evangelism</td><td class="fs-amount">₱ 18,300,000.00</td></tr>
-              <tr><td class="fs-label indent">Education & Training</td><td class="fs-amount">₱ 9,750,000.00</td></tr>
-              <tr><td class="fs-label indent">Community Services</td><td class="fs-amount">₱ 6,200,000.00</td></tr>
-              <tr><td class="fs-label indent">Remittance to Division</td><td class="fs-amount">₱ 15,500,000.00</td></tr>
-              <tr class="subtotal-row"><td class="fs-label">Total Expenses</td><td class="fs-amount">₱ 62,200,000.00</td></tr>
-
-              <tr class="spacer"><td colspan="2"></td></tr>
-              <tr class="total-row highlight"><td class="fs-label">NET SURPLUS</td><td class="fs-amount gold">₱ 22,823,215.58</td></tr>
-            </tbody>
-          </table>
+          <div class="bs-zoom-outer">
+            <div class="fs-table-scroll" id="isTableScroll">
+              <table class="fs-table" id="isTable">
+                <thead>
+                  <tr>
+                    <th class="fs-th"></th>
+                    <th class="fs-th center">2025 PREVIOUS</th>
+                    <th class="fs-th center">2026 CURRENT</th>
+                  </tr>
+                </thead>
+                <tbody id="isTableBody"></tbody>
+              </table>
+            </div>
           </div>
         </div>
 
         <!-- BALANCE SHEET -->
         <div class="fs-panel active" id="tab-balance">
           <div class="fs-panel-header">
-            <span class="fs-panel-title">STATEMENT OF FINANCIAL POSITION</span>
-            <span class="fs-panel-period">As of January 31, 2025</span>
+            <span class="fs-panel-title">FINANCIAL POSITION</span>
+            <div class="bs-month-wrap">
+              <span class="fs-panel-period" id="bsPeriodLabel">JANUARY 2026</span>
+              <select class="bs-month-select" id="bsMonthSelect" onchange="renderBalanceSheet()">
+                <option value="0">January</option>
+                <option value="1">February</option>
+                <option value="2">March</option>
+                <option value="3">April</option>
+                <option value="4">May</option>
+                <option value="5">June</option>
+                <option value="6">July</option>
+                <option value="7">August</option>
+                <option value="8">September</option>
+                <option value="9">October</option>
+                <option value="10">November</option>
+                <option value="11">December</option>
+              </select>
+              <div class="bs-zoom-wrap">
+                <button class="bs-zoom-btn" onclick="bsZoom(-1)" title="Zoom Out">&#8722;</button>
+                <span class="bs-zoom-label" id="bsZoomLabel">100%</span>
+                <button class="bs-zoom-btn" onclick="bsZoom(1)" title="Zoom In">&#43;</button>
+              </div>
+            </div>
           </div>
-          <div class="fs-table-scroll">
-          <table class="fs-table">
-            <tbody>
-              <tr class="section-header"><td colspan="2">ASSETS</td></tr>
-              <tr class="sub-section"><td colspan="2">Current Assets</td></tr>
-              <tr><td class="fs-label indent">Cash and Cash Equivalents</td><td class="fs-amount">₱ 38,450,000.00</td></tr>
-              <tr><td class="fs-label indent">Accounts Receivable</td><td class="fs-amount">₱ 4,200,000.00</td></tr>
-              <tr><td class="fs-label indent">Prepaid Expenses</td><td class="fs-amount">₱ 1,850,000.00</td></tr>
-              <tr class="subtotal-row"><td class="fs-label indent-sub">Total Current Assets</td><td class="fs-amount">₱ 44,500,000.00</td></tr>
-
-              <tr class="sub-section"><td colspan="2">Non-Current Assets</td></tr>
-              <tr><td class="fs-label indent">Property & Equipment</td><td class="fs-amount">₱ 125,000,000.00</td></tr>
-              <tr><td class="fs-label indent">Less: Accumulated Depreciation</td><td class="fs-amount neg">( ₱ 18,750,000.00 )</td></tr>
-              <tr class="subtotal-row"><td class="fs-label indent-sub">Total Non-Current Assets</td><td class="fs-amount">₱ 106,250,000.00</td></tr>
-
-              <tr class="total-row highlight"><td class="fs-label">TOTAL ASSETS</td><td class="fs-amount gold">₱ 150,750,000.00</td></tr>
-
-              <tr class="spacer"><td colspan="2"></td></tr>
-              <tr class="section-header"><td colspan="2">LIABILITIES</td></tr>
-              <tr><td class="fs-label indent">Accounts Payable</td><td class="fs-amount">₱ 3,100,000.00</td></tr>
-              <tr><td class="fs-label indent">Accrued Liabilities</td><td class="fs-amount">₱ 2,450,000.00</td></tr>
-              <tr><td class="fs-label indent">Deferred Revenue</td><td class="fs-amount">₱ 1,200,000.00</td></tr>
-              <tr class="subtotal-row"><td class="fs-label">Total Liabilities</td><td class="fs-amount">₱ 6,750,000.00</td></tr>
-
-              <tr class="spacer"><td colspan="2"></td></tr>
-              <tr class="section-header"><td colspan="2">NET ASSETS / EQUITY</td></tr>
-              <tr><td class="fs-label indent">Unrestricted Net Assets</td><td class="fs-amount">₱ 120,000,000.00</td></tr>
-              <tr><td class="fs-label indent">Restricted Net Assets</td><td class="fs-amount">₱ 24,000,000.00</td></tr>
-              <tr class="total-row highlight"><td class="fs-label">TOTAL LIABILITIES & NET ASSETS</td><td class="fs-amount gold">₱ 150,750,000.00</td></tr>
-            </tbody>
-          </table>
+          <div class="bs-zoom-outer">
+            <div class="fs-table-scroll" id="bsTableScroll">
+              <table class="fs-table" id="bsTable">
+                <thead>
+                  <tr>
+                    <th class="fs-th">ASSETS</th>
+                    <th class="fs-th center">2025 TOTAL</th>
+                    <th class="fs-th center">2026 TOTAL</th>
+                  </tr>
+                </thead>
+                <tbody id="bsTableBody"></tbody>
+              </table>
+            </div>
           </div>
         </div>
 
@@ -218,23 +225,23 @@
         <div class="kpi-cards">
           <div class="kpi-card kpi-green">
             <p class="kpi-label">TOTAL REVENUE</p>
-            <p class="kpi-value">₱85.02M</p>
-            <p class="kpi-sub">Jan 2025</p>
+            <p class="kpi-value" id="kpiRevenue">—</p>
+            <p class="kpi-sub" id="kpiRevenueSub">—</p>
           </div>
           <div class="kpi-card kpi-red">
             <p class="kpi-label">TOTAL EXPENSES</p>
-            <p class="kpi-value">₱62.20M</p>
-            <p class="kpi-sub">Jan 2025</p>
+            <p class="kpi-value" id="kpiExpenses">—</p>
+            <p class="kpi-sub" id="kpiExpensesSub">—</p>
           </div>
           <div class="kpi-card kpi-gold">
             <p class="kpi-label">NET SURPLUS</p>
-            <p class="kpi-value">₱22.82M</p>
-            <p class="kpi-sub">Jan 2025</p>
+            <p class="kpi-value" id="kpiSurplus">—</p>
+            <p class="kpi-sub" id="kpiSurplusSub">—</p>
           </div>
           <div class="kpi-card kpi-blue">
             <p class="kpi-label">TOTAL ASSETS</p>
-            <p class="kpi-value">₱150.75M</p>
-            <p class="kpi-sub">As of Jan 2025</p>
+            <p class="kpi-value" id="kpiAssets">—</p>
+            <p class="kpi-sub" id="kpiAssetsSub">—</p>
           </div>
         </div>
 
@@ -273,6 +280,78 @@
     </div>
   </main>
 
+  <!-- Note Modals -->
+  <div class="note-overlay hidden" id="noteOverlay" onclick="closeNote()"></div>
+
+  <div class="note-modal hidden" id="noteModal">
+    <div class="note-modal-header">
+      <span class="note-modal-title" id="noteModalTitle"></span>
+      <button class="note-modal-close" onclick="closeNote()">&#10005;</button>
+    </div>
+    <div class="note-modal-body">
+      <table class="note-table" id="noteTable">
+        <thead>
+          <tr>
+            <th class="nt-label"></th>
+            <th class="nt-col">PREVIOUS</th>
+            <th class="nt-col">CURRENT</th>
+          </tr>
+        </thead>
+        <tbody id="noteTableBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- SDA Sub-Modal -->
+  <div class="note-modal hidden" id="sdaModal" style="z-index:202; width:1170px;">
+    <div class="note-modal-header">
+      <div>
+        <div style="font-family:'Montserrat',sans-serif;font-weight:900;font-size:1.3rem;letter-spacing:1.5px;color:#0a1e6e;">ACCOUNTS RECEIVABLE</div>
+        <div style="font-family:'Montserrat',sans-serif;font-weight:700;font-size:1rem;color:#0a1e6e;margin-top:4px;">SDA ENTITIES WITHIN SWPUC</div>
+      </div>
+      <button class="note-modal-close" onclick="closeSda()">&#10005;</button>
+    </div>
+    <div class="note-modal-body">
+      <table class="note-table">
+        <thead><tr><th class="nt-label">ENTITY</th><th class="nt-col">PREVIOUS</th><th class="nt-col">CURRENT</th></tr></thead>
+        <tbody>
+          <tr><td class="nt-label nt-indent">ADV INT'L HEALTH SYSTEM</td><td class="nt-val"></td><td class="nt-val"></td></tr>
+          <tr><td class="nt-label nt-indent">ADVENTIST MEDICAL CENTER-DAVAO</td><td class="nt-val"></td><td class="nt-val"></td></tr>
+          <tr><td class="nt-label nt-indent">ADVENTIST MEDICAL CENTER-ILIGAN</td><td class="nt-val"></td><td class="nt-val"></td></tr>
+          <tr><td class="nt-label nt-indent">ADVENTIST MEDICAL CENTER-VALENCIA</td><td class="nt-val"></td><td class="nt-val"></td></tr>
+          <tr><td class="nt-label nt-indent">ADVENTIST MEDICAL CENTER COLLEGE</td><td class="nt-val"></td><td class="nt-val"></td></tr>
+          <tr><td class="nt-label nt-indent">CENTRAL MINDANAO MISSION</td><td class="nt-val"></td><td class="nt-val"></td></tr>
+          <tr><td class="nt-label nt-indent">ADVENTIST HOSPITAL-GINGOOG</td><td class="nt-val"></td><td class="nt-val"></td></tr>
+          <tr><td class="nt-label nt-indent">MOUNTAIN VIEW COLLEGE</td><td class="nt-val"></td><td class="nt-val"></td></tr>
+          <tr><td class="nt-label nt-indent">NORTHEASTERN MINDANAO MISSION</td><td class="nt-val"></td><td class="nt-val"></td></tr>
+          <tr><td class="nt-label nt-indent">WESTERN MINDANAO CONFERENCE</td><td class="nt-val"></td><td class="nt-val"></td></tr>
+          <tr><td class="nt-label nt-indent">ZAMBOANGA PENINSULA MISSION</td><td class="nt-val"></td><td class="nt-val"></td></tr>
+          <tr><td class="nt-label nt-indent">HOPE CHANNEL SOUTH PHILIPPINES</td><td class="nt-val"></td><td class="nt-val"></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- SDA AP Sub-Modal -->
+  <div class="note-modal hidden" id="sdaApModal" style="z-index:202; width:1170px;">
+    <div class="note-modal-header">
+      <div>
+        <div style="font-family:'Montserrat',sans-serif;font-weight:900;font-size:1.3rem;letter-spacing:1.5px;color:#0a1e6e;">ACCOUNTS PAYABLE</div>
+        <div style="font-family:'Montserrat',sans-serif;font-weight:700;font-size:1rem;color:#0a1e6e;margin-top:4px;">SDA ENTITIES WITHIN SWPUC</div>
+      </div>
+      <button class="note-modal-close" onclick="closeSdaAp()">&#10005;</button>
+    </div>
+    <div class="note-modal-body">
+      <table class="note-table">
+        <thead><tr><th class="nt-label">ENTITY</th><th class="nt-col">PREVIOUS</th><th class="nt-col">CURRENT</th></tr></thead>
+        <tbody>
+          <tr><td class="nt-label nt-indent">LITERATURE MINISTRY SEMINARY</td><td class="nt-val"></td><td class="nt-val"></td></tr>
+          <tr><td class="nt-label nt-indent">NORTH CENTRAL MINDANAO CONFERENCE</td><td class="nt-val"></td><td class="nt-val"></td></tr>
+          <tr><td class="nt-label nt-indent">SULADS</td><td class="nt-val"></td><td class="nt-val"></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
   <footer>
     <div class="footer-bottom">
       <button class="btn-arrow" id="hamburgerBtn" onclick="toggleFooterNav()">
@@ -357,6 +436,333 @@
         setTimeout(() => wrap.classList.add('hidden'), reversed.length * 60 + 200);
       }
     }
+    // ---- Balance Sheet monthly data ----
+    const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+
+    const bsData = [
+      // Jan
+      { cash25:256948827, cash26:179775708, inv25:36714415, inv26:36714415, ar25:89037911, ar26:104055542, agency25:11982029, agency26:24184415, loans25:24637318, loans26:24637316, supplies25:1055786, supplies26:650385, fixed25:72307736, fixed26:68190722, other25:32488938, other26:25543041, ap25:164005719, ap26:82806540, offa25:11982029, offa26:24184415, otherliab25:16542057, otherliab26:3356959, una_t25:177195252, una_t26:168221361, una_nt25:24943063, una_nt26:50271960, alloc25:58197104, alloc26:66719589, plant25:72307737, plant26:68190724 },
+      // Feb
+      { cash25:241382500, cash26:165430200, inv25:36714415, inv26:36714415, ar25:91240300, ar26:108320100, agency25:12450000, agency26:25100000, loans25:24637318, loans26:24637316, supplies25:980450, supplies26:612000, fixed25:71850000, fixed26:67800000, other25:31900000, other26:24800000, ap25:158320000, ap26:79450000, offa25:12450000, offa26:25100000, otherliab25:15800000, otherliab26:3100000, una_t25:174320000, una_t26:165800000, una_nt25:25100000, una_nt26:51200000, alloc25:57800000, alloc26:65900000, plant25:71850000, plant26:67800000 },
+      // Mar
+      { cash25:268750000, cash26:182340000, inv25:36714415, inv26:36714415, ar25:87650000, ar26:101230000, agency25:13200000, agency26:26500000, loans25:24637318, loans26:24637316, supplies25:1120000, supplies26:680000, fixed25:73100000, fixed26:69200000, other25:33200000, other26:26100000, ap25:170200000, ap26:85600000, offa25:13200000, offa26:26500000, otherliab25:17100000, otherliab26:3600000, una_t25:179800000, una_t26:170500000, una_nt25:24500000, una_nt26:49800000, alloc25:59200000, alloc26:67500000, plant25:73100000, plant26:69200000 },
+      // Apr
+      { cash25:275300000, cash26:188900000, inv25:36714415, inv26:36714415, ar25:93400000, ar26:110800000, agency25:14100000, agency26:27800000, loans25:24637318, loans26:24637316, supplies25:1230000, supplies26:720000, fixed25:72800000, fixed26:68900000, other25:34100000, other26:27200000, ap25:172500000, ap26:88200000, offa25:14100000, offa26:27800000, otherliab25:17800000, otherliab26:3900000, una_t25:181200000, una_t26:172300000, una_nt25:25800000, una_nt26:52100000, alloc25:60100000, alloc26:68800000, plant25:72800000, plant26:68900000 },
+      // May
+      { cash25:262100000, cash26:175600000, inv25:36714415, inv26:36714415, ar25:85900000, ar26:99700000, agency25:12800000, agency26:25600000, loans25:24637318, loans26:24637316, supplies25:990000, supplies26:630000, fixed25:71600000, fixed26:67500000, other25:31200000, other26:24200000, ap25:161800000, ap26:81300000, offa25:12800000, offa26:25600000, otherliab25:16200000, otherliab26:3200000, una_t25:175600000, una_t26:166900000, una_nt25:24100000, una_nt26:49200000, alloc25:57200000, alloc26:65100000, plant25:71600000, plant26:67500000 },
+      // Jun
+      { cash25:280500000, cash26:193200000, inv25:36714415, inv26:36714415, ar25:95800000, ar26:113400000, agency25:14800000, agency26:28900000, loans25:24637318, loans26:24637316, supplies25:1310000, supplies26:760000, fixed25:73500000, fixed26:69600000, other25:34800000, other26:27900000, ap25:175800000, ap26:90100000, offa25:14800000, offa26:28900000, otherliab25:18200000, otherliab26:4100000, una_t25:183500000, una_t26:174800000, una_nt25:26200000, una_nt26:53000000, alloc25:61000000, alloc26:69700000, plant25:73500000, plant26:69600000 },
+      // Jul
+      { cash25:258900000, cash26:172100000, inv25:36714415, inv26:36714415, ar25:84200000, ar26:97800000, agency25:12300000, agency26:24800000, loans25:24637318, loans26:24637316, supplies25:960000, supplies26:600000, fixed25:71200000, fixed26:67100000, other25:30800000, other26:23800000, ap25:159200000, ap26:79800000, offa25:12300000, offa26:24800000, otherliab25:15900000, otherliab26:3050000, una_t25:173800000, una_t26:165200000, una_nt25:23800000, una_nt26:48600000, alloc25:56800000, alloc26:64700000, plant25:71200000, plant26:67100000 },
+      // Aug
+      { cash25:271600000, cash26:184500000, inv25:36714415, inv26:36714415, ar25:90100000, ar26:106700000, agency25:13600000, agency26:27100000, loans25:24637318, loans26:24637316, supplies25:1080000, supplies26:660000, fixed25:72400000, fixed26:68300000, other25:32600000, other26:25700000, ap25:166900000, ap26:84200000, offa25:13600000, offa26:27100000, otherliab25:16800000, otherliab26:3400000, una_t25:178100000, una_t26:169400000, una_nt25:25400000, una_nt26:51600000, alloc25:58900000, alloc26:67200000, plant25:72400000, plant26:68300000 },
+      // Sep
+      { cash25:284200000, cash26:197800000, inv25:36714415, inv26:36714415, ar25:97300000, ar26:115900000, agency25:15200000, agency26:29600000, loans25:24637318, loans26:24637316, supplies25:1380000, supplies26:800000, fixed25:74100000, fixed26:70200000, other25:35500000, other26:28600000, ap25:178200000, ap26:92400000, offa25:15200000, offa26:29600000, otherliab25:18600000, otherliab26:4300000, una_t25:185800000, una_t26:177100000, una_nt25:26600000, una_nt26:53800000, alloc25:61800000, alloc26:70500000, plant25:74100000, plant26:70200000 },
+      // Oct
+      { cash25:249800000, cash26:163400000, inv25:36714415, inv26:36714415, ar25:82500000, ar26:95600000, agency25:11900000, agency26:23900000, loans25:24637318, loans26:24637316, supplies25:920000, supplies26:570000, fixed25:70800000, fixed26:66700000, other25:30200000, other26:23200000, ap25:156800000, ap26:78200000, offa25:11900000, offa26:23900000, otherliab25:15500000, otherliab26:2900000, una_t25:171900000, una_t26:163500000, una_nt25:23400000, una_nt26:48000000, alloc25:56300000, alloc26:64200000, plant25:70800000, plant26:66700000 },
+      // Nov
+      { cash25:265400000, cash26:178900000, inv25:36714415, inv26:36714415, ar25:88300000, ar26:103100000, agency25:13000000, agency26:26200000, loans25:24637318, loans26:24637316, supplies25:1020000, supplies26:645000, fixed25:72000000, fixed26:67900000, other25:31600000, other26:24500000, ap25:163400000, ap26:82100000, offa25:13000000, offa26:26200000, otherliab25:16500000, otherliab26:3250000, una_t25:176400000, una_t26:167700000, una_nt25:24700000, una_nt26:50600000, alloc25:57600000, alloc26:65500000, plant25:72000000, plant26:67900000 },
+      // Dec
+      { cash25:291500000, cash26:204100000, inv25:36714415, inv26:36714415, ar25:99800000, ar26:118600000, agency25:15800000, agency26:30400000, loans25:24637318, loans26:24637316, supplies25:1450000, supplies26:840000, fixed25:74800000, fixed26:70900000, other25:36200000, other26:29300000, ap25:181500000, ap26:95200000, offa25:15800000, offa26:30400000, otherliab25:19100000, otherliab26:4600000, una_t25:188200000, una_t26:179500000, una_nt25:27100000, una_nt26:54700000, alloc25:62600000, alloc26:71400000, plant25:74800000, plant26:70900000 }
+    ];
+
+    function fmt(n) { return n.toLocaleString('en-US'); }
+
+    function fmtM(n) {
+      if (n >= 1e9) return '₱' + (n/1e9).toFixed(2) + 'B';
+      if (n >= 1e6) return '₱' + (n/1e6).toFixed(2) + 'M';
+      return '₱' + n.toLocaleString('en-US');
+    }
+
+    function updateKPIs() {
+      const bsMi = parseInt(document.getElementById('bsMonthSelect').value);
+      const isMi = parseInt(document.getElementById('isMonthSelect').value);
+      const bs = bsData[bsMi];
+      const is = isData[isMi];
+      const bsMn = MONTHS[bsMi];
+      const isMn = MONTHS[isMi];
+
+      // Revenue & Expenses from Income Statement month
+      const totalInc26 = is.tithe26+is.offer26+is.inv26+is.other26;
+      const totalExp26 = is.emp26+is.prog26+is.admin26+is.office26+is.gen26+is.plant26;
+      const netSurplus = totalInc26 - totalExp26;
+
+      // Total Assets from Balance Sheet month
+      const tca26 = bs.cash26+bs.inv26+bs.ar26+bs.agency26+bs.loans26+bs.supplies26;
+      const ta26  = tca26+bs.fixed26+bs.other26;
+
+      document.getElementById('kpiRevenue').textContent    = fmtM(totalInc26);
+      document.getElementById('kpiRevenueSub').textContent  = isMn + ' 2026';
+      document.getElementById('kpiExpenses').textContent   = fmtM(totalExp26);
+      document.getElementById('kpiExpensesSub').textContent = isMn + ' 2026';
+      document.getElementById('kpiSurplus').textContent    = fmtM(netSurplus);
+      document.getElementById('kpiSurplusSub').textContent  = isMn + ' 2026';
+      document.getElementById('kpiAssets').textContent     = fmtM(ta26);
+      document.getElementById('kpiAssetsSub').textContent   = 'As of ' + bsMn + ' 2026';
+    }
+
+    function renderBalanceSheet() {
+      const mi = parseInt(document.getElementById('bsMonthSelect').value);
+      // Keep IS month in sync
+      document.getElementById('isMonthSelect').value = mi;
+      const d = bsData[mi];
+      const mn = MONTHS[mi];
+      document.getElementById('bsPeriodLabel').textContent = mn.toUpperCase() + ' 2026';
+
+      const tca25 = d.cash25+d.inv25+d.ar25+d.agency25+d.loans25+d.supplies25;
+      const tca26 = d.cash26+d.inv26+d.ar26+d.agency26+d.loans26+d.supplies26;
+      const ta25  = tca25+d.fixed25+d.other25;
+      const ta26  = tca26+d.fixed26+d.other26;
+      const tcl25 = d.ap25+d.offa25;
+      const tcl26 = d.ap26+d.offa26;
+      const tl25  = tcl25+d.otherliab25;
+      const tl26  = tcl26+d.otherliab26;
+      const tna25 = d.una_t25+d.una_nt25+d.alloc25+d.plant25;
+      const tna26 = d.una_t26+d.una_nt26+d.alloc26+d.plant26;
+      const tlna25 = tl25+tna25;
+      const tlna26 = tl26+tna26;
+
+      document.getElementById('bsTableBody').innerHTML = `
+        <tr class="section-header"><td colspan="3">CURRENT ASSETS</td></tr>
+        <tr class="bs-drilldown-row" onclick="openNote('cash')"><td class="fs-label indent">CASH AND CASH EQUIVALENTS <span class="drill-icon">▶</span></td><td class="fs-amount center">${fmt(d.cash25)}</td><td class="fs-amount center">${fmt(d.cash26)}</td></tr>
+        <tr><td class="fs-label indent">INVESTMENTS</td><td class="fs-amount center">${fmt(d.inv25)}</td><td class="fs-amount center">${fmt(d.inv26)}</td></tr>
+        <tr class="bs-drilldown-row" onclick="openNote('ar')"><td class="fs-label indent">ACCOUNTS RECEIVABLE-NET <span class="drill-icon">▶</span></td><td class="fs-amount center">${fmt(d.ar25)}</td><td class="fs-amount center">${fmt(d.ar26)}</td></tr>
+        <tr><td class="fs-label indent">CASH HELD FOR AGENCY (TRUST FUNDS)</td><td class="fs-amount center">${fmt(d.agency25)}</td><td class="fs-amount center">${fmt(d.agency26)}</td></tr>
+        <tr><td class="fs-label indent">LOANS RECEIVABLES</td><td class="fs-amount center">${fmt(d.loans25)}</td><td class="fs-amount center">${fmt(d.loans26)}</td></tr>
+        <tr><td class="fs-label indent">SUPPLIES AND PREPAID EXPENSE</td><td class="fs-amount center">${fmt(d.supplies25)}</td><td class="fs-amount center">${fmt(d.supplies26)}</td></tr>
+        <tr class="subtotal-row"><td class="fs-label indent-sub">TOTAL CURRENT ASSETS</td><td class="fs-amount center">${fmt(tca25)}</td><td class="fs-amount center">${fmt(tca26)}</td></tr>
+        <tr class="spacer"><td colspan="3"></td></tr>
+        <tr class="section-header"><td class="fs-label">FIXED ASSETS</td><td class="fs-amount center">${fmt(d.fixed25)}</td><td class="fs-amount center">${fmt(d.fixed26)}</td></tr>
+        <tr class="spacer"><td colspan="3"></td></tr>
+        <tr class="section-header"><td class="fs-label">OTHER ASSETS</td><td class="fs-amount center">${fmt(d.other25)}</td><td class="fs-amount center">${fmt(d.other26)}</td></tr>
+        <tr class="spacer"><td colspan="3"></td></tr>
+        <tr class="total-row highlight"><td class="fs-label">TOTAL ASSETS</td><td class="fs-amount center gold">${fmt(ta25)}</td><td class="fs-amount center gold">${fmt(ta26)}</td></tr>
+        <tr class="spacer"><td colspan="3"></td></tr>
+        <tr><th class="fs-th">LIABILITIES</th><th class="fs-th center">2025 TOTAL</th><th class="fs-th center">2026 TOTAL</th></tr>
+        <tr class="section-header"><td colspan="3">CURRENT LIABILITIES</td></tr>
+        <tr class="bs-drilldown-row" onclick="openNote('ap')"><td class="fs-label indent">ACCOUNTS PAYABLE <span class="drill-icon">▶</span></td><td class="fs-amount center">${fmt(d.ap25)}</td><td class="fs-amount center">${fmt(d.ap26)}</td></tr>
+        <tr><td class="fs-label indent">OFFERINGS AND AGENCY</td><td class="fs-amount center">${fmt(d.offa25)}</td><td class="fs-amount center">${fmt(d.offa26)}</td></tr>
+        <tr class="subtotal-row"><td class="fs-label indent-sub">TOTAL CURRENT LIABILITIES</td><td class="fs-amount center">${fmt(tcl25)}</td><td class="fs-amount center">${fmt(tcl26)}</td></tr>
+        <tr class="spacer"><td colspan="3"></td></tr>
+        <tr class="section-header"><td class="fs-label">OTHER LIABILITIES</td><td class="fs-amount center">${fmt(d.otherliab25)}</td><td class="fs-amount center">${fmt(d.otherliab26)}</td></tr>
+        <tr class="spacer"><td colspan="3"></td></tr>
+        <tr class="subtotal-row"><td class="fs-label">TOTAL LIABILITIES</td><td class="fs-amount center">${fmt(tl25)}</td><td class="fs-amount center">${fmt(tl26)}</td></tr>
+        <tr class="spacer"><td colspan="3"></td></tr>
+        <tr class="section-header"><td colspan="3">NET ASSETS</td></tr>
+        <tr><td class="fs-label indent">UNALLOCATED NET ASSETS-TITHES</td><td class="fs-amount center">${fmt(d.una_t25)}</td><td class="fs-amount center">${fmt(d.una_t26)}</td></tr>
+        <tr><td class="fs-label indent">UNALLOCATED NET ASSETS-NON TITHES</td><td class="fs-amount center">${fmt(d.una_nt25)}</td><td class="fs-amount center">${fmt(d.una_nt26)}</td></tr>
+        <tr><td class="fs-label indent">ALLOCATED NET ASSETS</td><td class="fs-amount center">${fmt(d.alloc25)}</td><td class="fs-amount center">${fmt(d.alloc26)}</td></tr>
+        <tr><td class="fs-label indent">INVESTMENT IN PLANT</td><td class="fs-amount center">${fmt(d.plant25)}</td><td class="fs-amount center">${fmt(d.plant26)}</td></tr>
+        <tr class="subtotal-row"><td class="fs-label indent-sub">TOTAL NET ASSETS</td><td class="fs-amount center">${fmt(tna25)}</td><td class="fs-amount center">${fmt(tna26)}</td></tr>
+        <tr class="spacer"><td colspan="3"></td></tr>
+        <tr class="total-row highlight"><td class="fs-label">TOTAL LIABILITIES &amp; NET ASSETS</td><td class="fs-amount center gold">${fmt(tlna25)}</td><td class="fs-amount center gold">${fmt(tlna26)}</td></tr>
+      `;
+      updateKPIs();
+    }
+
+    // ---- Initialization ----
+    window.addEventListener('DOMContentLoaded', () => {
+      const cur = new Date().getMonth();
+      document.getElementById('bsMonthSelect').value = cur;
+      document.getElementById('isMonthSelect').value = cur;
+      renderBalanceSheet();
+      renderIncomeStatement();
+    });
+
+    let bsZoomLevel = 100;
+    function bsZoom(dir) {
+      bsZoomLevel = Math.min(200, Math.max(60, bsZoomLevel + dir * 10));
+      const inner = document.getElementById('bsTableScroll');
+      const scale = bsZoomLevel / 100;
+      inner.style.transformOrigin = 'top left';
+      inner.style.transform = `scale(${scale})`;
+      inner.style.width = (100 / scale) + '%';
+      inner.style.height = 'auto';
+      // Expand the outer container to fit the scaled content
+      const outer = inner.parentElement;
+      outer.style.height = (inner.scrollHeight * scale) + 'px';
+      document.getElementById('bsZoomLabel').textContent = bsZoomLevel + '%';
+    }
+
+    // ---- Income Statement monthly data ----
+    const isData = [
+      { tithe25:12380337,tithe26:10224173,offer25:1168882,offer26:1438331,inv25:9650,inv26:7711,other25:501917,other26:463182,budgetInc26:13717319,emp25:2548906,emp26:2565212,prog25:2261240,prog26:3214341,admin25:847047,admin26:751343,office25:125432,office26:66196,gen25:271014,gen26:38794,plant25:921917,plant26:867154,budgetExp26:7464603,netAssetsBeg:348889046 },
+      { tithe25:11850200,tithe26:9980450,offer25:1090300,offer26:1320180,inv25:8420,inv26:7100,other25:478300,other26:441200,budgetInc26:13200000,emp25:2410500,emp26:2490300,prog25:2180600,prog26:3050200,admin25:810200,admin26:720100,office25:118300,office26:61400,gen25:258700,gen26:35200,plant25:890400,plant26:840200,budgetExp26:7200000,netAssetsBeg:353403633 },
+      { tithe25:13120500,tithe26:10850300,offer25:1240600,offer26:1520400,inv25:10200,inv26:8300,other25:528400,other26:489100,budgetInc26:14100000,emp25:2680300,emp26:2710500,prog25:2380100,prog26:3320400,admin25:890300,admin26:780200,office25:132100,office26:70300,gen25:285600,gen26:41200,plant25:950300,plant26:890100,budgetExp26:7680000,netAssetsBeg:357224083 },
+      { tithe25:12950800,tithe26:10680200,offer25:1210400,offer26:1490300,inv25:9900,inv26:8050,other25:515200,other26:475800,budgetInc26:13850000,emp25:2620100,emp26:2650800,prog25:2310500,prog26:3280100,admin25:865400,admin26:762300,office25:128700,office26:67800,gen25:278300,gen26:39500,plant25:935600,plant26:872400,budgetExp26:7520000,netAssetsBeg:362204283 },
+      { tithe25:11680400,tithe26:9620100,offer25:1050200,offer26:1280500,inv25:8100,inv26:6850,other25:462100,other26:428300,budgetInc26:12900000,emp25:2320400,emp26:2410200,prog25:2090300,prog26:2980400,admin25:782100,admin26:698500,office25:112400,office26:58200,gen25:248900,gen26:33800,plant25:862100,plant26:815300,budgetExp26:6980000,netAssetsBeg:366824783 },
+      { tithe25:13580200,tithe26:11240500,offer25:1290800,offer26:1580200,inv25:10800,inv26:8900,other25:542600,other26:502100,budgetInc26:14500000,emp25:2750800,emp26:2790300,prog25:2450200,prog26:3410600,admin25:912500,admin26:801400,office25:136800,office26:72900,gen25:293100,gen26:43100,plant25:968400,plant26:912600,budgetExp26:7890000,netAssetsBeg:370404983 },
+      { tithe25:11420600,tithe26:9410300,offer25:1028400,offer26:1250800,inv25:7850,inv26:6620,other25:451200,other26:418600,budgetInc26:12600000,emp25:2280100,emp26:2370500,prog25:2050800,prog26:2920100,admin25:768400,admin26:685200,office25:109800,office26:56800,gen25:243200,gen26:32900,plant25:845600,plant26:798400,budgetExp26:6820000,netAssetsBeg:375585283 },
+      { tithe25:12680300,tithe26:10480200,offer25:1148600,offer26:1408300,inv25:9200,inv26:7500,other25:498300,other26:461200,budgetInc26:13500000,emp25:2510200,emp26:2540800,prog25:2230400,prog26:3150200,admin25:838600,admin26:742100,office25:124200,office26:64800,gen25:268400,gen26:37600,plant25:912300,plant26:858200,budgetExp26:7380000,netAssetsBeg:379005383 },
+      { tithe25:13820400,tithe26:11420600,offer25:1312500,offer26:1608400,inv25:11100,inv26:9100,other25:551800,other26:510400,budgetInc26:14800000,emp25:2790500,emp26:2830100,prog25:2490600,prog26:3460800,admin25:928400,admin26:815600,office25:139200,office26:74500,gen25:298400,gen26:44200,plant25:982100,plant26:926800,budgetExp26:8020000,netAssetsBeg:383285883 },
+      { tithe25:11180200,tithe26:9210400,offer25:1008200,offer26:1228600,inv25:7600,inv26:6400,other25:441800,other26:409200,budgetInc26:12300000,emp25:2240800,emp26:2330200,prog25:2010400,prog26:2860500,admin25:754200,admin26:672400,office25:107200,office26:55400,gen25:237800,gen26:32100,plant25:829800,plant26:782100,budgetExp26:6680000,netAssetsBeg:388666083 },
+      { tithe25:12420500,tithe26:10280300,offer25:1128400,offer26:1380600,inv25:8950,inv26:7300,other25:488600,other26:452400,budgetInc26:13300000,emp25:2470600,emp26:2510400,prog25:2190800,prog26:3100500,admin25:824800,admin26:730600,office25:121600,office26:63200,gen25:263100,gen26:36800,plant25:898600,plant26:845800,budgetExp26:7260000,netAssetsBeg:391946483 },
+      { tithe25:14280600,tithe26:11820400,offer25:1358200,offer26:1658800,inv25:11500,inv26:9400,other25:568400,other26:526200,budgetInc26:15200000,emp25:2850200,emp26:2890600,prog25:2550800,prog26:3520400,admin25:948600,admin26:832800,office25:142800,office26:76400,gen25:305200,gen26:45600,plant25:998600,plant26:942400,budgetExp26:8180000,netAssetsBeg:396126683 }
+    ];
+
+    function fmtIs(n) { return n ? n.toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2}) : ''; }
+
+    function renderIncomeStatement() {
+      const mi = parseInt(document.getElementById('isMonthSelect').value);
+      // Keep BS month in sync
+      document.getElementById('bsMonthSelect').value = mi;
+      const d = isData[mi];
+      const mn = MONTHS[mi];
+      const lastDay = new Date(2026, mi + 1, 0).getDate();
+      document.getElementById('isPeriodLabel').textContent = mn.toUpperCase() + ' 2026';
+      const totalInc25 = d.tithe25+d.offer25+d.inv25+d.other25;
+      const totalInc26 = d.tithe26+d.offer26+d.inv26+d.other26;
+      const totalExp25 = d.emp25+d.prog25+d.admin25+d.office25+d.gen25+d.plant25;
+      const totalExp26 = d.emp26+d.prog26+d.admin26+d.office26+d.gen26+d.plant26;
+      const netInc26   = totalInc26 - totalExp26;
+      const netEnd26   = d.netAssetsBeg + netInc26;
+      document.getElementById('isTableBody').innerHTML = `
+        <tr class="section-header"><td colspan="3">OPERATING INCOME</td></tr>
+        <tr><td class="fs-label indent">TITHE INCOME-NET</td><td class="fs-amount center">${fmtIs(d.tithe25)}</td><td class="fs-amount center">${fmtIs(d.tithe26)}</td></tr>
+        <tr><td class="fs-label indent">OFFERING INCOME &amp; SPECIFIC DONATIONS</td><td class="fs-amount center">${fmtIs(d.offer25)}</td><td class="fs-amount center">${fmtIs(d.offer26)}</td></tr>
+        <tr><td class="fs-label indent">INVESTMENT INCOME</td><td class="fs-amount center">${fmtIs(d.inv25)}</td><td class="fs-amount center">${fmtIs(d.inv26)}</td></tr>
+        <tr><td class="fs-label indent">OTHER OPERATING INCOME</td><td class="fs-amount center">${fmtIs(d.other25)}</td><td class="fs-amount center">${fmtIs(d.other26)}</td></tr>
+        <tr class="subtotal-row"><td class="fs-label indent-sub">TOTAL EARNED OPERATING INCOME</td><td class="fs-amount center">${fmtIs(totalInc25)}</td><td class="fs-amount center">${fmtIs(totalInc26)}</td></tr>
+        <tr class="income-budget-row"><td class="fs-label indent-sub">( BUDGET INCOME for 2026-${mn.toUpperCase()} )</td><td class="fs-amount center"></td><td class="fs-amount center">${fmtIs(d.budgetInc26)}</td></tr>
+        <tr class="spacer"><td colspan="3"></td></tr>
+        <tr class="section-header"><td colspan="3">OPERATING EXPENSE</td></tr>
+        <tr><td class="fs-label indent">EMPLOYEE RELATED EXPENSE</td><td class="fs-amount center">${fmtIs(d.emp25)}</td><td class="fs-amount center">${fmtIs(d.emp26)}</td></tr>
+        <tr><td class="fs-label indent">PROGRAM SPECIFIC EXPENSE</td><td class="fs-amount center">${fmtIs(d.prog25)}</td><td class="fs-amount center">${fmtIs(d.prog26)}</td></tr>
+        <tr><td class="fs-label indent">ADMINISTRATIVE EXPENSE</td><td class="fs-amount center">${fmtIs(d.admin25)}</td><td class="fs-amount center">${fmtIs(d.admin26)}</td></tr>
+        <tr><td class="fs-label indent">OFFICE EXPENSES</td><td class="fs-amount center">${fmtIs(d.office25)}</td><td class="fs-amount center">${fmtIs(d.office26)}</td></tr>
+        <tr><td class="fs-label indent">GENERAL EXPENSES</td><td class="fs-amount center">${fmtIs(d.gen25)}</td><td class="fs-amount center">${fmtIs(d.gen26)}</td></tr>
+        <tr><td class="fs-label indent">PLANT OPERATION EXPENSES</td><td class="fs-amount center">${fmtIs(d.plant25)}</td><td class="fs-amount center">${fmtIs(d.plant26)}</td></tr>
+        <tr class="subtotal-row"><td class="fs-label indent-sub">TOTAL OPERATING EXPENSES</td><td class="fs-amount center">${fmtIs(totalExp25)}</td><td class="fs-amount center">${fmtIs(totalExp26)}</td></tr>
+        <tr class="income-budget-row"><td class="fs-label indent-sub">BUDGETED OP EXPENSES for 2026-${mn.toUpperCase()}</td><td class="fs-amount center"></td><td class="fs-amount center">${fmtIs(d.budgetExp26)}</td></tr>
+        <tr class="spacer"><td colspan="3"></td></tr>
+        <tr class="spacer"><td colspan="3"></td></tr>
+        <tr class="income-highlight-row"><td class="fs-label">NET ASSETS INCREASE, ( DECREASE )</td><td class="fs-amount center"></td><td class="fs-amount center">${fmtIs(netInc26)}</td></tr>
+        <tr><td class="fs-label indent">NET ASSETS as of ${mn.toUpperCase()} 1, 2026</td><td class="fs-amount center"></td><td class="fs-amount center">${fmtIs(d.netAssetsBeg)}</td></tr>
+        <tr class="total-row highlight"><td class="fs-label">NET ASSETS as of ${mn.toUpperCase()} ${lastDay}, 2026</td><td class="fs-amount center gold"></td><td class="fs-amount center gold">${fmtIs(netEnd26)}</td></tr>
+      `;
+      updateKPIs();
+    }
+
+    // ---- Income Statement zoom ----
+    let isZoomLevel = 100;
+    function isZoom(dir) {
+      isZoomLevel = Math.min(200, Math.max(60, isZoomLevel + dir * 10));
+      const inner = document.getElementById('isTableScroll');
+      const scale = isZoomLevel / 100;
+      inner.style.transformOrigin = 'top left';
+      inner.style.transform = `scale(${scale})`;
+      inner.style.width = (100 / scale) + '%';
+      inner.style.height = 'auto';
+      const outer = inner.parentElement;
+      outer.style.height = (inner.scrollHeight * scale) + 'px';
+      document.getElementById('isZoomLabel').textContent = isZoomLevel + '%';
+    }
+
+    // ---- Note drilldown modals ----
+    const noteData = {
+      cash: {
+        title: 'CASH AND CASH EQUIVALENTS',
+        rows: [
+          { label: 'PETTY CASH',                  prev: '60,000.00',           curr: '60,000.00',           sub: false },
+          { label: 'BANK CHECKING AND SAVINGS',   prev: '263,981,022.00',      curr: '199,010,288.00',      sub: false },
+          { label: 'TIME DEPOSITS (3 MONTHS DUE)',prev: '4,889,834.00',        curr: '4,889,834.00',        sub: false },
+          { label: 'LESS: CASH HELD FOR AGENCY',  prev: '(11,982,029.00)',     curr: '(24,184,415.00)',     sub: false, neg: true },
+          { label: 'TOTAL CASH AND CASH EQUIVALENTS', prev: '256,948,827.00', curr: '179,775,708.00',      sub: true }
+        ]
+      },
+      ar: {
+        title: 'ACCOUNTS RECEIVABLE',
+        rows: [
+          { label: 'ORGANIZATIONAL RECEIVABLES',  prev: '',                    curr: '',                    sub: false, group: true },
+          { label: 'SDA ENTITIES WITHIN SWPUC',   prev: '116,985,331.00',      curr: '137,672,215.00',      sub: false, indent: true, drill: 'sda' },
+          { label: 'OTHER DENOMINATIONAL',        prev: '5,768,218.00',        curr: '6,572,582.00',        sub: false, indent: true },
+          { label: 'EMPLOYEES RECEIVABLES',       prev: '7,429,969.00',        curr: '4,096,272.00',        sub: false },
+          { label: 'RETIREES RECEIVABLES',        prev: '1,557,318.00',        curr: '1,110,820.00',        sub: false },
+          { label: 'GENERAL ACCOUNTS RECEIVABLES',prev: '6,703,621.00',        curr: '4,009,198.00',        sub: false },
+          { label: 'ALLOWANCE FOR UNCOLLECTIBLE ACCTS', prev: '(49,406,545.00)', curr: '(49,406,545.00)', sub: false, neg: true },
+          { label: 'NET ACCOUNTS RECEIVABLES',    prev: '89,037,911.00',       curr: '104,055,542.00',      sub: true }
+        ]
+      },
+      ap: {
+        title: 'ACCOUNTS PAYABLE',
+        rows: [
+          { label: 'ORGANIZATIONAL PAYABLE',      prev: '',                    curr: '',                    sub: false, group: true },
+          { label: 'SOUTHERN ASIA PACIFIC DIVISION', prev: '24,421,266.00',   curr: '19,203,149.00',       sub: false, indent: true },
+          { label: 'SDA ENTITIES WITHIN SWPUC',   prev: '21,520,077.00',      curr: '35,659,483.00',       sub: false, indent: true, drill: 'sdaAp' },
+          { label: 'OTHER DENOMINATIONAL',        prev: '103,169,108.00',     curr: '18,007,422.00',       sub: false, indent: true },
+          { label: 'EMPLOYEES PAYABLE',           prev: '38,512.00',          curr: '37,127.00',           sub: false },
+          { label: 'RETIREES PAYABLE',            prev: '8,208,416.00',       curr: '4,102,742.00',        sub: false },
+          { label: 'OTHER ACCOUNTS PAYABLES',     prev: '1,781,527.00',       curr: '1,773,328.00',        sub: false },
+          { label: 'NET ACCOUNTS PAYABLE',        prev: '164,005,719.00',     curr: '82,806,540.00',       sub: true }
+        ]
+      }
+    };
+
+    function openNote(key) {
+      const data = noteData[key];
+      document.getElementById('noteModalTitle').textContent = data.title;
+      const tbody = document.getElementById('noteTableBody');
+      tbody.innerHTML = data.rows.map(r => {
+        const cls = r.sub ? 'nt-subtotal' : r.group ? 'nt-group' : r.neg ? 'nt-neg' : '';
+        const indentCls = r.indent ? ' nt-indent' : '';
+        const drillAttr = r.drill ? `onclick="openDrill('${r.drill}')" style="cursor:pointer;"` : '';
+        const drillIcon = r.drill ? ` <span class="drill-icon" style="color:#f5a623;">&#9654;</span>` : '';
+        return `<tr class="${cls}" ${drillAttr}>
+          <td class="nt-label${indentCls}">${r.label}${drillIcon}</td>
+          <td class="nt-val${r.neg ? ' nt-neg-val' : ''}">${r.prev}</td>
+          <td class="nt-val${r.neg ? ' nt-neg-val' : ''}">${r.curr}</td>
+        </tr>`;
+      }).join('');
+      document.getElementById('noteOverlay').classList.remove('hidden');
+      const modal = document.getElementById('noteModal');
+      modal.classList.remove('hidden');
+      modal.style.animation = 'noteModalIn 0.25s cubic-bezier(0.4,0,0.2,1) forwards';
+    }
+
+    function closeNote() {
+      closeSda();
+      closeSdaAp();
+      const modal = document.getElementById('noteModal');
+      modal.style.animation = 'noteModalOut 0.2s ease forwards';
+      setTimeout(() => {
+        modal.classList.add('hidden');
+        document.getElementById('noteOverlay').classList.add('hidden');
+      }, 200);
+    }
+
+    function openDrill(key) {
+      if (key === 'sda') openSda();
+      else if (key === 'sdaAp') openSdaAp();
+    }
+
+    function openSda() {
+      const modal = document.getElementById('sdaModal');
+      modal.classList.remove('hidden');
+      modal.style.animation = 'noteModalIn 0.25s cubic-bezier(0.4,0,0.2,1) forwards';
+    }
+
+    function closeSda() {
+      const modal = document.getElementById('sdaModal');
+      if (!modal.classList.contains('hidden')) {
+        modal.style.animation = 'noteModalOut 0.2s ease forwards';
+        setTimeout(() => modal.classList.add('hidden'), 200);
+      }
+    }
+
+    function openSdaAp() {
+      const modal = document.getElementById('sdaApModal');
+      modal.classList.remove('hidden');
+      modal.style.animation = 'noteModalIn 0.25s cubic-bezier(0.4,0,0.2,1) forwards';
+    }
+
+    function closeSdaAp() {
+      const modal = document.getElementById('sdaApModal');
+      if (!modal.classList.contains('hidden')) {
+        modal.style.animation = 'noteModalOut 0.2s ease forwards';
+        setTimeout(() => modal.classList.add('hidden'), 200);
+      }
+    }
+
   </script>
 </body>
 </html>
