@@ -38,7 +38,40 @@
 
       <!-- Overview Card -->
       <div class="overview-card hidden" id="overviewCard">
-        <button class="btn-toggle-back" onclick="toggleMain()">&#9650; BACK TO DETAIL VIEW</button>
+        <div class="overview-top-bar">
+          <div class="month-filter-wrap">
+            <button class="btn-month-filter" onclick="toggleMonthDropdown()">&#128197; FILTER MONTHS <span class="filter-arrow">&#9660;</span></button>
+            <div class="month-filter-dropdown hidden" id="monthFilterDropdown">
+              <div class="mfd-row">
+                <div class="mfd-group">
+                  <label class="mfd-label">FROM</label>
+                  <select class="mfd-select" id="fromMonth">
+                    <option value="0">January</option><option value="1">February</option><option value="2">March</option>
+                    <option value="3">April</option><option value="4">May</option><option value="5">June</option>
+                    <option value="6">July</option><option value="7">August</option><option value="8">September</option>
+                    <option value="9">October</option><option value="10">November</option><option value="11">December</option>
+                  </select>
+                </div>
+                <span class="mfd-arrow">&#8594;</span>
+                <div class="mfd-group">
+                  <label class="mfd-label">TO</label>
+                  <select class="mfd-select" id="toMonth">
+                    <option value="0">January</option><option value="1">February</option><option value="2">March</option>
+                    <option value="3">April</option><option value="4">May</option><option value="5">June</option>
+                    <option value="6">July</option><option value="7">August</option><option value="8">September</option>
+                    <option value="9">October</option><option value="10">November</option><option value="11" selected>December</option>
+                  </select>
+                </div>
+              </div>
+              <div class="mfd-actions">
+                <button class="mfd-btn-apply" onclick="applyMonthFilter()">APPLY</button>
+                <button class="mfd-btn-reset" onclick="resetMonthFilter()">RESET</button>
+              </div>
+            </div>
+            <span class="filter-active-pill hidden" id="filterActivePill"></span>
+          </div>
+          <button class="btn-toggle-back" onclick="toggleMain()">&#9650; BACK TO DETAIL VIEW</button>
+        </div>
         <div class="overview-charts-row">
           <div class="overview-chart-wrap"><canvas id="overviewChart"></canvas></div>
           <div class="overview-chart-wrap"><canvas id="lineChart"></canvas></div>
@@ -238,17 +271,20 @@
         const tithes = currentYear === 2025 ? dataTithes2025 : dataTithes2026;
         const offerings = currentYear === 2025 ? dataOfferings2025 : dataOfferings2026;
         const yr = currentYear;
+        const sliced = months.slice(activeFrom, activeTo + 1);
         if (overviewChart) {
-          overviewChart.data.datasets[0].data = tithes;
+          overviewChart.data.labels = sliced;
+          overviewChart.data.datasets[0].data = tithes.slice(activeFrom, activeTo + 1);
           overviewChart.data.datasets[0].label = 'Tithes ' + yr;
-          overviewChart.data.datasets[1].data = offerings;
+          overviewChart.data.datasets[1].data = offerings.slice(activeFrom, activeTo + 1);
           overviewChart.data.datasets[1].label = 'Offerings ' + yr;
           overviewChart.update();
         }
         if (lineChart) {
-          lineChart.data.datasets[0].data = tithes;
+          lineChart.data.labels = sliced;
+          lineChart.data.datasets[0].data = tithes.slice(activeFrom, activeTo + 1);
           lineChart.data.datasets[0].label = 'Tithes ' + yr;
-          lineChart.data.datasets[1].data = offerings;
+          lineChart.data.datasets[1].data = offerings.slice(activeFrom, activeTo + 1);
           lineChart.data.datasets[1].label = 'Offerings ' + yr;
           lineChart.update();
         }
@@ -299,6 +335,43 @@
     updateSideClock(); setInterval(updateSideClock, 1000);
 
     let overviewChart = null, lineChart = null;
+    let activeFrom = 0, activeTo = 11;
+
+    function toggleMonthDropdown() {
+      document.getElementById('monthFilterDropdown').classList.toggle('hidden');
+    }
+
+    function applyMonthFilter() {
+      const from = parseInt(document.getElementById('fromMonth').value);
+      const to   = parseInt(document.getElementById('toMonth').value);
+      if (from > to) { alert('"From" month cannot be after "To" month.'); return; }
+      activeFrom = from; activeTo = to;
+      document.getElementById('monthFilterDropdown').classList.add('hidden');
+      const pill = document.getElementById('filterActivePill');
+      if (from === 0 && to === 11) { pill.classList.add('hidden'); }
+      else { pill.textContent = months[from] + (from === to ? '' : ' – ' + months[to]); pill.classList.remove('hidden'); }
+      const tithes   = currentYear === 2025 ? dataTithes2025   : dataTithes2026;
+      const offerings = currentYear === 2025 ? dataOfferings2025 : dataOfferings2026;
+      const sliced = months.slice(from, to + 1);
+      if (overviewChart) {
+        overviewChart.data.labels = sliced;
+        overviewChart.data.datasets[0].data = tithes.slice(from, to + 1);
+        overviewChart.data.datasets[1].data = offerings.slice(from, to + 1);
+        overviewChart.update('active');
+      }
+      if (lineChart) {
+        lineChart.data.labels = sliced;
+        lineChart.data.datasets[0].data = tithes.slice(from, to + 1);
+        lineChart.data.datasets[1].data = offerings.slice(from, to + 1);
+        lineChart.update('active');
+      }
+    }
+
+    function resetMonthFilter() {
+      document.getElementById('fromMonth').value = '0';
+      document.getElementById('toMonth').value   = '11';
+      applyMonthFilter();
+    }
 
     function toggleMain() {
       const mainCard = document.getElementById('mainChartCard');
@@ -320,27 +393,30 @@
           const tithes = currentYear === 2025 ? dataTithes2025 : dataTithes2026;
           const offerings = currentYear === 2025 ? dataOfferings2025 : dataOfferings2026;
           const yr = currentYear;
+          const sliced = months.slice(activeFrom, activeTo + 1);
           if (overviewChart) {
-            overviewChart.data.datasets[0].data = tithes;
+            overviewChart.data.labels = sliced;
+            overviewChart.data.datasets[0].data = tithes.slice(activeFrom, activeTo + 1);
             overviewChart.data.datasets[0].label = 'Tithes ' + yr;
-            overviewChart.data.datasets[1].data = offerings;
+            overviewChart.data.datasets[1].data = offerings.slice(activeFrom, activeTo + 1);
             overviewChart.data.datasets[1].label = 'Offerings ' + yr;
             overviewChart.update();
           } else {
             const barCanvas = document.getElementById('overviewChart'), barWrap = barCanvas.parentElement;
             barCanvas.style.width = (barWrap.clientWidth - 16) + 'px'; barCanvas.style.height = (barWrap.clientHeight - 30) + 'px';
-            overviewChart = new Chart(barCanvas.getContext('2d'), { type: 'bar', data: { labels: months, datasets: [{ label: 'Tithes '+yr, data: tithes, backgroundColor: '#0a1e6e', borderRadius: 4 },{ label: 'Offerings '+yr, data: offerings, backgroundColor: '#f59e0b', borderRadius: 4 }]}, options: { responsive: false, maintainAspectRatio: false, plugins: { legend: { display: true, position: 'top', labels: { color: '#fff', font: { weight: '700', size: 11 } } }, tooltip: { callbacks: { label: ctx => ` ${ctx.dataset.label}: ₱${ctx.parsed.y.toLocaleString('en-US', {minimumFractionDigits:2,maximumFractionDigits:2})}` } } }, scales: { y: { beginAtZero: true, ticks: { callback: v => v >= 1000000 ? '₱'+(v/1000000).toFixed(1)+'M' : '₱'+v, font:{weight:'700',size:11}, color:'#fff' }, grid:{color:'rgba(255,255,255,0.3)'} }, x: { grid:{display:false}, ticks:{font:{weight:'700',size:11},color:'#fff'} } } } });
+            overviewChart = new Chart(barCanvas.getContext('2d'), { type: 'bar', data: { labels: sliced, datasets: [{ label: 'Tithes '+yr, data: tithes.slice(activeFrom, activeTo+1), backgroundColor: '#0a1e6e', borderRadius: 4 },{ label: 'Offerings '+yr, data: offerings.slice(activeFrom, activeTo+1), backgroundColor: '#f59e0b', borderRadius: 4 }]}, options: { responsive: false, maintainAspectRatio: false, plugins: { legend: { display: true, position: 'top', labels: { color: '#fff', font: { weight: '700', size: 11 } } }, tooltip: { callbacks: { label: ctx => ` ${ctx.dataset.label}: ₱${ctx.parsed.y.toLocaleString('en-US', {minimumFractionDigits:2,maximumFractionDigits:2})}` } } }, scales: { y: { beginAtZero: true, ticks: { callback: v => v >= 1000000 ? '₱'+(v/1000000).toFixed(1)+'M' : '₱'+v, font:{weight:'700',size:11}, color:'#fff' }, grid:{color:'rgba(255,255,255,0.3)'} }, x: { grid:{display:false}, ticks:{font:{weight:'700',size:11},color:'#fff'} } } } });
           }
           if (lineChart) {
-            lineChart.data.datasets[0].data = tithes;
+            lineChart.data.labels = sliced;
+            lineChart.data.datasets[0].data = tithes.slice(activeFrom, activeTo + 1);
             lineChart.data.datasets[0].label = 'Tithes ' + yr;
-            lineChart.data.datasets[1].data = offerings;
+            lineChart.data.datasets[1].data = offerings.slice(activeFrom, activeTo + 1);
             lineChart.data.datasets[1].label = 'Offerings ' + yr;
             lineChart.update();
           } else {
             const lineCanvas = document.getElementById('lineChart'), lineWrap = lineCanvas.parentElement;
             lineCanvas.style.width = (lineWrap.clientWidth - 16) + 'px'; lineCanvas.style.height = (lineWrap.clientHeight - 30) + 'px';
-            lineChart = new Chart(lineCanvas.getContext('2d'), { type: 'line', data: { labels: months, datasets: [{ label: 'Tithes '+yr, data: tithes, borderColor: '#4f7cff', backgroundColor: 'rgba(79,124,255,0.15)', pointBackgroundColor: '#4f7cff', tension: 0.4, fill: true, pointRadius: 4 },{ label: 'Offerings '+yr, data: offerings, borderColor: '#f59e0b', backgroundColor: 'rgba(245,158,11,0.15)', pointBackgroundColor: '#f59e0b', tension: 0.4, fill: true, pointRadius: 4 }]}, options: { responsive: false, maintainAspectRatio: false, plugins: { legend: { display: true, position: 'top', labels: { color: '#fff', font: { weight: '700', size: 11 } } }, tooltip: { callbacks: { label: ctx => ` ${ctx.dataset.label}: ₱${ctx.parsed.y.toLocaleString('en-US', {minimumFractionDigits:2,maximumFractionDigits:2})}` } } }, scales: { y: { beginAtZero: true, ticks: { callback: v => v >= 1000000 ? '₱'+(v/1000000).toFixed(1)+'M' : '₱'+v, font:{weight:'700',size:11}, color:'#fff' }, grid:{color:'rgba(255,255,255,0.3)'} }, x: { grid:{color:'rgba(255,255,255,0.1)'}, ticks:{font:{weight:'700',size:11},color:'#fff'} } } } });
+            lineChart = new Chart(lineCanvas.getContext('2d'), { type: 'line', data: { labels: sliced, datasets: [{ label: 'Tithes '+yr, data: tithes.slice(activeFrom, activeTo+1), borderColor: '#4f7cff', backgroundColor: 'rgba(79,124,255,0.15)', pointBackgroundColor: '#4f7cff', tension: 0.4, fill: true, pointRadius: 4 },{ label: 'Offerings '+yr, data: offerings.slice(activeFrom, activeTo+1), borderColor: '#f59e0b', backgroundColor: 'rgba(245,158,11,0.15)', pointBackgroundColor: '#f59e0b', tension: 0.4, fill: true, pointRadius: 4 }]}, options: { responsive: false, maintainAspectRatio: false, plugins: { legend: { display: true, position: 'top', labels: { color: '#fff', font: { weight: '700', size: 11 } } }, tooltip: { callbacks: { label: ctx => ` ${ctx.dataset.label}: ₱${ctx.parsed.y.toLocaleString('en-US', {minimumFractionDigits:2,maximumFractionDigits:2})}` } } }, scales: { y: { beginAtZero: true, ticks: { callback: v => v >= 1000000 ? '₱'+(v/1000000).toFixed(1)+'M' : '₱'+v, font:{weight:'700',size:11}, color:'#fff' }, grid:{color:'rgba(255,255,255,0.3)'} }, x: { grid:{color:'rgba(255,255,255,0.1)'}, ticks:{font:{weight:'700',size:11},color:'#fff'} } } } });
           }
         }, 300);
       }

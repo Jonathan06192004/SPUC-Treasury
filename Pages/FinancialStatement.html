@@ -403,7 +403,7 @@
       hours = hours % 12 || 12;
       const hh = String(hours).padStart(2,'0'), mm = String(now.getMinutes()).padStart(2,'0'), ss = String(now.getSeconds()).padStart(2,'0');
       document.getElementById('sideClock').innerHTML = `
-        <div class="side-clock-time">${hh}:${mm}:${ss} <span class="side-clock-ampm">${ampm}</span></div>
+        <div class="side-clock-time">${hh}:${mm}:${ss}<span class="side-clock-ampm">${ampm}</span></div>
         <div class="side-clock-date">${date}</div>`;
     }
     updateSideClock();

@@ -209,7 +209,7 @@ main {
 }
 
 .side-clock-time {
-  font-size: 2rem;
+  font-size: 3.5rem;
   font-weight: 800;
   color: #fff;
   letter-spacing: 3px;
@@ -217,9 +217,9 @@ main {
 }
 
 .side-clock-ampm {
-  font-size: 1rem;
-  font-weight: 600;
-  color: rgba(255,255,255,0.7);
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: rgba(255,255,255,0.85);
 }
 
 .side-clock-date {
