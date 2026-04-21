@@ -70,6 +70,12 @@ main {
   white-space: nowrap;
 }
 
+.page-title-img {
+  height: 5.5rem;
+  width: auto;
+  display: inline-block;
+}
+
 .page-subtitle {
   font-size: 1.8rem;
   font-weight: 800;

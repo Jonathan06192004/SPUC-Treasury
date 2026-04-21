@@ -66,7 +66,14 @@ main {
   text-align: right;
   margin: 0;
   margin-top: -10px;
+  margin-right: 60px;
   flex-shrink: 0;
+}
+
+.page-title-img {
+  height: 5.5rem;
+  width: auto;
+  display: inline-block;
 }
 
 .page-subtitle {
@@ -79,7 +86,7 @@ main {
   flex: 1;
   text-align: center;
   white-space: nowrap;
-  margin-right: 180px;
+  margin-right: 20px;
   margin-top: -10px;
 }
 
@@ -648,6 +655,98 @@ main {
   background: #f0f4ff !important;
   border: none !important;
 }
+
+/* ---- Cash Flow color theme ---- */
+#tab-cashflow .fs-table-scroll {
+  background: #fff;
+  border-radius: 0 0 10px 10px;
+  box-shadow: 0 4px 24px rgba(10,30,110,0.18);
+}
+#tab-cashflow .fs-table { font-size: 0.73rem; }
+#tab-cashflow .fs-th {
+  background: #0a1e6e; color: #f5a623; font-size: 0.68rem;
+  letter-spacing: 1.5px; padding: 10px 16px;
+  border-bottom: 3px solid #f5a623; text-transform: uppercase;
+}
+#tab-cashflow .section-header td {
+  background: #ffe600; color: #0a1e6e;
+  font-family: 'Montserrat', sans-serif; font-weight: 900;
+  font-size: 0.72rem; letter-spacing: 2px; padding: 8px 16px;
+  border-left: none; border-top: 2px solid #d4c000;
+  border-bottom: 1px solid #d4c000; text-transform: uppercase;
+}
+#tab-cashflow .fs-label.indent {
+  padding-left: 24px !important; font-weight: 600;
+  color: #1a237e; text-transform: uppercase; font-size: 0.7rem;
+}
+#tab-cashflow tbody tr td { border-bottom: 1px solid #e8ecf4; padding: 6px 16px; }
+#tab-cashflow tbody tr:nth-child(even) td { background: #fafbff; }
+#tab-cashflow tbody tr:hover td { background: #f0f4ff; transition: background 0.15s; }
+#tab-cashflow .subtotal-row td {
+  background: #fce4ec; color: #880e4f;
+  font-family: 'Montserrat', sans-serif; font-weight: 800;
+  font-size: 0.71rem; letter-spacing: 0.5px;
+  border-top: 2px solid #f48fb1; border-bottom: 2px solid #f48fb1;
+  padding: 7px 16px; text-transform: uppercase;
+}
+#tab-cashflow .total-row.highlight td {
+  background: #0a1e6e; color: #f5a623;
+  font-family: 'Montserrat', sans-serif; font-weight: 900;
+  font-size: 0.75rem; letter-spacing: 1px;
+  border-top: 3px solid #f5a623; border-bottom: 3px solid #f5a623;
+  padding: 9px 16px; text-transform: uppercase;
+}
+#tab-cashflow .total-row.highlight .fs-amount.gold {
+  color: #ffe600; font-size: 0.78rem;
+  text-shadow: 0 0 8px rgba(255,230,0,0.4);
+}
+#tab-cashflow .spacer td { height: 10px; background: #f0f4ff !important; border: none !important; }
+
+/* ---- Financial Liquidity color theme ---- */
+#tab-equity .fs-table-scroll {
+  background: #fff;
+  border-radius: 0 0 10px 10px;
+  box-shadow: 0 4px 24px rgba(10,30,110,0.18);
+}
+#tab-equity .fs-table { font-size: 0.73rem; }
+#tab-equity .fs-th {
+  background: #0a1e6e; color: #f5a623; font-size: 0.68rem;
+  letter-spacing: 1.5px; padding: 10px 16px;
+  border-bottom: 3px solid #f5a623; text-transform: uppercase;
+}
+#tab-equity .section-header td {
+  background: #ffe600; color: #0a1e6e;
+  font-family: 'Montserrat', sans-serif; font-weight: 900;
+  font-size: 0.72rem; letter-spacing: 2px; padding: 8px 16px;
+  border-left: none; border-top: 2px solid #d4c000;
+  border-bottom: 1px solid #d4c000; text-transform: uppercase;
+}
+#tab-equity .fs-label.indent {
+  padding-left: 24px !important; font-weight: 600;
+  color: #1a237e; text-transform: uppercase; font-size: 0.7rem;
+}
+#tab-equity tbody tr td { border-bottom: 1px solid #e8ecf4; padding: 6px 16px; }
+#tab-equity tbody tr:nth-child(even) td { background: #fafbff; }
+#tab-equity tbody tr:hover td { background: #f0f4ff; transition: background 0.15s; }
+#tab-equity .subtotal-row td {
+  background: #fce4ec; color: #880e4f;
+  font-family: 'Montserrat', sans-serif; font-weight: 800;
+  font-size: 0.71rem; letter-spacing: 0.5px;
+  border-top: 2px solid #f48fb1; border-bottom: 2px solid #f48fb1;
+  padding: 7px 16px; text-transform: uppercase;
+}
+#tab-equity .total-row.highlight td {
+  background: #0a1e6e; color: #f5a623;
+  font-family: 'Montserrat', sans-serif; font-weight: 900;
+  font-size: 0.75rem; letter-spacing: 1px;
+  border-top: 3px solid #f5a623; border-bottom: 3px solid #f5a623;
+  padding: 9px 16px; text-transform: uppercase;
+}
+#tab-equity .total-row.highlight .fs-amount.gold {
+  color: #ffe600; font-size: 0.78rem;
+  text-shadow: 0 0 8px rgba(255,230,0,0.4);
+}
+#tab-equity .spacer td { height: 10px; background: #f0f4ff !important; border: none !important; }
 
 /* ---- Drilldown clickable rows ---- */
 .bs-drilldown-row {

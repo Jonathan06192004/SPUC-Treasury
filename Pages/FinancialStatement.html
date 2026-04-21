@@ -23,7 +23,7 @@
     <div class="title-row">
       <div class="title-left"></div>
       <p class="page-subtitle">Southwestern Philippine Union Conference</p>
-      <h1 class="page-title">FINANCIAL<br/>STATEMENT</h1>
+      <h1 class="page-title"><img src="../Assets/Financial Statement.png" alt="Financial Statement" class="page-title-img"/></h1>
     </div>
 
     <div class="fs-body">
@@ -121,35 +121,28 @@
         <div class="fs-panel" id="tab-cashflow">
           <div class="fs-panel-header">
             <span class="fs-panel-title">STATEMENT OF CASH FLOWS</span>
-            <span class="fs-panel-period">For the Period Ended January 31, 2025</span>
+            <div class="bs-month-wrap">
+              <span class="fs-panel-period" id="cfPeriodLabel">JANUARY 2026</span>
+              <select class="bs-month-select" id="cfMonthSelect" onchange="renderCashFlow()">
+                <option value="0">January</option><option value="1">February</option><option value="2">March</option>
+                <option value="3">April</option><option value="4">May</option><option value="5">June</option>
+                <option value="6">July</option><option value="7">August</option><option value="8">September</option>
+                <option value="9">October</option><option value="10">November</option><option value="11">December</option>
+              </select>
+              <div class="bs-zoom-wrap">
+                <button class="bs-zoom-btn" onclick="cfZoom(-1)" title="Zoom Out">&#8722;</button>
+                <span class="bs-zoom-label" id="cfZoomLabel">100%</span>
+                <button class="bs-zoom-btn" onclick="cfZoom(1)" title="Zoom In">&#43;</button>
+              </div>
+            </div>
           </div>
-          <div class="fs-table-scroll">
-          <table class="fs-table">
-            <tbody>
-              <tr class="section-header"><td colspan="2">OPERATING ACTIVITIES</td></tr>
-              <tr><td class="fs-label indent">Cash Received from Tithes</td><td class="fs-amount">₱ 61,301,229.98</td></tr>
-              <tr><td class="fs-label indent">Cash Received from Offerings</td><td class="fs-amount">₱ 23,721,985.60</td></tr>
-              <tr><td class="fs-label indent">Cash Paid for Operations</td><td class="fs-amount neg">( ₱ 46,700,000.00 )</td></tr>
-              <tr><td class="fs-label indent">Cash Remitted to Division</td><td class="fs-amount neg">( ₱ 15,500,000.00 )</td></tr>
-              <tr class="subtotal-row"><td class="fs-label">Net Cash from Operations</td><td class="fs-amount">₱ 22,823,215.58</td></tr>
-
-              <tr class="spacer"><td colspan="2"></td></tr>
-              <tr class="section-header"><td colspan="2">INVESTING ACTIVITIES</td></tr>
-              <tr><td class="fs-label indent">Purchase of Equipment</td><td class="fs-amount neg">( ₱ 2,500,000.00 )</td></tr>
-              <tr><td class="fs-label indent">Proceeds from Asset Disposal</td><td class="fs-amount">₱ 350,000.00</td></tr>
-              <tr class="subtotal-row"><td class="fs-label">Net Cash from Investing</td><td class="fs-amount neg">( ₱ 2,150,000.00 )</td></tr>
-
-              <tr class="spacer"><td colspan="2"></td></tr>
-              <tr class="section-header"><td colspan="2">FINANCING ACTIVITIES</td></tr>
-              <tr><td class="fs-label indent">Loan Repayments</td><td class="fs-amount neg">( ₱ 0.00 )</td></tr>
-              <tr class="subtotal-row"><td class="fs-label">Net Cash from Financing</td><td class="fs-amount">₱ 0.00</td></tr>
-
-              <tr class="spacer"><td colspan="2"></td></tr>
-              <tr class="total-row highlight"><td class="fs-label">NET INCREASE IN CASH</td><td class="fs-amount gold">₱ 20,673,215.58</td></tr>
-              <tr><td class="fs-label indent">Cash — Beginning of Period</td><td class="fs-amount">₱ 17,776,784.42</td></tr>
-              <tr class="total-row highlight"><td class="fs-label">CASH — END OF PERIOD</td><td class="fs-amount gold">₱ 38,450,000.00</td></tr>
-            </tbody>
-          </table>
+          <div class="bs-zoom-outer">
+            <div class="fs-table-scroll" id="cfTableScroll">
+              <table class="fs-table" id="cfTable">
+                <thead><tr><th class="fs-th">ACTIVITIES</th><th class="fs-th center">AMOUNT</th></tr></thead>
+                <tbody id="cfTableBody"></tbody>
+              </table>
+            </div>
           </div>
         </div>
 
@@ -157,63 +150,35 @@
         <div class="fs-panel" id="tab-equity">
           <div class="fs-panel-header">
             <span class="fs-panel-title">STATEMENT OF FINANCIAL LIQUIDITY</span>
-            <span class="fs-panel-period">For the Period Ended January 31, 2025</span>
+            <div class="bs-month-wrap">
+              <span class="fs-panel-period" id="flPeriodLabel">JANUARY 2026</span>
+              <select class="bs-month-select" id="flMonthSelect" onchange="renderFinancialLiquidity()">
+                <option value="0">January</option><option value="1">February</option><option value="2">March</option>
+                <option value="3">April</option><option value="4">May</option><option value="5">June</option>
+                <option value="6">July</option><option value="7">August</option><option value="8">September</option>
+                <option value="9">October</option><option value="10">November</option><option value="11">December</option>
+              </select>
+              <div class="bs-zoom-wrap">
+                <button class="bs-zoom-btn" onclick="flZoom(-1)" title="Zoom Out">&#8722;</button>
+                <span class="bs-zoom-label" id="flZoomLabel">100%</span>
+                <button class="bs-zoom-btn" onclick="flZoom(1)" title="Zoom In">&#43;</button>
+              </div>
+            </div>
           </div>
-          <div class="fs-table-scroll">
-          <table class="fs-table">
-            <thead>
-              <tr>
-                <th class="fs-th"></th>
-                <th class="fs-th center">Unrestricted</th>
-                <th class="fs-th center">Restricted</th>
-                <th class="fs-th center">Total</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr class="section-header"><td colspan="4">BALANCE, BEGINNING OF PERIOD</td></tr>
-              <tr>
-                <td class="fs-label indent">Net Assets — Jan 1, 2025</td>
-                <td class="fs-amount center">₱ 97,176,784.42</td>
-                <td class="fs-amount center">₱ 24,000,000.00</td>
-                <td class="fs-amount center">₱ 121,176,784.42</td>
-              </tr>
-
-              <tr class="spacer"><td colspan="4"></td></tr>
-              <tr class="section-header"><td colspan="4">CHANGES DURING THE PERIOD</td></tr>
-              <tr>
-                <td class="fs-label indent">Tithes Received</td>
-                <td class="fs-amount center">₱ 61,301,229.98</td>
-                <td class="fs-amount center">—</td>
-                <td class="fs-amount center">₱ 61,301,229.98</td>
-              </tr>
-              <tr>
-                <td class="fs-label indent">Offerings Received</td>
-                <td class="fs-amount center">₱ 23,721,985.60</td>
-                <td class="fs-amount center">—</td>
-                <td class="fs-amount center">₱ 23,721,985.60</td>
-              </tr>
-              <tr>
-                <td class="fs-label indent">Total Expenses</td>
-                <td class="fs-amount center neg">( ₱ 62,200,000.00 )</td>
-                <td class="fs-amount center">—</td>
-                <td class="fs-amount center neg">( ₱ 62,200,000.00 )</td>
-              </tr>
-              <tr class="subtotal-row">
-                <td class="fs-label">Net Change</td>
-                <td class="fs-amount center">₱ 22,823,215.58</td>
-                <td class="fs-amount center">—</td>
-                <td class="fs-amount center">₱ 22,823,215.58</td>
-              </tr>
-
-              <tr class="spacer"><td colspan="4"></td></tr>
-              <tr class="total-row highlight">
-                <td class="fs-label">BALANCE, END OF PERIOD</td>
-                <td class="fs-amount center gold">₱ 120,000,000.00</td>
-                <td class="fs-amount center gold">₱ 24,000,000.00</td>
-                <td class="fs-amount center gold">₱ 144,000,000.00</td>
-              </tr>
-            </tbody>
-          </table>
+          <div class="bs-zoom-outer">
+            <div class="fs-table-scroll" id="flTableScroll">
+              <table class="fs-table" id="flTable">
+                <thead>
+                  <tr>
+                    <th class="fs-th"></th>
+                    <th class="fs-th center">UNRESTRICTED</th>
+                    <th class="fs-th center">RESTRICTED</th>
+                    <th class="fs-th center">TOTAL</th>
+                  </tr>
+                </thead>
+                <tbody id="flTableBody"></tbody>
+              </table>
+            </div>
           </div>
         </div>
 
@@ -565,8 +530,12 @@
       const cur = new Date().getMonth();
       document.getElementById('bsMonthSelect').value = cur;
       document.getElementById('isMonthSelect').value = cur;
+      document.getElementById('cfMonthSelect').value = cur;
+      document.getElementById('flMonthSelect').value = cur;
       renderBalanceSheet();
       renderIncomeStatement();
+      renderCashFlow();
+      renderFinancialLiquidity();
     });
 
     let bsZoomLevel = 100;
@@ -656,6 +625,126 @@
       const outer = inner.parentElement;
       outer.style.height = (inner.scrollHeight * scale) + 'px';
       document.getElementById('isZoomLabel').textContent = isZoomLevel + '%';
+    }
+
+    // ---- Cash Flow monthly data ----
+    const cfData = [
+      { tithes:61301229.98, offerings:23721985.60, ops:46700000, remit:15500000, equip:2500000, disposal:350000, loan:0, cashBeg:17776784.42 },
+      { tithes:58420180.00, offerings:22380450.00, ops:44200000, remit:14800000, equip:1800000, disposal:200000, loan:0, cashBeg:38450000.00 },
+      { tithes:63480300.00, offerings:24920400.00, ops:47800000, remit:15900000, equip:2100000, disposal:420000, loan:0, cashBeg:62050630.00 },
+      { tithes:62150200.00, offerings:23890300.00, ops:46500000, remit:15600000, equip:2300000, disposal:310000, loan:0, cashBeg:85271030.00 },
+      { tithes:57320100.00, offerings:21780500.00, ops:43900000, remit:14500000, equip:1600000, disposal:180000, loan:0, cashBeg:109016030.00 },
+      { tithes:65840500.00, offerings:25580200.00, ops:49200000, remit:16400000, equip:2600000, disposal:480000, loan:0, cashBeg:131396030.00 },
+      { tithes:56910300.00, offerings:21250800.00, ops:43100000, remit:14200000, equip:1500000, disposal:160000, loan:0, cashBeg:157696030.00 },
+      { tithes:61480200.00, offerings:23408300.00, ops:46100000, remit:15300000, equip:2000000, disposal:280000, loan:0, cashBeg:178406030.00 },
+      { tithes:66420600.00, offerings:25608400.00, ops:49800000, remit:16600000, equip:2700000, disposal:520000, loan:0, cashBeg:201974030.00 },
+      { tithes:55210400.00, offerings:20828600.00, ops:42500000, remit:14000000, equip:1400000, disposal:140000, loan:0, cashBeg:226824030.00 },
+      { tithes:60280300.00, offerings:22880600.00, ops:45400000, remit:15100000, equip:1900000, disposal:240000, loan:0, cashBeg:245294030.00 },
+      { tithes:68820400.00, offerings:26658800.00, ops:51200000, remit:17100000, equip:2900000, disposal:580000, loan:0, cashBeg:266314030.00 }
+    ];
+
+    function fmtCf(n) { return '₱ ' + Math.abs(n).toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2}); }
+    function fmtCfNeg(n) { return '( ₱ ' + n.toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2}) + ' )'; }
+
+    function renderCashFlow() {
+      const mi = parseInt(document.getElementById('cfMonthSelect').value);
+      const d = cfData[mi];
+      const mn = MONTHS[mi];
+      const lastDay = new Date(2026, mi + 1, 0).getDate();
+      document.getElementById('cfPeriodLabel').textContent = mn.toUpperCase() + ' 2026';
+      const netOps = d.tithes + d.offerings - d.ops - d.remit;
+      const netInv = d.disposal - d.equip;
+      const netFin = -d.loan;
+      const netIncrease = netOps + netInv + netFin;
+      const cashEnd = d.cashBeg + netIncrease;
+      document.getElementById('cfTableBody').innerHTML = `
+        <tr class="section-header"><td colspan="2">OPERATING ACTIVITIES</td></tr>
+        <tr><td class="fs-label indent">CASH RECEIVED FROM TITHES</td><td class="fs-amount">${fmtCf(d.tithes)}</td></tr>
+        <tr><td class="fs-label indent">CASH RECEIVED FROM OFFERINGS</td><td class="fs-amount">${fmtCf(d.offerings)}</td></tr>
+        <tr><td class="fs-label indent">CASH PAID FOR OPERATIONS</td><td class="fs-amount neg">${fmtCfNeg(d.ops)}</td></tr>
+        <tr><td class="fs-label indent">CASH REMITTED TO DIVISION</td><td class="fs-amount neg">${fmtCfNeg(d.remit)}</td></tr>
+        <tr class="subtotal-row"><td class="fs-label">NET CASH FROM OPERATIONS</td><td class="fs-amount">${fmtCf(netOps)}</td></tr>
+        <tr class="spacer"><td colspan="2"></td></tr>
+        <tr class="section-header"><td colspan="2">INVESTING ACTIVITIES</td></tr>
+        <tr><td class="fs-label indent">PURCHASE OF EQUIPMENT</td><td class="fs-amount neg">${fmtCfNeg(d.equip)}</td></tr>
+        <tr><td class="fs-label indent">PROCEEDS FROM ASSET DISPOSAL</td><td class="fs-amount">${fmtCf(d.disposal)}</td></tr>
+        <tr class="subtotal-row"><td class="fs-label">NET CASH FROM INVESTING</td><td class="fs-amount ${netInv < 0 ? 'neg' : ''}">${netInv < 0 ? fmtCfNeg(-netInv) : fmtCf(netInv)}</td></tr>
+        <tr class="spacer"><td colspan="2"></td></tr>
+        <tr class="section-header"><td colspan="2">FINANCING ACTIVITIES</td></tr>
+        <tr><td class="fs-label indent">LOAN REPAYMENTS</td><td class="fs-amount neg">${fmtCfNeg(d.loan)}</td></tr>
+        <tr class="subtotal-row"><td class="fs-label">NET CASH FROM FINANCING</td><td class="fs-amount">${fmtCf(0)}</td></tr>
+        <tr class="spacer"><td colspan="2"></td></tr>
+        <tr class="total-row highlight"><td class="fs-label">NET INCREASE IN CASH</td><td class="fs-amount gold">${fmtCf(netIncrease)}</td></tr>
+        <tr><td class="fs-label indent">CASH — BEGINNING OF PERIOD</td><td class="fs-amount">${fmtCf(d.cashBeg)}</td></tr>
+        <tr class="total-row highlight"><td class="fs-label">CASH — END OF PERIOD (${mn.toUpperCase()} ${lastDay}, 2026)</td><td class="fs-amount gold">${fmtCf(cashEnd)}</td></tr>
+      `;
+    }
+
+    let cfZoomLevel = 100;
+    function cfZoom(dir) {
+      cfZoomLevel = Math.min(200, Math.max(60, cfZoomLevel + dir * 10));
+      const inner = document.getElementById('cfTableScroll');
+      const scale = cfZoomLevel / 100;
+      inner.style.transformOrigin = 'top left';
+      inner.style.transform = `scale(${scale})`;
+      inner.style.width = (100 / scale) + '%';
+      inner.style.height = 'auto';
+      inner.parentElement.style.height = (inner.scrollHeight * scale) + 'px';
+      document.getElementById('cfZoomLabel').textContent = cfZoomLevel + '%';
+    }
+
+    // ---- Financial Liquidity monthly data ----
+    const flData = [
+      { unrestrictedBeg:97176784.42, restrictedBeg:24000000, tithes:61301229.98, offerings:23721985.60, expenses:62200000, unrestrictedEnd:120000000, restrictedEnd:24000000 },
+      { unrestrictedBeg:120000000, restrictedBeg:24000000, tithes:58420180, offerings:22380450, expenses:59800000, unrestrictedEnd:141000630, restrictedEnd:24000000 },
+      { unrestrictedBeg:141000630, restrictedBeg:24000000, tithes:63480300, offerings:24920400, expenses:63500000, unrestrictedEnd:165901330, restrictedEnd:24000000 },
+      { unrestrictedBeg:165901330, restrictedBeg:24000000, tithes:62150200, offerings:23890300, expenses:62100000, unrestrictedEnd:189841830, restrictedEnd:24000000 },
+      { unrestrictedBeg:189841830, restrictedBeg:24000000, tithes:57320100, offerings:21780500, expenses:58200000, unrestrictedEnd:210742430, restrictedEnd:24000000 },
+      { unrestrictedBeg:210742430, restrictedBeg:24000000, tithes:65840500, offerings:25580200, expenses:65800000, unrestrictedEnd:236363130, restrictedEnd:24000000 },
+      { unrestrictedBeg:236363130, restrictedBeg:24000000, tithes:56910300, offerings:21250800, expenses:57100000, unrestrictedEnd:257424230, restrictedEnd:24000000 },
+      { unrestrictedBeg:257424230, restrictedBeg:24000000, tithes:61480200, offerings:23408300, expenses:61500000, unrestrictedEnd:280812730, restrictedEnd:24000000 },
+      { unrestrictedBeg:280812730, restrictedBeg:24000000, tithes:66420600, offerings:25608400, expenses:66200000, unrestrictedEnd:306641730, restrictedEnd:24000000 },
+      { unrestrictedBeg:306641730, restrictedBeg:24000000, tithes:55210400, offerings:20828600, expenses:55900000, unrestrictedEnd:326780730, restrictedEnd:24000000 },
+      { unrestrictedBeg:326780730, restrictedBeg:24000000, tithes:60280300, offerings:22880600, expenses:60600000, unrestrictedEnd:349341630, restrictedEnd:24000000 },
+      { unrestrictedBeg:349341630, restrictedBeg:24000000, tithes:68820400, offerings:26658800, expenses:68900000, unrestrictedEnd:375920830, restrictedEnd:24000000 }
+    ];
+
+    function fmtFl(n) { return '₱ ' + n.toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2}); }
+    function fmtFlNeg(n) { return '( ₱ ' + n.toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2}) + ' )'; }
+
+    function renderFinancialLiquidity() {
+      const mi = parseInt(document.getElementById('flMonthSelect').value);
+      const d = flData[mi];
+      const mn = MONTHS[mi];
+      document.getElementById('flPeriodLabel').textContent = mn.toUpperCase() + ' 2026';
+      const totalBeg = d.unrestrictedBeg + d.restrictedBeg;
+      const netChange = d.tithes + d.offerings - d.expenses;
+      const totalEnd = d.unrestrictedEnd + d.restrictedEnd;
+      document.getElementById('flTableBody').innerHTML = `
+        <tr class="section-header"><td colspan="4">BALANCE, BEGINNING OF PERIOD</td></tr>
+        <tr><td class="fs-label indent">NET ASSETS — ${mn.toUpperCase()} 1, 2026</td><td class="fs-amount center">${fmtFl(d.unrestrictedBeg)}</td><td class="fs-amount center">${fmtFl(d.restrictedBeg)}</td><td class="fs-amount center">${fmtFl(totalBeg)}</td></tr>
+        <tr class="spacer"><td colspan="4"></td></tr>
+        <tr class="section-header"><td colspan="4">CHANGES DURING THE PERIOD</td></tr>
+        <tr><td class="fs-label indent">TITHES RECEIVED</td><td class="fs-amount center">${fmtFl(d.tithes)}</td><td class="fs-amount center">—</td><td class="fs-amount center">${fmtFl(d.tithes)}</td></tr>
+        <tr><td class="fs-label indent">OFFERINGS RECEIVED</td><td class="fs-amount center">${fmtFl(d.offerings)}</td><td class="fs-amount center">—</td><td class="fs-amount center">${fmtFl(d.offerings)}</td></tr>
+        <tr><td class="fs-label indent">TOTAL EXPENSES</td><td class="fs-amount center neg">${fmtFlNeg(d.expenses)}</td><td class="fs-amount center">—</td><td class="fs-amount center neg">${fmtFlNeg(d.expenses)}</td></tr>
+        <tr class="subtotal-row"><td class="fs-label">NET CHANGE</td><td class="fs-amount center">${fmtFl(netChange)}</td><td class="fs-amount center">—</td><td class="fs-amount center">${fmtFl(netChange)}</td></tr>
+        <tr class="spacer"><td colspan="4"></td></tr>
+        <tr class="total-row highlight"><td class="fs-label">BALANCE, END OF PERIOD</td><td class="fs-amount center gold">${fmtFl(d.unrestrictedEnd)}</td><td class="fs-amount center gold">${fmtFl(d.restrictedEnd)}</td><td class="fs-amount center gold">${fmtFl(totalEnd)}</td></tr>
+      `;
+    }
+
+    let flZoomLevel = 100;
+    function flZoom(dir) {
+      flZoomLevel = Math.min(200, Math.max(60, flZoomLevel + dir * 10));
+      const inner = document.getElementById('flTableScroll');
+      const scale = flZoomLevel / 100;
+      inner.style.transformOrigin = 'top left';
+      inner.style.transform = `scale(${scale})`;
+      inner.style.width = (100 / scale) + '%';
+      inner.style.height = 'auto';
+      inner.parentElement.style.height = (inner.scrollHeight * scale) + 'px';
+      document.getElementById('flZoomLabel').textContent = flZoomLevel + '%';
     }
 
     // ---- Note drilldown modals ----

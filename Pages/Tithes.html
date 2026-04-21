@@ -146,6 +146,33 @@
   <script>
     const VISIBLE_MONTHS = 4;
     const labels = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+    // SPUC totals = sum of all 5 missions per month (from screenshot)
+    const datasets = [
+      { label: '2025', data: [69617914.36, 61596239.55, 65948798.45, 79607269.42, 67373242.37, 81624204.69, 74988549.33, 64439238.42, 81572737.88, 63549232.84, 68980414.58, 90367744.52], backgroundColor: '#0a1e6e', borderRadius: 4 },
+      { label: '2026', data: [61301229.98, 82826503.21, 68784584.11, null, null, null, null, null, null, null, null, null], backgroundColor: '#f59e0b', borderRadius: 4 },
+      { label: 'Budget', data: [75000000, 70000000, 72000000, 80000000, 75000000, 82000000, 78000000, 72000000, 80000000, 70000000, 75000000, 88000000], backgroundColor: '#ef4444', borderRadius: 4 }
+    ];
+
+    // Per-mission 2025 data (from screenshot)
+    const missionData = [
+      [22621870.89,18578687.78,17162301.27,20294803.38,15619823.58,18203978.14,21189228.22,18660639.55,20985045.33,15892071.06,14178110.09,23315279.12], // NCMC
+      [4443619.05,11007216.37,18569355.76,18946323.34,17035848.15,19364276.52,15573564.14,15496542.12,23435771.52,13356756.36,19743514.55,20649250.17],  // CMM
+      [8979630.22,6906975.54,7603812.43,8247275.91,7698935.23,10050505.87,9562060.72,7703403.70,8311743.70,8332417.55,9272742.38,10979424.34],           // NMM
+      [21470361.40,15298976.00,14811539.90,19149807.77,16873462.51,21203105.61,18036761.13,14558798.10,17601704.97,17197806.26,17023040.69,22382871.58], // WMC
+      [12102432.80,9804383.86,7801789.09,12969059.02,10145172.90,12802338.55,10626935.12,8019854.95,11238472.36,8770181.61,8763006.87,13040919.31]       // ZPM
+    ];
+
+    // Populate table
+    const fmt = v => v != null ? '₱' + v.toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2}) : '-';
+    const t25 = datasets[0].data.reduce((a,b)=>a+(b||0),0);
+    const t26 = datasets[1].data.reduce((a,b)=>a+(b||0),0);
+    const tBgt = datasets[2].data.reduce((a,b)=>a+(b||0),0);
+    document.getElementById('excelBody').innerHTML = labels.map((m,i) =>
+      `<tr><td class="month-cell">${m}</td><td class="cell-2025">${fmt(datasets[0].data[i])}</td><td class="cell-2026">${fmt(datasets[1].data[i])}</td><td class="cell-budget">${fmt(datasets[2].data[i])}</td></tr>`
+    ).join('') + `<tr class="total-row"><td class="month-cell">Total</td><td class="total-cell">${fmt(t25)}</td><td class="total-cell">${fmt(t26)}</td><td class="total-cell">${fmt(tBgt)}</td></tr>`;
+
+    // Main bar chart
     const canvas = document.getElementById('tithesChart');
     const containerWidth = canvas.parentElement.clientWidth;
     const containerHeight = canvas.parentElement.clientHeight;
@@ -154,29 +181,15 @@
     canvas.style.minWidth = (barWidth * labels.length) + 'px';
     canvas.style.height = containerHeight + 'px';
 
-    const datasets = [
-      { label: '2025', data: [69617914.36, 61596239.55, 65948798.45, 79607269.42, 67373242.37, 81624204.69, 74988549.33, 64439238.42, 81572737.88, 63549232.84, 68980414.58, 90367744.52], backgroundColor: '#0a1e6e', borderRadius: 4 },
-      { label: '2026', data: [61301229.98, null, null, null, null, null, null, null, null, null, null, null], backgroundColor: '#f59e0b', borderRadius: 4 },
-      { label: 'Budget', data: [75000000, 70000000, 72000000, 80000000, 75000000, 82000000, 78000000, 72000000, 80000000, 70000000, 75000000, 88000000], backgroundColor: '#ef4444', borderRadius: 4 }
-    ];
-
     const chart = new Chart(canvas.getContext('2d'), {
       type: 'bar',
       data: { labels, datasets },
       options: {
-        responsive: false,
-        maintainAspectRatio: false,
-        plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => ` ${ctx.dataset.label}: ₱${ctx.parsed.y.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}` } } },
+        responsive: false, maintainAspectRatio: false,
+        plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => ` ${ctx.dataset.label}: ₱${ctx.parsed.y.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})}` } } },
         scales: {
-          y: { 
-            beginAtZero: true,
-            ticks: { callback: v => v >= 1000000 ? '₱' + (v / 1000000).toFixed(1) + 'M' : v >= 1000 ? '₱' + (v / 1000).toFixed(1) + 'K' : '₱' + v, font: { weight: '700', size: 11 }, color: '#ffffff' },
-            grid: { color: 'rgba(255,255,255,0.5)', lineWidth: 2 }
-          },
-          x: { 
-            grid: { display: false },
-            ticks: { font: { weight: '700', size: 11 }, color: '#ffffff' }
-          }
+          y: { beginAtZero: true, ticks: { callback: v => v>=1000000?'₱'+(v/1000000).toFixed(1)+'M':v>=1000?'₱'+(v/1000).toFixed(1)+'K':'₱'+v, font:{weight:'700',size:11}, color:'#ffffff' }, grid:{color:'rgba(255,255,255,0.5)',lineWidth:2} },
+          x: { grid:{display:false}, ticks:{font:{weight:'700',size:11},color:'#ffffff'} }
         }
       }
     });
@@ -186,102 +199,53 @@
       const item = document.createElement('div');
       item.className = 'legend-item';
       item.innerHTML = `<span class="legend-dot" style="background:${ds.backgroundColor}"></span><span class="legend-label">${ds.label}</span>`;
-      item.addEventListener('click', () => {
-        const meta = chart.getDatasetMeta(i);
-        meta.hidden = !meta.hidden;
-        item.classList.toggle('legend-hidden');
-        chart.update();
-      });
+      item.addEventListener('click', () => { const meta = chart.getDatasetMeta(i); meta.hidden = !meta.hidden; item.classList.toggle('legend-hidden'); chart.update(); });
       legendEl.appendChild(item);
     });
 
-    let overviewChart = null;
-    let lineChart = null;
-    let pieChart = null;
+    let overviewChart = null, lineChart = null, pieChart = null;
+    let activeFrom = 0, activeTo = 11;
+
+    function toggleMonthDropdown() { document.getElementById('monthFilterDropdown').classList.toggle('hidden'); }
+
+    function applyMonthFilter() {
+      const from = parseInt(document.getElementById('fromMonth').value);
+      const to   = parseInt(document.getElementById('toMonth').value);
+      if (from > to) { alert('"From" month cannot be after "To" month.'); return; }
+      activeFrom = from; activeTo = to;
+      document.getElementById('monthFilterDropdown').classList.add('hidden');
+      const pill = document.getElementById('filterActivePill');
+      if (from === 0 && to === 11) { pill.classList.add('hidden'); }
+      else { pill.textContent = labels[from] + (from === to ? '' : ' – ' + labels[to]); pill.classList.remove('hidden'); }
+      const sl = labels.slice(from, to+1);
+      if (overviewChart) { overviewChart.data.labels=sl; overviewChart.data.datasets[0].data=datasets[0].data.slice(from,to+1); overviewChart.data.datasets[1].data=datasets[1].data.slice(from,to+1); overviewChart.data.datasets[2].data=datasets[2].data.slice(from,to+1); overviewChart.update('active'); }
+      if (lineChart) { lineChart.data.labels=sl; lineChart.data.datasets[0].data=datasets[0].data.slice(from,to+1); lineChart.data.datasets[1].data=datasets[1].data.slice(from,to+1); lineChart.data.datasets[2].data=datasets[2].data.slice(from,to+1); lineChart.update('active'); }
+      if (pieChart) { pieChart.data.datasets[0].data=missionData.map(m=>m.slice(from,to+1).reduce((a,b)=>a+b,0)); pieChart.update('active'); }
+    }
+
+    function resetMonthFilter() { document.getElementById('fromMonth').value='0'; document.getElementById('toMonth').value='11'; applyMonthFilter(); }
 
     function toggleMain() {
       const mainCard = document.getElementById('mainChartCard');
       const overviewCard = document.getElementById('overviewCard');
       const isOverview = !overviewCard.classList.contains('hidden');
-
       if (isOverview) {
         overviewCard.style.animation = 'fadeSlideOut 0.3s ease forwards';
-        setTimeout(() => {
-          overviewCard.classList.add('hidden');
-          overviewCard.style.animation = '';
-          mainCard.classList.remove('hidden');
-          mainCard.style.animation = 'fadeSlideIn 0.4s ease forwards';
-          setTimeout(() => mainCard.style.animation = '', 400);
-        }, 300);
+        setTimeout(() => { overviewCard.classList.add('hidden'); overviewCard.style.animation=''; mainCard.classList.remove('hidden'); mainCard.style.animation='fadeSlideIn 0.4s ease forwards'; setTimeout(()=>mainCard.style.animation='',400); }, 300);
       } else {
         mainCard.style.animation = 'fadeSlideOut 0.3s ease forwards';
         setTimeout(() => {
-          mainCard.classList.add('hidden');
-          mainCard.style.animation = '';
-          overviewCard.classList.remove('hidden');
-          overviewCard.style.animation = 'fadeSlideIn 0.4s ease forwards';
-          setTimeout(() => overviewCard.style.animation = '', 400);
+          mainCard.classList.add('hidden'); mainCard.style.animation='';
+          overviewCard.classList.remove('hidden'); overviewCard.style.animation='fadeSlideIn 0.4s ease forwards';
+          setTimeout(()=>overviewCard.style.animation='',400);
           if (!overviewChart) {
-            const barCanvas = document.getElementById('overviewChart');
-            overviewChart = new Chart(barCanvas.getContext('2d'), {
-              type: 'bar',
-              data: { labels, datasets: [
-                { label: '2025', data: datasets[0].data, backgroundColor: '#0a1e6e', borderRadius: 4 },
-                { label: '2026', data: datasets[1].data, backgroundColor: '#f59e0b', borderRadius: 4 },
-                { label: 'Budget', data: datasets[2].data, backgroundColor: '#ef4444', borderRadius: 4 }
-              ]},
-              options: {
-                responsive: true, maintainAspectRatio: false,
-                plugins: { legend: { display: true, position: 'top', labels: { color: '#fff', font: { weight: '700', size: 11 } } }, tooltip: { callbacks: { label: ctx => ` ${ctx.dataset.label}: ₱${ctx.parsed.y.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}` } } },
-                scales: {
-                  y: { beginAtZero: true, ticks: { callback: v => v >= 1000000 ? '₱' + (v/1000000).toFixed(1) + 'M' : '₱' + v, font: { weight: '700', size: 11 }, color: '#fff' }, grid: { color: 'rgba(255,255,255,0.3)' } },
-                  x: { grid: { display: false }, ticks: { font: { weight: '700', size: 11 }, color: '#fff' } }
-                }
-              }
-            });
+            overviewChart = new Chart(document.getElementById('overviewChart').getContext('2d'), { type:'bar', data:{ labels, datasets:[{label:'2025',data:datasets[0].data,backgroundColor:'#0a1e6e',borderRadius:4},{label:'2026',data:datasets[1].data,backgroundColor:'#f59e0b',borderRadius:4},{label:'Budget',data:datasets[2].data,backgroundColor:'#ef4444',borderRadius:4}]}, options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true,position:'top',labels:{color:'#fff',font:{weight:'700',size:11}}},tooltip:{callbacks:{label:ctx=>` ${ctx.dataset.label}: ₱${ctx.parsed.y.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})}`}}},scales:{y:{beginAtZero:true,ticks:{callback:v=>v>=1000000?'₱'+(v/1000000).toFixed(1)+'M':'₱'+v,font:{weight:'700',size:11},color:'#fff'},grid:{color:'rgba(255,255,255,0.3)'}},x:{grid:{display:false},ticks:{font:{weight:'700',size:11},color:'#fff'}}}} });
           }
           if (!lineChart) {
-            const lineCanvas = document.getElementById('lineChart');
-            lineChart = new Chart(lineCanvas.getContext('2d'), {
-              type: 'line',
-              data: { labels, datasets: [
-                { label: '2025', data: datasets[0].data, borderColor: '#4f7cff', backgroundColor: 'rgba(79,124,255,0.15)', pointBackgroundColor: '#4f7cff', tension: 0.4, fill: true, pointRadius: 4 },
-                { label: '2026', data: datasets[1].data, borderColor: '#f59e0b', backgroundColor: 'rgba(245,158,11,0.15)', pointBackgroundColor: '#f59e0b', tension: 0.4, fill: true, pointRadius: 4 },
-                { label: 'Budget', data: datasets[2].data, borderColor: '#ef4444', backgroundColor: 'rgba(239,68,68,0.1)', pointBackgroundColor: '#ef4444', tension: 0.4, fill: false, borderDash: [6,3], pointRadius: 4 }
-              ]},
-              options: {
-                responsive: true, maintainAspectRatio: false,
-                plugins: { legend: { display: true, position: 'top', labels: { color: '#fff', font: { weight: '700', size: 11 } } }, tooltip: { callbacks: { label: ctx => ` ${ctx.dataset.label}: ₱${ctx.parsed.y.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}` } } },
-                scales: {
-                  y: { beginAtZero: true, ticks: { callback: v => v >= 1000000 ? '₱' + (v/1000000).toFixed(1) + 'M' : '₱' + v, font: { weight: '700', size: 11 }, color: '#fff' }, grid: { color: 'rgba(255,255,255,0.3)' } },
-                  x: { grid: { color: 'rgba(255,255,255,0.1)' }, ticks: { font: { weight: '700', size: 11 }, color: '#fff' } }
-                }
-              }
-            });
+            lineChart = new Chart(document.getElementById('lineChart').getContext('2d'), { type:'line', data:{ labels, datasets:[{label:'2025',data:datasets[0].data,borderColor:'#4f7cff',backgroundColor:'rgba(79,124,255,0.15)',pointBackgroundColor:'#4f7cff',tension:0.4,fill:true,pointRadius:4},{label:'2026',data:datasets[1].data,borderColor:'#f59e0b',backgroundColor:'rgba(245,158,11,0.15)',pointBackgroundColor:'#f59e0b',tension:0.4,fill:true,pointRadius:4},{label:'Budget',data:datasets[2].data,borderColor:'#ef4444',backgroundColor:'rgba(239,68,68,0.1)',pointBackgroundColor:'#ef4444',tension:0.4,fill:false,borderDash:[6,3],pointRadius:4}]}, options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true,position:'top',labels:{color:'#fff',font:{weight:'700',size:11}}},tooltip:{callbacks:{label:ctx=>` ${ctx.dataset.label}: ₱${ctx.parsed.y.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})}`}}},scales:{y:{beginAtZero:true,ticks:{callback:v=>v>=1000000?'₱'+(v/1000000).toFixed(1)+'M':'₱'+v,font:{weight:'700',size:11},color:'#fff'},grid:{color:'rgba(255,255,255,0.3)'}},x:{grid:{color:'rgba(255,255,255,0.1)'},ticks:{font:{weight:'700',size:11},color:'#fff'}}}} });
           }
           if (!pieChart) {
-            const pieCanvas = document.getElementById('pieChart');
-            pieChart = new Chart(pieCanvas.getContext('2d'), {
-              type: 'doughnut',
-              data: {
-                labels: ['NCMC', 'CMM', 'NMM', 'WMC', 'ZPM'],
-                datasets: [{
-                  data: missionData.map(m => m.slice(activeFrom, activeTo + 1).reduce((a,b)=>a+b,0)),
-                  backgroundColor: ['#1a3a8f', '#f5a623', '#22c55e', '#a855f7', '#ef4444'],
-                  borderColor: 'rgba(255,255,255,0.25)',
-                  borderWidth: 2,
-                  hoverOffset: 10
-                }]
-              },
-              options: {
-                responsive: true, maintainAspectRatio: false,
-                cutout: '52%',
-                plugins: {
-                  legend: { display: true, position: 'bottom', labels: { color: '#fff', font: { weight: '700', size: 10 }, padding: 8, boxWidth: 12 } },
-                  tooltip: { callbacks: { label: ctx => ` ${ctx.label}: ₱${ctx.parsed.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}` } }
-                }
-              }
-            });
+            pieChart = new Chart(document.getElementById('pieChart').getContext('2d'), { type:'doughnut', data:{ labels:['NCMC','CMM','NMM','WMC','ZPM'], datasets:[{data:missionData.map(m=>m.slice(activeFrom,activeTo+1).reduce((a,b)=>a+b,0)),backgroundColor:['#1a3a8f','#f5a623','#22c55e','#a855f7','#ef4444'],borderColor:'rgba(255,255,255,0.25)',borderWidth:2,hoverOffset:10}]}, options:{responsive:true,maintainAspectRatio:false,cutout:'52%',plugins:{legend:{display:true,position:'bottom',labels:{color:'#fff',font:{weight:'700',size:10},padding:8,boxWidth:12}},tooltip:{callbacks:{label:ctx=>` ${ctx.label}: ₱${ctx.parsed.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})}`}}}} });
           }
         }, 300);
       }
@@ -289,17 +253,11 @@
 
     function updateSideClock() {
       const now = new Date();
-      const date = now.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-      let hours = now.getHours();
-      const ampm = hours >= 12 ? 'PM' : 'AM';
+      const date = now.toLocaleDateString('en-US', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
+      let hours = now.getHours(); const ampm = hours >= 12 ? 'PM' : 'AM';
       hours = hours % 12 || 12;
-      const hh = String(hours).padStart(2, '0');
-      const mm = String(now.getMinutes()).padStart(2, '0');
-      const ss = String(now.getSeconds()).padStart(2, '0');
-      document.getElementById('sideClock').innerHTML = `
-        <div class="side-clock-time">${hh}:${mm}:${ss} <span class="side-clock-ampm">${ampm}</span></div>
-        <div class="side-clock-date">${date}</div>
-      `;
+      const hh = String(hours).padStart(2,'0'), mm = String(now.getMinutes()).padStart(2,'0'), ss = String(now.getSeconds()).padStart(2,'0');
+      document.getElementById('sideClock').innerHTML = `<div class="side-clock-time">${hh}:${mm}:${ss} <span class="side-clock-ampm">${ampm}</span></div><div class="side-clock-date">${date}</div>`;
     }
     updateSideClock();
     setInterval(updateSideClock, 1000);
@@ -309,155 +267,32 @@
       const btn = document.getElementById('hamburgerBtn');
       const isHidden = wrap.classList.contains('hidden');
       const items = wrap.querySelectorAll('.btn-home, .footer-divider, .btn-page');
-
       if (isHidden) {
-        wrap.classList.remove('hidden');
-        btn.classList.remove('active');
-        items.forEach((el, i) => {
-          el.style.opacity = '0';
-          el.style.transform = 'translateX(-20px)';
-          setTimeout(() => {
-            el.style.transition = 'opacity 0.25s ease, transform 0.25s ease';
-            el.style.opacity = '1';
-            el.style.transform = 'translateX(0)';
-          }, i * 80);
-        });
+        wrap.classList.remove('hidden'); btn.classList.remove('active');
+        items.forEach((el,i) => { el.style.opacity='0'; el.style.transform='translateX(-20px)'; setTimeout(()=>{ el.style.transition='opacity 0.25s ease, transform 0.25s ease'; el.style.opacity='1'; el.style.transform='translateX(0)'; },i*80); });
       } else {
         btn.classList.add('active');
         const reversed = Array.from(items).reverse();
-        reversed.forEach((el, i) => {
-          setTimeout(() => {
-            el.style.transition = 'opacity 0.2s ease, transform 0.2s ease';
-            el.style.opacity = '0';
-            el.style.transform = 'translateX(-20px)';
-          }, i * 60);
-        });
-        setTimeout(() => wrap.classList.add('hidden'), reversed.length * 60 + 200);
+        reversed.forEach((el,i) => { setTimeout(()=>{ el.style.transition='opacity 0.2s ease, transform 0.2s ease'; el.style.opacity='0'; el.style.transform='translateX(-20px)'; },i*60); });
+        setTimeout(()=>wrap.classList.add('hidden'), reversed.length*60+200);
       }
     }
 
-    const fmt = v => v != null ? '₱' + v.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}) : '-';
-    const data2025 = datasets[0].data;
-    const data2026 = datasets[1].data;
-    const dataBudget = datasets[2].data;
-    const total2025 = data2025.reduce((a, b) => a + (b || 0), 0);
-    const total2026 = data2026.reduce((a, b) => a + (b || 0), 0);
-    const totalBudget = dataBudget.reduce((a, b) => a + (b || 0), 0);
-    const tbody = document.getElementById('excelBody');
-    tbody.innerHTML = labels.map((m, i) => `
-      <tr>
-        <td class="month-cell">${m}</td>
-        <td class="cell-2025">${fmt(data2025[i])}</td>
-        <td class="cell-2026">${fmt(data2026[i])}</td>
-        <td class="cell-budget">${fmt(dataBudget[i])}</td>
-      </tr>
-    `).join('') + `
-      <tr class="total-row">
-        <td class="month-cell">Total</td>
-        <td class="total-cell">${fmt(total2025)}</td>
-        <td class="total-cell">${fmt(total2026)}</td>
-        <td class="total-cell">${fmt(totalBudget)}</td>
-      </tr>
-    `;
-    // ---- Mission monthly data (for pie filtering) ----
-    const missionData = [
-      [22621870.89,18578687.78,17162301.27,20294803.38,15619823.58,18203978.14,21189228.22,18660639.55,20985045.33,15892071.06,14178110.09,23315279.12], // NCMC
-      [4443619.05,11007216.37,18569355.76,18946323.34,17035848.15,19364276.52,15573564.14,15496542.12,23435771.52,13356756.36,19743514.55,20649250.17],  // CMM
-      [8979630.22,6906975.54,7603812.43,8247275.91,7698935.23,10050505.87,9562060.72,7703403.70,8311743.70,8332417.55,9272742.38,10979424.34],           // NMM
-      [21470361.40,15298976.00,14811539.90,19149807.77,16873462.51,21203105.61,18036761.13,14558798.10,17601704.97,17197806.26,17023040.69,22382871.58], // WMC
-      [12102432.80,9804383.86,7801789.09,12969059.02,10145172.90,12802338.55,10626935.12,8019854.95,11238472.36,8770181.61,8763006.87,13040919.31]       // ZPM
-    ];
-
-    // ---- Month filter ----
-    let activeFrom = 0, activeTo = 11;
-
-    function toggleMonthDropdown() {
-      const dd = document.getElementById('monthFilterDropdown');
-      dd.classList.toggle('hidden');
-    }
-
-    function applyMonthFilter() {
-      const from = parseInt(document.getElementById('fromMonth').value);
-      const to   = parseInt(document.getElementById('toMonth').value);
-      if (from > to) { alert('"From" month cannot be after "To" month.'); return; }
-      activeFrom = from; activeTo = to;
-      document.getElementById('monthFilterDropdown').classList.add('hidden');
-      const pill = document.getElementById('filterActivePill');
-      if (from === 0 && to === 11) {
-        pill.classList.add('hidden');
-      } else {
-        pill.textContent = labels[from] + (from === to ? '' : ' – ' + labels[to]);
-        pill.classList.remove('hidden');
-      }
-      updateOverviewCharts(from, to);
-    }
-
-    function resetMonthFilter() {
-      document.getElementById('fromMonth').value = '0';
-      document.getElementById('toMonth').value   = '11';
-      applyMonthFilter();
-    }
-
-    function updateOverviewCharts(from, to) {
-      const slicedLabels = labels.slice(from, to + 1);
-      if (overviewChart) {
-        overviewChart.data.labels = slicedLabels;
-        overviewChart.data.datasets[0].data = datasets[0].data.slice(from, to + 1);
-        overviewChart.data.datasets[1].data = datasets[1].data.slice(from, to + 1);
-        overviewChart.data.datasets[2].data = datasets[2].data.slice(from, to + 1);
-        overviewChart.update('active');
-      }
-      if (lineChart) {
-        lineChart.data.labels = slicedLabels;
-        lineChart.data.datasets[0].data = datasets[0].data.slice(from, to + 1);
-        lineChart.data.datasets[1].data = datasets[1].data.slice(from, to + 1);
-        lineChart.data.datasets[2].data = datasets[2].data.slice(from, to + 1);
-        lineChart.update('active');
-      }
-      if (pieChart) {
-        pieChart.data.datasets[0].data = missionData.map(m => m.slice(from, to + 1).reduce((a, b) => a + b, 0));
-        pieChart.update('active');
-      }
-    }
-
-    // ---- Chart expand / collapse ----
     let expandedWrap = null;
-
     function expandChart(wrapId) {
       if (expandedWrap === wrapId) { collapseChart(); return; }
-      const row = document.getElementById('overviewChartsRow');
-      const wraps = row.querySelectorAll('.overview-chart-wrap');
       expandedWrap = wrapId;
-      wraps.forEach(w => {
-        if (w.id === wrapId) {
-          w.classList.add('chart-expanded');
-          w.classList.remove('chart-shrunk');
-          w.querySelector('.chart-close-btn').classList.add('visible');
-        } else {
-          w.classList.add('chart-shrunk');
-          w.classList.remove('chart-expanded');
-          w.querySelector('.chart-close-btn').classList.remove('visible');
-        }
+      document.querySelectorAll('.overview-chart-wrap').forEach(w => {
+        if (w.id === wrapId) { w.classList.add('chart-expanded'); w.classList.remove('chart-shrunk'); w.querySelector('.chart-close-btn').classList.add('visible'); }
+        else { w.classList.add('chart-shrunk'); w.classList.remove('chart-expanded'); w.querySelector('.chart-close-btn').classList.remove('visible'); }
       });
-      // Resize the chart canvas after transition
-      setTimeout(() => resizeAllCharts(), 380);
+      setTimeout(() => [overviewChart, lineChart, pieChart].forEach(c => c && c.resize()), 380);
     }
-
     function collapseChart() {
-      const row = document.getElementById('overviewChartsRow');
-      const wraps = row.querySelectorAll('.overview-chart-wrap');
       expandedWrap = null;
-      wraps.forEach(w => {
-        w.classList.remove('chart-expanded', 'chart-shrunk');
-        w.querySelector('.chart-close-btn').classList.remove('visible');
-      });
-      setTimeout(() => resizeAllCharts(), 380);
+      document.querySelectorAll('.overview-chart-wrap').forEach(w => { w.classList.remove('chart-expanded','chart-shrunk'); w.querySelector('.chart-close-btn').classList.remove('visible'); });
+      setTimeout(() => [overviewChart, lineChart, pieChart].forEach(c => c && c.resize()), 380);
     }
-
-    function resizeAllCharts() {
-      [overviewChart, lineChart, pieChart].forEach(c => { if (c) c.resize(); });
-    }
-
   </script>
 </body>
 </html>
