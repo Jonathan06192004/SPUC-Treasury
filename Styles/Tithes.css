@@ -517,22 +517,156 @@ main {
   padding: 12px;
   box-shadow: 0 4px 16px rgba(0,0,0,0.15);
   height: fit-content;
+  cursor: pointer;
+  transition: box-shadow 0.2s, transform 0.2s;
+}
+
+.excel-table-wrap:hover {
+  box-shadow: 0 6px 24px rgba(245,166,35,0.35), 0 0 0 2px #f59e0b;
+  transform: translateY(-2px);
+}
+
+/* ---- Table Modal ---- */
+.table-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(5,10,40,0.7);
+  backdrop-filter: blur(6px);
+  z-index: 300;
+}
+.table-modal-overlay.hidden { display: none; }
+
+.table-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 301;
+  width: 1100px;
+  max-width: 96vw;
+  height: auto;
+  max-height: 95vh;
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 24px 64px rgba(0,0,0,0.55), 0 0 0 2px #f59e0b;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.table-modal.hidden { display: none; }
+
+@keyframes tableModalIn {
+  from { opacity: 0; transform: translate(-50%, -44%) scale(0.92); }
+  to   { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+}
+@keyframes tableModalOut {
+  from { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+  to   { opacity: 0; transform: translate(-50%, -44%) scale(0.92); }
+}
+
+.table-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: linear-gradient(135deg, #0a1e6e, #1a237e);
+  padding: 16px 22px;
+  border-bottom: 3px solid #f59e0b;
+  flex-shrink: 0;
+}
+
+.table-modal-title {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 900;
+  font-size: 1.7rem;
+  letter-spacing: 2px;
+  color: #f59e0b;
+  text-transform: uppercase;
+}
+
+.table-modal-close {
+  background: rgba(255,255,255,0.12);
+  border: 1px solid rgba(255,255,255,0.3);
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  color: #fff;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s, transform 0.2s;
+}
+.table-modal-close:hover { background: rgba(255,255,255,0.25); transform: scale(1.1); }
+
+.table-modal-body {
+  overflow: hidden;
+  flex: 1;
+  padding: 0;
+}
+
+.table-modal-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 3.4rem;
+  color: #1e293b;
+}
+
+.table-modal-table th {
+  padding: 20px 28px;
+  text-align: center;
+  font-weight: 700;
+  white-space: nowrap;
+  border: 1px solid #c7d0e8;
+  font-size: 3.2rem;
+  color: #fff;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.table-modal-table td {
+  padding: 18px 28px;
+  text-align: right;
+  border: 1px solid #dde3f0;
+  white-space: nowrap;
+  font-size: 3.28rem;
+}
+
+.table-modal-table tbody tr:nth-child(even) td { background: #f8faff; }
+.table-modal-table tbody tr:hover td { background: #eef2ff; transition: background 0.15s; }
+
+/* Keep modal table typography large (override base .excel-table styles below) */
+.table-modal .table-modal-table {
+  font-size: clamp(1rem, 1.2vw, 1.35rem) !important;
+  table-layout: fixed;
+}
+
+.table-modal .table-modal-table th {
+  font-size: clamp(0.95rem, 1.1vw, 1.25rem) !important;
+  padding: 7px 10px !important;
+}
+
+.table-modal .table-modal-table td {
+  font-size: clamp(1rem, 1.2vw, 1.35rem) !important;
+  padding: 7px 10px !important;
 }
 
 .excel-table {
   border-collapse: collapse;
-  font-size: 0.78rem;
+  font-size: 0.62rem;
   width: 100%;
   color: #1e293b;
 }
 
 .excel-table th {
-  padding: 5px 8px;
+  padding: 3px 5px;
   text-align: center;
   font-weight: 700;
   white-space: nowrap;
   border: 1px solid #c7d0e8;
-  font-size: 0.72rem;
+  font-size: 0.6rem;
   color: #fff;
 }
 
@@ -542,11 +676,11 @@ main {
 .th-budget { background: #ef4444; }
 
 .excel-table td {
-  padding: 4px 8px;
+  padding: 2px 5px;
   text-align: right;
   border: 1px solid #dde3f0;
   white-space: nowrap;
-  font-size: 0.72rem;
+  font-size: 0.6rem;
 }
 
 .month-cell {

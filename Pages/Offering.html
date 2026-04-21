@@ -34,7 +34,7 @@
         </div>
         <div class="right-col">
           <div class="chart-legend" id="chartLegend"></div>
-          <div class="excel-table-wrap">
+          <div class="excel-table-wrap" onclick="openTableModal()" title="Click to expand">
             <table class="excel-table">
               <thead><tr>
                 <th class="th-offerings">OFFERINGS</th>
@@ -442,6 +442,40 @@
     document.getElementById('excelBody').innerHTML = labels.map((m,i) =>
       `<tr><td class="month-cell">${m}</td><td class="cell-2025">${fmt(d2025[i])}</td><td class="cell-2026">${fmt(d2026[i])}</td><td class="cell-budget">${fmt(dBudget[i])}</td></tr>`
     ).join('') + `<tr class="total-row"><td class="month-cell">Total</td><td class="total-cell">${fmt(t2025)}</td><td class="total-cell">${fmt(t2026)}</td><td class="total-cell">${fmt(tBudget)}</td></tr>`;
+
+    function openTableModal() {
+      document.getElementById('modalTableBody').innerHTML = document.getElementById('excelBody').innerHTML;
+      document.getElementById('tableModalOverlay').classList.remove('hidden');
+      const modal = document.getElementById('tableModal');
+      modal.classList.remove('hidden');
+      modal.style.animation = 'tableModalIn 0.35s cubic-bezier(0.4,0,0.2,1) forwards';
+    }
+
+    function closeTableModal() {
+      const modal = document.getElementById('tableModal');
+      modal.style.animation = 'tableModalOut 0.25s ease forwards';
+      setTimeout(() => {
+        modal.classList.add('hidden');
+        document.getElementById('tableModalOverlay').classList.add('hidden');
+      }, 250);
+    }
   </script>
+
+  <!-- Table Modal -->
+  <div class="table-modal-overlay hidden" id="tableModalOverlay" onclick="closeTableModal()"></div>
+  <div class="table-modal hidden" id="tableModal">
+    <div class="table-modal-header">
+      <span class="table-modal-title">OFFERINGS - JANUARY TO DECEMBER</span>
+      <button class="table-modal-close" onclick="closeTableModal()">&#10005;</button>
+    </div>
+    <div class="table-modal-body">
+      <table class="excel-table table-modal-table">
+        <thead>
+          <tr><th class="th-offerings">OFFERINGS</th><th class="th-2025">2025</th><th class="th-2026">2026</th><th class="th-budget">BUDGET</th></tr>
+        </thead>
+        <tbody id="modalTableBody"></tbody>
+      </table>
+    </div>
+  </div>
 </body>
 </html>

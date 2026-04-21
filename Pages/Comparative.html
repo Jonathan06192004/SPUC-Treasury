@@ -84,7 +84,7 @@
           <div class="chart-legend" id="chartLegend"></div>
           <button class="btn-year-toggle" id="yearToggleBtn" onclick="toggleYear()">VIEW 2026 &#8594;</button>
         </div>
-        <div class="summary-table-wrap">
+        <div class="summary-table-wrap" onclick="openTableModal()" title="Click to expand">
           <table class="summary-table">
             <thead>
               <tr>
@@ -143,10 +143,10 @@
   <script>
     const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 
-    const dataTithes2025   = [61301229.98, 61596239.55, 65948798.45, 79607269.42, 67373242.37, 81624204.69, 74988549.33, 64439238.42, 81572737.88, 63549232.84, 68980414.58, 90367744.52];
-    const dataOfferings2025 = [23721985.60, 25572581.73, 26943637.10, 34327859.77, 27915369.40, 33272114.27, 30302696.70, 25934152.67, 33973938.90, 24600448.63, 24742424.30, 33009367.40];
-    const dataTithes2026   = [61301229.98, null, null, null, null, null, null, null, null, null, null, null];
-    const dataOfferings2026 = [23721985.60, null, null, null, null, null, null, null, null, null, null, null];
+    const dataTithes2025   = [69617914.36, 61596239.55, 65948798.45, 79607269.42, 67373242.37, 81624204.69, 74988549.33, 64439238.42, 81572737.88, 63549232.84, 68980414.58, 90367744.52];
+    const dataOfferings2025 = [29938070.07, 25572581.73, 26943637.10, 34327859.77, 27915369.40, 33272114.27, 30302696.70, 25934152.67, 33973938.90, 24600448.63, 24742424.30, 33009367.40];
+    const dataTithes2026   = [61301229.98, 82826503.21, 68784584.11, null, null, null, null, null, null, null, null, null];
+    const dataOfferings2026 = [23721985.60, 31140714.83, 26368161.33, null, null, null, null, null, null, null, null, null];
 
     let currentYear = 2025;
     let dataTithes = dataTithes2025;
@@ -243,6 +243,8 @@
         chart.update();
         document.getElementById('thTithes').textContent = 'TITHES 2026';
         document.getElementById('thOfferings').textContent = 'OFFERINGS 2026';
+        document.getElementById('modalThTithes').textContent = 'TITHES 2026';
+        document.getElementById('modalThOfferings').textContent = 'OFFERINGS 2026';
         renderTable(dataTithes2026, dataOfferings2026);
         btn.innerHTML = 'VIEW 2025 &#8592;';
         btn.classList.add('active');
@@ -255,6 +257,8 @@
         chart.update();
         document.getElementById('thTithes').textContent = 'TITHES 2025';
         document.getElementById('thOfferings').textContent = 'OFFERINGS 2025';
+        document.getElementById('modalThTithes').textContent = 'TITHES 2025';
+        document.getElementById('modalThOfferings').textContent = 'OFFERINGS 2025';
         renderTable(dataTithes2025, dataOfferings2025);
         btn.innerHTML = 'VIEW 2026 &#8594;';
         btn.classList.remove('active');
@@ -292,6 +296,23 @@
     }
 
     renderTable(dataTithes2025, dataOfferings2025);
+
+    function openTableModal() {
+      document.getElementById('modalSummaryBody').innerHTML = document.getElementById('summaryBody').innerHTML;
+      document.getElementById('tableModalOverlay').classList.remove('hidden');
+      const modal = document.getElementById('tableModal');
+      modal.classList.remove('hidden');
+      modal.style.animation = 'tableModalIn 0.35s cubic-bezier(0.4,0,0.2,1) forwards';
+    }
+
+    function closeTableModal() {
+      const modal = document.getElementById('tableModal');
+      modal.style.animation = 'tableModalOut 0.25s ease forwards';
+      setTimeout(() => {
+        modal.classList.add('hidden');
+        document.getElementById('tableModalOverlay').classList.add('hidden');
+      }, 250);
+    }
 
     function toggleFooterNav() {
       const wrap = document.getElementById('footerNavWrap');
@@ -422,5 +443,26 @@
       }
     }
   </script>
+  <!-- Table Modal -->
+  <div class="table-modal-overlay hidden" id="tableModalOverlay" onclick="closeTableModal()"></div>
+  <div class="table-modal hidden" id="tableModal">
+    <div class="table-modal-header">
+      <span class="table-modal-title">COMPARATIVE - JANUARY TO DECEMBER</span>
+      <button class="table-modal-close" onclick="closeTableModal()">&#10005;</button>
+    </div>
+    <div class="table-modal-body">
+      <table class="summary-table table-modal-table">
+        <thead>
+          <tr>
+            <th class="th-month">MONTH</th>
+            <th class="th-tithes" id="modalThTithes">TITHES 2025</th>
+            <th class="th-offerings" id="modalThOfferings">OFFERINGS 2025</th>
+            <th class="th-total">TOTAL</th>
+          </tr>
+        </thead>
+        <tbody id="modalSummaryBody"></tbody>
+      </table>
+    </div>
+  </div>
 </body>
 </html>

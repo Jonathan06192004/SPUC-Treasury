@@ -55,7 +55,7 @@ main {
   position: relative;
   z-index: 2;
   flex: 1;
-  padding: 10px 40px;
+  padding: 10px 40px 10px;
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -82,12 +82,11 @@ main {
   color: #f5a623;
   letter-spacing: 4px;
   margin: 0;
-  margin-right: 10px;
-  margin-top: -20px;
+  margin-right: 30px;
 }
 
 .page-title-img {
-  height: 6rem;
+  height: 4.5rem;
   width: auto;
   display: inline-block;
 }
@@ -209,7 +208,7 @@ main {
 }
 
 .side-clock-time {
-  font-size: 2rem;
+  font-size: 3.5rem;
   font-weight: 800;
   color: #fff;
   letter-spacing: 3px;
@@ -217,9 +216,9 @@ main {
 }
 
 .side-clock-ampm {
-  font-size: 1rem;
-  font-weight: 600;
-  color: rgba(255,255,255,0.7);
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: rgba(255,255,255,0.85);
 }
 
 .side-clock-date {
