@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Monthly Report | Treasury SPUC</title>
+  <link rel="icon" type="image/png" href="../Assets/logo.png"/>
+  <link rel="stylesheet" href="../Styles/MonthlyReport.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Cinzel:wght@700;900&family=Montserrat:wght@700;800;900&display=swap" rel="stylesheet"/>
+  <script src="../Script/utils.js"></script>
+</head>
+<body>
+
+  <header>
+    <div class="logo-area" onclick="location.href='../index.html'" style="cursor:pointer;">
+      <img src="../Assets/logo.png" alt="Logo" class="logo-img"/>
+      <div class="org-name">
+        <strong>Southwestern Philippines</strong> Union Conference
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <div class="title-row">
+      <div class="title-left"></div>
+      <p class="page-subtitle">Southwestern Philippines Union Conference</p>
+      <h1 class="page-title"><img src="../Assets/Reconciliation.png" alt="Monthly Report" class="page-title-img"/></h1>
+    </div>
+
+    <div class="mr-body">
+      <div class="mr-table-wrap">
+        <div class="mr-table-header-row">
+          <span class="mr-table-title">MONTHLY REPORT</span>
+          <div class="mr-month-select-wrap">
+            <label class="mr-month-label">MONTH:</label>
+            <select class="mr-month-select" id="mrMonthSelect" onchange="updateMonthLabel()">
+              <option value="January">January</option>
+              <option value="February">February</option>
+              <option value="March">March</option>
+              <option value="April">April</option>
+              <option value="May">May</option>
+              <option value="June">June</option>
+              <option value="July">July</option>
+              <option value="August">August</option>
+              <option value="September">September</option>
+              <option value="October">October</option>
+              <option value="November">November</option>
+              <option value="December">December</option>
+            </select>
+            <span class="mr-year-label">2026</span>
+          </div>
+        </div>
+        <div class="mr-scroll">
+          <div class="mr-split">
+
+            <!-- LEFT: Institutions Panel -->
+            <div class="mr-inst-panel" id="instPanel">
+              <div class="mr-inst-spacer"></div>
+              <div class="mr-inst-group">
+                <div class="mr-inst-group-title">MISSIONS / CONFERENCES</div>
+                <div class="mr-inst-item">CENTRAL MINDANAO MISSION</div>
+                <div class="mr-inst-item">NORTH CENTRAL MINDANAO CONFERENCE</div>
+                <div class="mr-inst-item">NORTHEASTERN MINDANAO MISSION</div>
+                <div class="mr-inst-item">WESTERN MINDANAO CONFERENCE</div>
+                <div class="mr-inst-item">ZAMBOANGA PENINSULA MISSION</div>
+              </div>
+              <div class="mr-inst-group">
+                <div class="mr-inst-group-title">MEDICAL CENTERS</div>
+                <div class="mr-inst-item">ADVENTIST MEDICAL CENTER-ILIGAN</div>
+                <div class="mr-inst-item">ADVENTIST MEDICAL CENTER-VALENCIA</div>
+                <div class="mr-inst-item">ADVENTIST HOSPITAL-GINGOOG</div>
+              </div>
+              <div class="mr-inst-group">
+                <div class="mr-inst-group-title">EDUCATIONAL</div>
+                <div class="mr-inst-item">MOUNTAIN VIEW COLLEGE</div>
+                <div class="mr-inst-item">AMC COLLEGE-ILIGAN</div>
+                <div class="mr-inst-item">WESTERN MINDANAO ADV ACADEMY</div>
+                <div class="mr-inst-item">MINDANAO MISSION ACADEMY</div>
+                <div class="mr-inst-item">MVC ACADEMY</div>
+                <div class="mr-inst-item">NORTHEASTERN MINDANAO ACADEMY</div>
+                <div class="mr-inst-item">LAKE VIEW ACADEMY</div>
+                <div class="mr-inst-item">CALDWEN ADVENTIST ACADEMY</div>
+              </div>
+              <div class="mr-inst-group">
+                <div class="mr-inst-group-title">OTHER INSTITUTIONS</div>
+                <div class="mr-inst-item">SULADS</div>
+                <div class="mr-inst-item">LITERATURE MINISTRY SEMINARY</div>
+                <div class="mr-inst-item">HOPE CHANNEL-SOUTH PHILIPPINES</div>
+                <div class="mr-inst-item">SOUTHERN ASIA PACIFIC DIVISION</div>
+                <div class="mr-inst-item">SOUTHEASTERN PHILIPPINE UNION</div>
+              </div>
+            </div>
+
+            <!-- RIGHT: Data Grid -->
+            <div class="mr-data-scroll" id="dataScroll">
+              <table class="mr-table">
+                <thead>
+                  <tr>
+                    <th class="mr-th-group" colspan="3">FINANCIAL STATEMENT</th>
+                    <th class="mr-th-group" colspan="2">TREASURER'S REPORT</th>
+                    <th class="mr-th-group" colspan="2">RECONCILIATION</th>
+                  </tr>
+                  <tr>
+                    <th class="mr-th-sub">DATE REC'D</th>
+                    <th class="mr-th-sub">WRKG CAP</th>
+                    <th class="mr-th-sub">LIQUIDITY</th>
+                    <th class="mr-th-sub">DATE REC'D</th>
+                    <th class="mr-th-sub">REMITTANCE</th>
+                    <th class="mr-th-sub">DATE REC'D</th>
+                    <th class="mr-th-sub">OUTSTANDING</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <!-- MISSIONS/CONFERENCES -->
+                  <tr class="mr-data-section-gap"><td colspan="7"></td></tr>
+                  <tr class="mr-data-row"><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+                  <tr class="mr-data-row"><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+                  <tr class="mr-data-row"><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+                  <tr class="mr-data-row"><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+                  <tr class="mr-data-row"><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+                  <!-- MEDICAL CENTERS -->
+                  <tr class="mr-data-section-gap"><td colspan="7"></td></tr>
+                  <tr class="mr-data-row"><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+                  <tr class="mr-data-row"><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+                  <tr class="mr-data-row"><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+                  <!-- EDUCATIONAL -->
+                  <tr class="mr-data-section-gap"><td colspan="7"></td></tr>
+                  <tr class="mr-data-row"><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+                  <tr class="mr-data-row"><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+                  <tr class="mr-data-row"><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+                  <tr class="mr-data-row"><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+                  <tr class="mr-data-row"><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+                  <tr class="mr-data-row"><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+                  <tr class="mr-data-row"><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+                  <tr class="mr-data-row"><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+                  <!-- OTHER INSTITUTIONS -->
+                  <tr class="mr-data-section-gap"><td colspan="7"></td></tr>
+                  <tr class="mr-data-row"><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+                  <tr class="mr-data-row"><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+                  <tr class="mr-data-row"><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+                  <tr class="mr-data-row"><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+                  <tr class="mr-data-row"><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+                </tbody>
+              </table>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <div class="mr-right">
+
+        <!-- Summary Stats -->
+        <div class="mr-summary-card">
+          <div class="mr-summary-title">REPORT SUMMARY</div>
+          <div class="mr-summary-period" id="mrSummaryPeriod">JANUARY 2026</div>
+          <div class="mr-stat-grid">
+            <div class="mr-stat kpi-blue">
+              <span class="mr-stat-val">21</span>
+              <span class="mr-stat-label">TOTAL<br/>INSTITUTIONS</span>
+            </div>
+            <div class="mr-stat kpi-green">
+              <span class="mr-stat-val" id="mrStatSubmitted">0</span>
+              <span class="mr-stat-label">SUBMITTED</span>
+            </div>
+            <div class="mr-stat kpi-amber">
+              <span class="mr-stat-val" id="mrStatPending">21</span>
+              <span class="mr-stat-label">PENDING</span>
+            </div>
+            <div class="mr-stat kpi-red">
+              <span class="mr-stat-val" id="mrStatOutstanding">0</span>
+              <span class="mr-stat-label">OUTSTANDING</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Submission Status per Group -->
+        <div class="mr-status-card">
+          <div class="mr-status-title">SUBMISSION STATUS</div>
+          <div class="mr-status-group">
+            <span class="mr-status-group-label">MISSIONS / CONFERENCES</span>
+            <div class="mr-status-chips">
+              <span class="mr-chip pending">CMM</span>
+              <span class="mr-chip pending">NCMC</span>
+              <span class="mr-chip pending">NMM</span>
+              <span class="mr-chip pending">WMC</span>
+              <span class="mr-chip pending">ZPM</span>
+            </div>
+          </div>
+          <div class="mr-status-group">
+            <span class="mr-status-group-label">MEDICAL CENTERS</span>
+            <div class="mr-status-chips">
+              <span class="mr-chip pending">AMC-ILIGAN</span>
+              <span class="mr-chip pending">AMC-VALENCIA</span>
+              <span class="mr-chip pending">ADV HOSP-GINGOOG</span>
+            </div>
+          </div>
+          <div class="mr-status-group">
+            <span class="mr-status-group-label">EDUCATIONAL</span>
+            <div class="mr-status-chips">
+              <span class="mr-chip pending">MVC</span>
+              <span class="mr-chip pending">AMC COLLEGE</span>
+              <span class="mr-chip pending">WMAA</span>
+              <span class="mr-chip pending">MMA</span>
+              <span class="mr-chip pending">MVC ACAD</span>
+              <span class="mr-chip pending">NMA</span>
+              <span class="mr-chip pending">LVA</span>
+              <span class="mr-chip pending">CAA</span>
+            </div>
+          </div>
+          <div class="mr-status-group">
+            <span class="mr-status-group-label">OTHER INSTITUTIONS</span>
+            <div class="mr-status-chips">
+              <span class="mr-chip pending">SULADS</span>
+              <span class="mr-chip pending">LMS</span>
+              <span class="mr-chip pending">HOPE CH.</span>
+              <span class="mr-chip pending">SAPD</span>
+              <span class="mr-chip pending">SEPU</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Reminders removed -->
+
+        <!-- Clock -->
+        <div class="side-clock" id="sideClock"></div>
+
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <div class="footer-bottom">
+      <button class="btn-arrow" id="hamburgerBtn" onclick="toggleFooterNav()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+      </button>
+      <div class="footer-nav-wrap" id="footerNavWrap">
+        <button class="btn-home" onclick="location.href='../index.html'">
+          <span class="icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V9.5z"/><path d="M9 21V12h6v9"/></svg>
+          </span>
+          <span class="label">HOMEPAGE</span>
+        </button>
+        <div class="footer-divider"></div>
+        <div class="nav-buttons">
+          <button class="btn-page" onclick="location.href='Tithes.html'">
+            <span class="btn-page-icon">📋</span>
+            <span class="btn-page-label">TITHES</span>
+          </button>
+          <button class="btn-page" onclick="location.href='Offering.html'">
+            <span class="btn-page-icon">🙏</span>
+            <span class="btn-page-label">OFFERINGS</span>
+          </button>
+          <button class="btn-page" onclick="location.href='Comparative.html'">
+            <span class="btn-page-icon">📊</span>
+            <span class="btn-page-label">COMPARATIVE</span>
+          </button>
+          <button class="btn-page" onclick="location.href='FinancialStatement.html'">
+            <span class="btn-page-icon">📄</span>
+            <span class="btn-page-label">FINANCIAL STATEMENT</span>
+          </button>
+        </div>
+      </div>
+      <a href="https://spucadventist.org" class="footer-link">spucadventist.org</a>
+    </div>
+  </footer>
+
+  <script>
+    updateSideClock();
+    setInterval(updateSideClock, 1000);
+
+    function updateMonthLabel() {
+      const sel = document.getElementById('mrMonthSelect');
+      const month = sel.value.toUpperCase();
+      document.querySelector('.mr-year-label').textContent = '2026 — ' + month;
+      document.getElementById('mrSummaryPeriod').textContent = month + ' 2026';
+    }
+    updateMonthLabel();
+
+    // Sync vertical scroll between institutions panel and data grid
+    const instPanel = document.getElementById('instPanel');
+    const dataScroll = document.getElementById('dataScroll');
+    instPanel.addEventListener('scroll', () => { dataScroll.scrollTop = instPanel.scrollTop; });
+    dataScroll.addEventListener('scroll', () => { instPanel.scrollTop = dataScroll.scrollTop; });
+  </script>
+</body>
+</html>
