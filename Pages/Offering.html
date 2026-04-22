@@ -8,6 +8,7 @@
   <link rel="stylesheet" href="../Styles/Offering.css" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Cinzel:wght@700;900&family=Montserrat:wght@700;800;900&display=swap" rel="stylesheet"/>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="../Script/utils.js"></script>
 </head>
 <body>
 
@@ -15,7 +16,7 @@
     <div class="logo-area" onclick="location.href='../index.html'" style="cursor:pointer;">
       <img src="../Assets/logo.png" alt="Logo" class="logo-img"/>
       <div class="org-name">
-        <strong>Southwestern Philippine</strong> Union Conference
+        <strong>Southwestern Philippines</strong> Union Conference
       </div>
     </div>
   </header>
@@ -23,7 +24,7 @@
   <main>
     <div class="title-row">
       <div class="title-left"></div>
-      <p class="page-subtitle">Southwestern Philippine Union Conference</p>
+      <p class="page-subtitle">Southwestern Philippines Union Conference</p>
       <h1 class="page-title"><img src="../Assets/Offerings.png" alt="Offerings" class="page-title-img"/></h1>
     </div>
 
@@ -198,20 +199,6 @@
       legendEl.appendChild(item);
     });
 
-    function updateSideClock() {
-      const now = new Date();
-      const date = now.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-      let hours = now.getHours();
-      const ampm = hours >= 12 ? 'PM' : 'AM';
-      hours = hours % 12 || 12;
-      const hh = String(hours).padStart(2, '0');
-      const mm = String(now.getMinutes()).padStart(2, '0');
-      const ss = String(now.getSeconds()).padStart(2, '0');
-      document.getElementById('sideClock').innerHTML = `
-        <div class="side-clock-time">${hh}:${mm}:${ss} <span class="side-clock-ampm">${ampm}</span></div>
-        <div class="side-clock-date">${date}</div>
-      `;
-    }
     updateSideClock();
     setInterval(updateSideClock, 1000);
 
@@ -221,11 +208,11 @@
 
     // ---- Mission monthly offering data (for pie filtering) ----
     const missionData = [
-      [8423978.37,5890144.37,6749753.63,8640243.73,5713093.73,7387405.67,7967638.30,5647825.33,10416009.03,5008471.43,4981968.80,7654224.13], // NCMC
-      [2930234.20,6108608.17,7391777.43,8704753.23,8272590.83,9679020.80,6969523.87,8017628.13,8899305.50,6555693.97,7214962.67,9541109.40], // CMM
-      [5009467.27,3264745.60,3542691.70,3879662.63,3501869.67,3499267.07,4302372.97,3423456.57,3504767.43,3497940.47,3220721.53,4051357.87], // NMM
-      [7234635.93,6312085.27,5773173.97,7312363.03,6233734.50,7274468.83,6496167.73,5528993.60,6698727.10,6273345.43,5928348.80,7397304.03], // WMC
-      [6339754.30,3996998.33,3486240.37,5790837.13,4194080.67,5431951.90,4566993.83,3316249.03,4455129.83,3264997.33,3396422.50,4365371.97]  // ZPM
+      [8423978.37, 5890144.37, 6749753.63, 8640243.73, 5713093.73, 7387405.67, 7967638.30, 5647825.33, 10416009.03, 5008471.43, 4981968.80, 7654224.13], // NCMC
+      [2930234.20, 6108608.17, 7391777.43, 8704753.23, 8272590.83, 9679020.80, 6969523.87, 8017628.13, 8899305.50, 6555693.97, 7214962.67, 9541109.40], // CMM
+      [5009467.27, 3264745.60, 3542691.70, 3879662.63, 3501869.67, 3499267.07, 4302372.97, 3423456.57, 3504767.43, 3497940.47, 3220721.53, 4051357.87], // NMM
+      [7234635.93, 6312085.27, 5773173.97, 7312363.03, 6233734.50, 7274468.83, 6496167.73, 5528993.60, 6698727.10, 6273345.43, 5928348.80, 7397304.03], // WMC
+      [6339754.30, 3996998.33, 3486240.37, 5790837.13, 4194080.67, 5431951.90, 4566993.83, 3316249.03, 4455129.83, 3264997.33, 3396422.50, 4365371.97]  // ZPM
     ];
 
     // ---- Month filter ----
@@ -401,37 +388,6 @@
 
     function resizeAllCharts() {
       [overviewChart, lineChart, pieChart].forEach(c => { if (c) c.resize(); });
-    }
-
-    function toggleFooterNav() {
-      const wrap = document.getElementById('footerNavWrap');
-      const btn = document.getElementById('hamburgerBtn');
-      const isHidden = wrap.classList.contains('hidden');
-      const items = wrap.querySelectorAll('.btn-home, .footer-divider, .btn-page');
-      if (isHidden) {
-        wrap.classList.remove('hidden');
-        btn.classList.remove('active');
-        items.forEach((el, i) => {
-          el.style.opacity = '0';
-          el.style.transform = 'translateX(-20px)';
-          setTimeout(() => {
-            el.style.transition = 'opacity 0.25s ease, transform 0.25s ease';
-            el.style.opacity = '1';
-            el.style.transform = 'translateX(0)';
-          }, i * 80);
-        });
-      } else {
-        btn.classList.add('active');
-        const reversed = Array.from(items).reverse();
-        reversed.forEach((el, i) => {
-          setTimeout(() => {
-            el.style.transition = 'opacity 0.2s ease, transform 0.2s ease';
-            el.style.opacity = '0';
-            el.style.transform = 'translateX(-20px)';
-          }, i * 60);
-        });
-        setTimeout(() => wrap.classList.add('hidden'), reversed.length * 60 + 200);
-      }
     }
 
     const fmt = v => v != null ? '₱' + v.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}) : '-';

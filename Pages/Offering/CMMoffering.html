@@ -7,6 +7,7 @@
   <link rel="stylesheet" href="../../Styles/Offering/CMMoffering.css" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Montserrat:wght@700;800;900&display=swap" rel="stylesheet"/>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="../../Script/utils.js"></script>
 </head>
 <body>
 
@@ -14,7 +15,7 @@
     <div class="logo-area" onclick="location.href='../../index.html'" style="cursor:pointer;">
       <img src="../../Assets/logo.png" alt="Logo" class="logo-img"/>
       <div class="org-name">
-        <strong>Southwestern Philippine</strong> Union Conference
+        <strong>Southwestern Philippines</strong> Union Conference
       </div>
     </div>
     <button class="btn-back" onclick="location.href='../Offering.html'">&#8592; Back</button>
@@ -95,139 +96,12 @@
   </footer>
 
   <script>
-    const VISIBLE_MONTHS = 4;
-    const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-    const data2025 = [2930234.20, 6108608.17, 7391777.43, 8704753.23, 8272590.83, 9679020.80, 6969523.87, 8017628.13, 8899305.50, 6555693.97, 7214962.67, 9541109.40];
-    const data2026 = [187511.00, 11376208.60, 6481870.30, null, null, null, null, null, null, null, null, null];
-    const dataTarget = [4000000, 7000000, 8000000, 9000000, 8500000, 10000000, 7500000, 8500000, 9000000, 7000000, 7500000, 10000000];
-
-    const canvas = document.getElementById('cmmOfferingChart');
-    const containerWidth = canvas.parentElement.clientWidth;
-    const containerHeight = canvas.parentElement.clientHeight;
-    const barWidth = containerWidth / VISIBLE_MONTHS;
-    canvas.style.width = (barWidth * months.length) + 'px';
-    canvas.style.minWidth = (barWidth * months.length) + 'px';
-    canvas.style.height = containerHeight + 'px';
-
-    const datasets = [
-      { label: '2025', data: data2025, backgroundColor: '#1a237e', borderRadius: 5 },
-      { label: '2026', data: data2026, backgroundColor: '#f5a623', borderRadius: 5 },
-      { label: 'Budget', data: dataTarget, backgroundColor: '#ef4444', borderRadius: 5 }
-    ];
-
-    const chart = new Chart(canvas.getContext('2d'), {
-      type: 'bar',
-      data: { labels: months, datasets },
-      options: {
-        responsive: false,
-        maintainAspectRatio: false,
-        plugins: {
-          legend: { display: false },
-          tooltip: { callbacks: { label: ctx => ` ${ctx.dataset.label}: ₱${ctx.parsed.y.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}` } }
-        },
-        scales: {
-          y: { beginAtZero: true, ticks: { callback: v => v >= 1000000 ? '₱' + (v / 1000000).toFixed(1) + 'M' : v >= 1000 ? '₱' + (v / 1000).toFixed(1) + 'K' : '₱' + v, font: { weight: '600', size: 11 }, color: '#ffffff' }, grid: { color: 'rgba(255,255,255,0.5)', lineWidth: 2 } },
-          x: { grid: { display: false }, ticks: { font: { weight: '600', size: 11 }, color: '#ffffff' } }
-        }
-      }
+    initMissionPage({
+      canvasId: 'cmmOfferingChart',
+      data2025:   [2930234.20, 6108608.17, 7391777.43, 8704753.23, 8272590.83, 9679020.80, 6969523.87, 8017628.13, 8899305.50, 6555693.97, 7214962.67, 9541109.40],
+      data2026:   [187511.00, 11376208.60, 6481870.30, null, null, null, null, null, null, null, null, null],
+      dataTarget: [4000000, 7000000, 8000000, 9000000, 8500000, 10000000, 7500000, 8500000, 9000000, 7000000, 7500000, 10000000]
     });
-
-    const legendEl = document.getElementById('chartLegend');
-    datasets.forEach((ds, i) => {
-      const item = document.createElement('div');
-      item.className = 'legend-item';
-      item.innerHTML = `<span class="legend-dot" style="background:${ds.backgroundColor}"></span><span class="legend-label">${ds.label}</span>`;
-      item.addEventListener('click', () => {
-        const meta = chart.getDatasetMeta(i);
-        meta.hidden = !meta.hidden;
-        item.classList.toggle('legend-hidden');
-        chart.update();
-      });
-      legendEl.appendChild(item);
-    });
-
-    const fmt = v => v != null ? '₱' + v.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}) : '-';
-    const t2025 = data2025.reduce((a,b) => a+(b||0),0);
-    const t2026 = data2026.reduce((a,b) => a+(b||0),0);
-    const tBudget = dataTarget.reduce((a,b) => a+(b||0),0);
-    document.getElementById('excelBody').innerHTML = months.map((m,i) =>
-      `<tr><td class="month-cell">${m}</td><td class="cell-2025">${fmt(data2025[i])}</td><td class="cell-2026">${fmt(data2026[i])}</td><td class="cell-budget">${fmt(dataTarget[i])}</td></tr>`
-    ).join('') + `<tr class="total-row"><td class="month-cell">Total</td><td class="total-cell">${fmt(t2025)}</td><td class="total-cell">${fmt(t2026)}</td><td class="total-cell">${fmt(tBudget)}</td></tr>`;
-
-    function updateSideClock() {
-      const now = new Date();
-      const date = now.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-      let hours = now.getHours();
-      const ampm = hours >= 12 ? 'PM' : 'AM';
-      hours = hours % 12 || 12;
-      const hh = String(hours).padStart(2, '0');
-      const mm = String(now.getMinutes()).padStart(2, '0');
-      const ss = String(now.getSeconds()).padStart(2, '0');
-      document.getElementById('sideClock').innerHTML = `
-        <div class="side-clock-time">${hh}:${mm}:${ss} <span class="side-clock-ampm">${ampm}</span></div>
-        <div class="side-clock-date">${date}</div>
-      `;
-    }
-    updateSideClock();
-    setInterval(updateSideClock, 1000);
-
-    let overviewChart = null;
-    let lineChart = null;
-
-    let activeFrom = 0, activeTo = 11;
-    function toggleMonthDropdown() { document.getElementById('monthFilterDropdown').classList.toggle('hidden'); }
-    function applyMonthFilter() {
-      const from = parseInt(document.getElementById('fromMonth').value);
-      const to   = parseInt(document.getElementById('toMonth').value);
-      if (from > to) { alert('"From" month cannot be after "To" month.'); return; }
-      activeFrom = from; activeTo = to;
-      document.getElementById('monthFilterDropdown').classList.add('hidden');
-      const pill = document.getElementById('filterActivePill');
-      if (from === 0 && to === 11) { pill.classList.add('hidden'); }
-      else { pill.textContent = months[from] + (from === to ? '' : ' – ' + months[to]); pill.classList.remove('hidden'); }
-      if (overviewChart) { overviewChart.data.labels = months.slice(from,to+1); overviewChart.data.datasets[0].data = data2025.slice(from,to+1); overviewChart.data.datasets[1].data = data2026.slice(from,to+1); overviewChart.data.datasets[2].data = dataTarget.slice(from,to+1); overviewChart.update('active'); }
-      if (lineChart) { lineChart.data.labels = months.slice(from,to+1); lineChart.data.datasets[0].data = data2025.slice(from,to+1); lineChart.data.datasets[1].data = data2026.slice(from,to+1); lineChart.data.datasets[2].data = dataTarget.slice(from,to+1); lineChart.update('active'); }
-    }
-    function resetMonthFilter() { document.getElementById('fromMonth').value='0'; document.getElementById('toMonth').value='11'; applyMonthFilter(); }
-
-    function toggleMain() {
-      const mainCard = document.getElementById('mainChartCard');
-      const overviewCard = document.getElementById('overviewCard');
-      const isOverview = !overviewCard.classList.contains('hidden');
-      if (isOverview) {
-        overviewCard.style.animation = 'fadeSlideOut 0.3s ease forwards';
-        setTimeout(() => { overviewCard.classList.add('hidden'); overviewCard.style.animation = ''; mainCard.classList.remove('hidden'); mainCard.style.animation = 'fadeSlideIn 0.4s ease forwards'; setTimeout(() => mainCard.style.animation = '', 400); }, 300);
-      } else {
-        mainCard.style.animation = 'fadeSlideOut 0.3s ease forwards';
-        setTimeout(() => {
-          mainCard.classList.add('hidden'); mainCard.style.animation = '';
-          overviewCard.classList.remove('hidden'); overviewCard.style.animation = 'fadeSlideIn 0.4s ease forwards';
-          setTimeout(() => overviewCard.style.animation = '', 400);
-          if (!overviewChart) {
-            overviewChart = new Chart(document.getElementById('overviewChart').getContext('2d'), { type:'bar', data:{ labels:months.slice(activeFrom,activeTo+1), datasets:[{label:'2025',data:data2025.slice(activeFrom,activeTo+1),backgroundColor:'#1a237e',borderRadius:5},{label:'2026',data:data2026.slice(activeFrom,activeTo+1),backgroundColor:'#f5a623',borderRadius:5},{label:'Budget',data:dataTarget.slice(activeFrom,activeTo+1),backgroundColor:'#ef4444',borderRadius:5}]}, options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true,position:'top',labels:{color:'#fff',font:{weight:'700',size:11}}},tooltip:{callbacks:{label:ctx=>` ${ctx.dataset.label}: ₱${ctx.parsed.y.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})}`}}},scales:{y:{beginAtZero:true,ticks:{callback:v=>v>=1000000?'₱'+(v/1000000).toFixed(1)+'M':'₱'+v,font:{weight:'700',size:11},color:'#fff'},grid:{color:'rgba(255,255,255,0.3)'}},x:{grid:{display:false},ticks:{font:{weight:'700',size:11},color:'#fff'}}}} });
-          }
-          if (!lineChart) {
-            lineChart = new Chart(document.getElementById('lineChart').getContext('2d'), { type:'line', data:{ labels:months.slice(activeFrom,activeTo+1), datasets:[{label:'2025',data:data2025.slice(activeFrom,activeTo+1),borderColor:'#4f7cff',backgroundColor:'rgba(79,124,255,0.15)',pointBackgroundColor:'#4f7cff',tension:0.4,fill:true,pointRadius:4},{label:'2026',data:data2026.slice(activeFrom,activeTo+1),borderColor:'#f5a623',backgroundColor:'rgba(245,166,35,0.15)',pointBackgroundColor:'#f5a623',tension:0.4,fill:true,pointRadius:4},{label:'Budget',data:dataTarget.slice(activeFrom,activeTo+1),borderColor:'#ef4444',backgroundColor:'rgba(239,68,68,0.1)',pointBackgroundColor:'#ef4444',tension:0.4,fill:false,borderDash:[6,3],pointRadius:4}]}, options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true,position:'top',labels:{color:'#fff',font:{weight:'700',size:11}}},tooltip:{callbacks:{label:ctx=>` ${ctx.dataset.label}: ₱${ctx.parsed.y.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})}`}}},scales:{y:{beginAtZero:true,ticks:{callback:v=>v>=1000000?'₱'+(v/1000000).toFixed(1)+'M':'₱'+v,font:{weight:'700',size:11},color:'#fff'},grid:{color:'rgba(255,255,255,0.3)'}},x:{grid:{color:'rgba(255,255,255,0.1)'},ticks:{font:{weight:'700',size:11},color:'#fff'}}}} });
-          }
-        }, 300);
-      }
-    }
-
-    let expandedWrap = null;
-    function expandChart(wrapId) {
-      if (expandedWrap === wrapId) { collapseChart(); return; }
-      expandedWrap = wrapId;
-      document.querySelectorAll('.overview-chart-wrap').forEach(w => {
-        if (w.id === wrapId) { w.classList.add('chart-expanded'); w.classList.remove('chart-shrunk'); w.querySelector('.chart-close-btn').classList.add('visible'); }
-        else { w.classList.add('chart-shrunk'); w.classList.remove('chart-expanded'); w.querySelector('.chart-close-btn').classList.remove('visible'); }
-      });
-      setTimeout(() => [overviewChart, lineChart].forEach(c => c && c.resize()), 380);
-    }
-    function collapseChart() {
-      expandedWrap = null;
-      document.querySelectorAll('.overview-chart-wrap').forEach(w => { w.classList.remove('chart-expanded','chart-shrunk'); w.querySelector('.chart-close-btn').classList.remove('visible'); });
-      setTimeout(() => [overviewChart, lineChart].forEach(c => c && c.resize()), 380);
-    }
   </script>
 </body>
 </html>

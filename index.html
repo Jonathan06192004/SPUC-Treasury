@@ -32,15 +32,15 @@
 
         <div class="currency-top">
           <div class="currency-select" id="fromBox" onclick="openDropdown('from')">
-            <img id="fromFlag" src="https://flagcdn.com/w20/ph.png"/>
-            <span id="fromCode">PHP</span>
+            <img id="fromFlag" src="https://flagcdn.com/w20/us.png"/>
+            <span id="fromCode">USD</span>
           </div>
 
           <div class="currency-swap" onclick="swapCurrencies()">⇄</div>
 
           <div class="currency-select" id="toBox" onclick="openDropdown('to')">
-            <img id="toFlag" src="https://flagcdn.com/w20/us.png"/>
-            <span id="toCode">USD</span>
+            <img id="toFlag" src="https://flagcdn.com/w20/ph.png"/>
+            <span id="toCode">PHP</span>
           </div>
         </div>
 
@@ -140,7 +140,7 @@ const CURRENCIES = [
   { code: 'ZAR', name: 'South African Rand',    flag: 'za' },
   { code: 'BRL', name: 'Brazilian Real',        flag: 'br' },
   { code: 'MXN', name: 'Mexican Peso',          flag: 'mx' },
-  { code: 'ARG', name: 'Argentine Peso',        flag: 'ar' },
+  { code: 'ARS', name: 'Argentine Peso',        flag: 'ar' },
   { code: 'CLP', name: 'Chilean Peso',          flag: 'cl' },
   { code: 'COP', name: 'Colombian Peso',        flag: 'co' },
   { code: 'PEN', name: 'Peruvian Sol',          flag: 'pe' },
@@ -167,8 +167,8 @@ const CURRENCIES = [
 ];
 
 let activeTarget = null;
-let fromCurrency = CURRENCIES.find(c => c.code === 'PHP');
-let toCurrency   = CURRENCIES.find(c => c.code === 'USD');
+let fromCurrency = CURRENCIES.find(c => c.code === 'USD');
+let toCurrency   = CURRENCIES.find(c => c.code === 'PHP');
 
 function renderDropdown(filter = '') {
   const list = document.getElementById('currencyList');
@@ -232,7 +232,7 @@ function fetchRate() {
   fetch(`https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/${fromCurrency.code.toLowerCase()}.json`)
     .then(r => r.json())
     .then(data => {
-      const rate = data[fromCurrency.code.toLowerCase()][toCurrency.code.toLowerCase()];
+      const rate = data[fromCurrency.code.toLowerCase()]?.[toCurrency.code.toLowerCase()];
       if (rate === undefined) {
         rateText.innerHTML = '<strong>Rate unavailable</strong>';
       } else {

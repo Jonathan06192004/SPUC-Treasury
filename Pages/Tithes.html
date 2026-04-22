@@ -8,6 +8,7 @@
   <link rel="stylesheet" href="../Styles/Tithes.css" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Cinzel:wght@700;900&family=Montserrat:wght@700;800;900&display=swap" rel="stylesheet"/>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="../Script/utils.js"></script>
 </head>
 <body>
 
@@ -15,7 +16,7 @@
     <div class="logo-area" onclick="location.href='../index.html'" style="cursor:pointer;">
       <img src="../Assets/logo.png" alt="Logo" class="logo-img"/>
       <div class="org-name">
-        <strong>Southwestern Philippine</strong> Union Conference
+        <strong>Southwestern Philippines</strong> Union Conference
       </div>
     </div>
   </header>
@@ -23,7 +24,7 @@
   <main>
     <div class="title-row">
       <div class="title-left"></div>
-      <p class="page-subtitle">Southwestern Philippine Union Conference</p>
+      <p class="page-subtitle">Southwestern Philippines Union Conference</p>
       <h1 class="page-title"><img src="../Assets/Tithes.png" alt="Tithes" class="page-title-img"/></h1>
     </div>
 
@@ -251,32 +252,8 @@
       }
     }
 
-    function updateSideClock() {
-      const now = new Date();
-      const date = now.toLocaleDateString('en-US', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
-      let hours = now.getHours(); const ampm = hours >= 12 ? 'PM' : 'AM';
-      hours = hours % 12 || 12;
-      const hh = String(hours).padStart(2,'0'), mm = String(now.getMinutes()).padStart(2,'0'), ss = String(now.getSeconds()).padStart(2,'0');
-      document.getElementById('sideClock').innerHTML = `<div class="side-clock-time">${hh}:${mm}:${ss} <span class="side-clock-ampm">${ampm}</span></div><div class="side-clock-date">${date}</div>`;
-    }
     updateSideClock();
     setInterval(updateSideClock, 1000);
-
-    function toggleFooterNav() {
-      const wrap = document.getElementById('footerNavWrap');
-      const btn = document.getElementById('hamburgerBtn');
-      const isHidden = wrap.classList.contains('hidden');
-      const items = wrap.querySelectorAll('.btn-home, .footer-divider, .btn-page');
-      if (isHidden) {
-        wrap.classList.remove('hidden'); btn.classList.remove('active');
-        items.forEach((el,i) => { el.style.opacity='0'; el.style.transform='translateX(-20px)'; setTimeout(()=>{ el.style.transition='opacity 0.25s ease, transform 0.25s ease'; el.style.opacity='1'; el.style.transform='translateX(0)'; },i*80); });
-      } else {
-        btn.classList.add('active');
-        const reversed = Array.from(items).reverse();
-        reversed.forEach((el,i) => { setTimeout(()=>{ el.style.transition='opacity 0.2s ease, transform 0.2s ease'; el.style.opacity='0'; el.style.transform='translateX(-20px)'; },i*60); });
-        setTimeout(()=>wrap.classList.add('hidden'), reversed.length*60+200);
-      }
-    }
 
     let expandedWrap = null;
     function expandChart(wrapId) {
