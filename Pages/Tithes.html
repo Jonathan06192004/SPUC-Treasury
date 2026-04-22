@@ -8,6 +8,7 @@
   <link rel="stylesheet" href="../Styles/Tithes.css" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Cinzel:wght@700;900&family=Montserrat:wght@700;800;900&display=swap" rel="stylesheet"/>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
   <script src="../Script/utils.js"></script>
 </head>
 <body>
@@ -85,16 +86,16 @@
         <button class="btn-toggle-back" onclick="toggleMain()">&#9650; BACK TO DETAIL VIEW</button>
       </div>
       <div class="overview-charts-row" id="overviewChartsRow">
-        <div class="overview-chart-wrap" id="wrap-bar" onclick="expandChart('wrap-bar')">
-          <button class="chart-close-btn" id="close-bar" onclick="event.stopPropagation(); collapseChart()">&#10005;</button>
+        <div class="overview-chart-wrap" id="wrap-bar">
+          <button class="chart-close-btn" id="close-bar" onclick="collapseChart()">&#10005;</button>
           <canvas id="overviewChart"></canvas>
         </div>
-        <div class="overview-chart-wrap" id="wrap-pie" onclick="expandChart('wrap-pie')">
-          <button class="chart-close-btn" id="close-pie" onclick="event.stopPropagation(); collapseChart()">&#10005;</button>
+        <div class="overview-chart-wrap" id="wrap-pie">
+          <button class="chart-close-btn" id="close-pie" onclick="collapseChart()">&#10005;</button>
           <canvas id="pieChart"></canvas>
         </div>
-        <div class="overview-chart-wrap" id="wrap-line" onclick="expandChart('wrap-line')">
-          <button class="chart-close-btn" id="close-line" onclick="event.stopPropagation(); collapseChart()">&#10005;</button>
+        <div class="overview-chart-wrap" id="wrap-line">
+          <button class="chart-close-btn" id="close-line" onclick="collapseChart()">&#10005;</button>
           <canvas id="lineChart"></canvas>
         </div>
       </div>
@@ -152,7 +153,7 @@
     const datasets = [
       { label: '2025', data: [69617914.36, 61596239.55, 65948798.45, 79607269.42, 67373242.37, 81624204.69, 74988549.33, 64439238.42, 81572737.88, 63549232.84, 68980414.58, 90367744.52], backgroundColor: '#0a1e6e', borderRadius: 4 },
       { label: '2026', data: [61301229.98, 82826503.21, 68784584.11, null, null, null, null, null, null, null, null, null], backgroundColor: '#f59e0b', borderRadius: 4 },
-      { label: 'Budget', data: [75000000, 70000000, 72000000, 80000000, 75000000, 82000000, 78000000, 72000000, 80000000, 70000000, 75000000, 88000000], backgroundColor: '#ef4444', borderRadius: 4 }
+      { label: 'Budget', data: [75000000, 70000000, 72000000, 80000000, 75000000, 82000000, 78000000, 72000000, 80000000, 70000000, 75000000, 88000000], backgroundColor: '#6d43ea', borderRadius: 4 }
     ];
 
     // Per-mission 2025 data (from screenshot)
@@ -205,6 +206,7 @@
     });
 
     let overviewChart = null, lineChart = null, pieChart = null;
+    let resetPieExplode = () => {};
     let activeFrom = 0, activeTo = 11;
 
     function toggleMonthDropdown() { document.getElementById('monthFilterDropdown').classList.toggle('hidden'); }
@@ -221,7 +223,11 @@
       const sl = labels.slice(from, to+1);
       if (overviewChart) { overviewChart.data.labels=sl; overviewChart.data.datasets[0].data=datasets[0].data.slice(from,to+1); overviewChart.data.datasets[1].data=datasets[1].data.slice(from,to+1); overviewChart.data.datasets[2].data=datasets[2].data.slice(from,to+1); overviewChart.update('active'); }
       if (lineChart) { lineChart.data.labels=sl; lineChart.data.datasets[0].data=datasets[0].data.slice(from,to+1); lineChart.data.datasets[1].data=datasets[1].data.slice(from,to+1); lineChart.data.datasets[2].data=datasets[2].data.slice(from,to+1); lineChart.update('active'); }
-      if (pieChart) { pieChart.data.datasets[0].data=missionData.map(m=>m.slice(from,to+1).reduce((a,b)=>a+b,0)); pieChart.update('active'); }
+      if (pieChart) {
+        pieChart.data.datasets[0].data = missionData.map(m => m.slice(from,to+1).reduce((a,b)=>a+b,0));
+        resetPieExplode(false);
+        pieChart.update('active');
+      }
     }
 
     function resetMonthFilter() { document.getElementById('fromMonth').value='0'; document.getElementById('toMonth').value='11'; applyMonthFilter(); }
@@ -240,13 +246,238 @@
           overviewCard.classList.remove('hidden'); overviewCard.style.animation='fadeSlideIn 0.4s ease forwards';
           setTimeout(()=>overviewCard.style.animation='',400);
           if (!overviewChart) {
-            overviewChart = new Chart(document.getElementById('overviewChart').getContext('2d'), { type:'bar', data:{ labels, datasets:[{label:'2025',data:datasets[0].data,backgroundColor:'#0a1e6e',borderRadius:4},{label:'2026',data:datasets[1].data,backgroundColor:'#f59e0b',borderRadius:4},{label:'Budget',data:datasets[2].data,backgroundColor:'#ef4444',borderRadius:4}]}, options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true,position:'top',labels:{color:'#fff',font:{weight:'700',size:11}}},tooltip:{callbacks:{label:ctx=>` ${ctx.dataset.label}: ₱${ctx.parsed.y.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})}`}}},scales:{y:{beginAtZero:true,ticks:{callback:v=>v>=1000000?'₱'+(v/1000000).toFixed(1)+'M':'₱'+v,font:{weight:'700',size:11},color:'#fff'},grid:{color:'rgba(255,255,255,0.3)'}},x:{grid:{display:false},ticks:{font:{weight:'700',size:11},color:'#fff'}}}} });
+            overviewChart = new Chart(document.getElementById('overviewChart').getContext('2d'), { type:'bar', data:{ labels, datasets:[{label:'2025',data:datasets[0].data,backgroundColor:'#0a1e6e',borderRadius:4},{label:'2026',data:datasets[1].data,backgroundColor:'#f59e0b',borderRadius:4},{label:'Budget',data:datasets[2].data,backgroundColor:'#6d43ea',borderRadius:4}]}, options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true,position:'top',labels:{color:'#fff',font:{weight:'700',size:11}}},tooltip:{callbacks:{label:ctx=>` ${ctx.dataset.label}: ₱${ctx.parsed.y.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})}`}}},scales:{y:{beginAtZero:true,ticks:{callback:v=>v>=1000000?'₱'+(v/1000000).toFixed(1)+'M':'₱'+v,font:{weight:'700',size:11},color:'#fff'},grid:{color:'rgba(255,255,255,0.3)'}},x:{grid:{display:false},ticks:{font:{weight:'700',size:11},color:'#fff'}}}} });
           }
           if (!lineChart) {
-            lineChart = new Chart(document.getElementById('lineChart').getContext('2d'), { type:'line', data:{ labels, datasets:[{label:'2025',data:datasets[0].data,borderColor:'#4f7cff',backgroundColor:'rgba(79,124,255,0.15)',pointBackgroundColor:'#4f7cff',tension:0.4,fill:true,pointRadius:4},{label:'2026',data:datasets[1].data,borderColor:'#f59e0b',backgroundColor:'rgba(245,158,11,0.15)',pointBackgroundColor:'#f59e0b',tension:0.4,fill:true,pointRadius:4},{label:'Budget',data:datasets[2].data,borderColor:'#ef4444',backgroundColor:'rgba(239,68,68,0.1)',pointBackgroundColor:'#ef4444',tension:0.4,fill:false,borderDash:[6,3],pointRadius:4}]}, options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true,position:'top',labels:{color:'#fff',font:{weight:'700',size:11}}},tooltip:{callbacks:{label:ctx=>` ${ctx.dataset.label}: ₱${ctx.parsed.y.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})}`}}},scales:{y:{beginAtZero:true,ticks:{callback:v=>v>=1000000?'₱'+(v/1000000).toFixed(1)+'M':'₱'+v,font:{weight:'700',size:11},color:'#fff'},grid:{color:'rgba(255,255,255,0.3)'}},x:{grid:{color:'rgba(255,255,255,0.1)'},ticks:{font:{weight:'700',size:11},color:'#fff'}}}} });
+            lineChart = new Chart(document.getElementById('lineChart').getContext('2d'), { type:'line', data:{ labels, datasets:[{label:'2025',data:datasets[0].data,borderColor:'#4f7cff',backgroundColor:'rgba(79,124,255,0.15)',pointBackgroundColor:'#4f7cff',tension:0.4,fill:true,pointRadius:4},{label:'2026',data:datasets[1].data,borderColor:'#f59e0b',backgroundColor:'rgba(245,158,11,0.15)',pointBackgroundColor:'#f59e0b',tension:0.4,fill:true,pointRadius:4},{label:'Budget',data:datasets[2].data,borderColor:'#6d43ea',backgroundColor:'rgba(109,67,234,0.18)',pointBackgroundColor:'#6d43ea',tension:0.4,fill:false,borderDash:[6,3],pointRadius:4}]}, options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true,position:'top',labels:{color:'#fff',font:{weight:'700',size:11}}},tooltip:{callbacks:{label:ctx=>` ${ctx.dataset.label}: ₱${ctx.parsed.y.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})}`}}},scales:{y:{beginAtZero:true,ticks:{callback:v=>v>=1000000?'₱'+(v/1000000).toFixed(1)+'M':'₱'+v,font:{weight:'700',size:11},color:'#fff'},grid:{color:'rgba(255,255,255,0.3)'}},x:{grid:{color:'rgba(255,255,255,0.1)'},ticks:{font:{weight:'700',size:11},color:'#fff'}}}} });
           }
           if (!pieChart) {
-            pieChart = new Chart(document.getElementById('pieChart').getContext('2d'), { type:'doughnut', data:{ labels:['NCMC','CMM','NMM','WMC','ZPM'], datasets:[{data:missionData.map(m=>m.slice(activeFrom,activeTo+1).reduce((a,b)=>a+b,0)),backgroundColor:['#1a3a8f','#f5a623','#22c55e','#a855f7','#ef4444'],borderColor:'rgba(255,255,255,0.25)',borderWidth:2,hoverOffset:10}]}, options:{responsive:true,maintainAspectRatio:false,cutout:'52%',plugins:{legend:{display:true,position:'bottom',labels:{color:'#fff',font:{weight:'700',size:10},padding:8,boxWidth:12}},tooltip:{callbacks:{label:ctx=>` ${ctx.label}: ₱${ctx.parsed.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})}`}}}} });
+            const pieCanvas = document.getElementById('pieChart');
+            const wrap = document.getElementById('wrap-pie');
+            const colors = ['#1a3a8f','#f5a623','#22c55e','#a855f7','#ef4444'];
+            const missionLabels = ['NCMC','CMM','NMM','WMC','ZPM'];
+            let explodeProgress = 0; // progress 0..1 for detached arc view
+            let pieIsExploded = false;
+            let rafId = null;
+
+            function easeOutBack(t) {
+              return 1 + 2.70158 * Math.pow(t-1,3) + 1.70158 * Math.pow(t-1,2);
+            }
+
+            // Custom plugin: draws detached mission arcs with connectors
+            const explodePlugin = {
+              id: 'explodeDetachedArcs',
+              afterDraw(chart) {
+                const meta = chart.getDatasetMeta(0);
+                if (!meta.data.length) return;
+                if (explodeProgress <= 0.01) return;
+                const ctx2 = chart.ctx;
+                const area = chart.chartArea || { left: 0, top: 0, right: chart.width, bottom: chart.height };
+                const cx = (area.left + area.right) / 2;
+                const cy = (area.top + area.bottom) / 2;
+                const outerR = meta.data[0].outerRadius;
+                const innerR = meta.data[0].innerRadius;
+                const total = chart.data.datasets[0].data.reduce((a,b)=>a+b,0) || 1;
+                const p = explodeProgress;
+                const viewW = area.right - area.left;
+                const viewH = area.bottom - area.top;
+                const viewSize = Math.min(viewW, viewH);
+                const panelPad = 10;
+                const minX = area.left + panelPad;
+                const maxX = area.right - panelPad;
+                const minY = area.top + panelPad;
+                const maxY = area.bottom - panelPad;
+                const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
+
+                // Keep detached parts compact so everything fits inside panel.
+                const detachedThickness = Math.max((outerR - innerR) * (1.05 + 0.12 * p), viewSize * 0.10);
+                const detachedOuter = outerR + 6 + (viewSize * 0.03) * p;
+                const detachedInner = Math.max(8, detachedOuter - detachedThickness);
+                const orbit = outerR + 16 + (viewSize * 0.09) * p;
+
+                const drawArrowHead = (x, y, ang, color, alpha) => {
+                  const len = 8;
+                  const wing = 4;
+                  ctx2.save();
+                  ctx2.globalAlpha = alpha;
+                  ctx2.strokeStyle = color;
+                  ctx2.lineWidth = 2;
+                  ctx2.beginPath();
+                  ctx2.moveTo(x, y);
+                  ctx2.lineTo(x - Math.cos(ang - 0.35) * len, y - Math.sin(ang - 0.35) * len);
+                  ctx2.moveTo(x, y);
+                  ctx2.lineTo(x - Math.cos(ang + 0.35) * len, y - Math.sin(ang + 0.35) * len);
+                  ctx2.stroke();
+                  ctx2.restore();
+                };
+
+                missionLabels.forEach((label, i) => {
+                  const arc = meta.data[i];
+                  const midAngle = (arc.startAngle + arc.endAngle) / 2;
+                  const angleShift = (label === 'NMM') ? 0.42 : 0;
+                  const drawStart = arc.startAngle + angleShift;
+                  const drawEnd = arc.endAngle + angleShift;
+                  const drawMid = midAngle + angleShift;
+                  const ease = easeOutBack(Math.min(p, 1));
+                  const alpha = Math.min(1, 0.15 + p * 0.95);
+
+                  ctx2.save();
+                  ctx2.globalAlpha = alpha;
+
+                  // Detached arc center
+                  const proposedX = cx + Math.cos(drawMid) * orbit * ease;
+                  const proposedY = cy + Math.sin(drawMid) * orbit * ease;
+
+                  // Pin side placement based on requested grouping:
+                  // Right: NCMC, CMM | Left: NMM, WMC, ZPM
+                  const rightSide = (label === 'NCMC' || label === 'CMM');
+                  const edgeTargetX = rightSide
+                    ? (maxX - detachedOuter - 8)
+                    : (minX + detachedOuter + 8);
+                  const sideBlend = 0.82; // keep slight natural angle while pushing near edge
+                  const sideX = proposedX * (1 - sideBlend) + edgeTargetX * sideBlend;
+                  const zpmRightNudge = (label === 'ZPM') ? 14 : 0;
+                  const nmmRightNudge = (label === 'NMM') ? 120 : 0;
+                  const dcx = clamp(sideX + zpmRightNudge + nmmRightNudge, minX + detachedOuter, maxX - detachedOuter);
+                  const dcy = clamp(proposedY, minY + detachedOuter, maxY - detachedOuter);
+
+                  // Detached arc
+                  ctx2.fillStyle = colors[i];
+                  ctx2.beginPath();
+                  ctx2.arc(dcx, dcy, detachedOuter, drawStart, drawEnd);
+                  ctx2.arc(dcx, dcy, detachedInner, drawEnd, drawStart, true);
+                  ctx2.closePath();
+                  ctx2.fill();
+
+                  // Connector line (curved + arrow)
+                  const sx = cx + Math.cos(midAngle) * (outerR + 2);
+                  const sy = cy + Math.sin(midAngle) * (outerR + 2);
+                  const ex = dcx + Math.cos(drawMid) * (detachedInner - 3);
+                  const ey = dcy + Math.sin(drawMid) * (detachedInner - 3);
+                  const nx = -Math.sin(drawMid);
+                  const ny = Math.cos(drawMid);
+                  const bend = (i % 2 === 0 ? -1 : 1) * (10 + 10 * p);
+                  const cpx = (sx + ex) * 0.5 + nx * bend;
+                  const cpy = (sy + ey) * 0.5 + ny * bend;
+
+                  ctx2.strokeStyle = 'rgba(255,255,255,0.88)';
+                  ctx2.lineWidth = 2.2;
+                  ctx2.lineCap = 'round';
+                  ctx2.beginPath();
+                  ctx2.moveTo(sx, sy);
+                  ctx2.quadraticCurveTo(cpx, cpy, ex, ey);
+                  ctx2.stroke();
+
+                  const headAngle = Math.atan2(ey - cpy, ex - cpx);
+                  drawArrowHead(ex, ey, headAngle, 'rgba(255,255,255,0.88)', alpha);
+
+                  // Label inside detached arc
+                  if (p > 0.22) {
+                    const value = chart.data.datasets[0].data[i];
+                    const pct = ((value / total) * 100).toFixed(1) + '%';
+                    const money = '₱' + (value / 1000000).toFixed(1) + 'M';
+                    const labelR = detachedInner + (detachedOuter - detachedInner) * 0.56;
+                    const tx = dcx + Math.cos(drawMid) * labelR;
+                    const ty = dcy + Math.sin(drawMid) * labelR;
+
+                    ctx2.fillStyle = '#111827';
+                    ctx2.textAlign = 'center';
+                    ctx2.textBaseline = 'middle';
+                    ctx2.font = `800 ${Math.max(12, Math.round(11 + 4 * p))}px Montserrat,sans-serif`;
+                    ctx2.fillText(label, tx, ty - 16);
+                    ctx2.font = `800 ${Math.max(11, Math.round(10 + 3 * p))}px Montserrat,sans-serif`;
+                    ctx2.fillText(pct, tx, ty + 2);
+                    ctx2.font = `800 ${Math.max(11, Math.round(10 + 3 * p))}px Montserrat,sans-serif`;
+                    ctx2.fillText(money, tx, ty + 19);
+                    ctx2.shadowBlur = 0;
+                  }
+                  ctx2.restore();
+                })
+              }
+            };
+
+            pieChart = new Chart(pieCanvas.getContext('2d'), {
+              type: 'doughnut',
+              plugins: [ChartDataLabels, explodePlugin],
+              data: {
+                labels: missionLabels,
+                datasets: [{
+                  data: missionData.map(m => m.slice(activeFrom,activeTo+1).reduce((a,b)=>a+b,0)),
+                  backgroundColor: colors,
+                  borderColor: 'rgba(255,255,255,0.25)',
+                  borderWidth: 2,
+                  hoverOffset: 8
+                }]
+              },
+              options: {
+                responsive: true, maintainAspectRatio: false, radius: '76%', cutout: '34%',
+                plugins: {
+                  legend: { display: false },
+                  tooltip: { callbacks: { label: ctx => ` ${ctx.label}: ₱${ctx.parsed.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})}` } },
+                  datalabels: {
+                    color: '#fff', font: { weight: '700', size: 10 },
+                    textShadowBlur: 4, textShadowColor: 'rgba(0,0,0,0.6)',
+                    formatter: (value, ctx) => {
+                      const total = ctx.chart.data.datasets[0].data.reduce((a,b)=>a+b,0);
+                      const pct = ((value/total)*100).toFixed(1);
+                      return `${pct}%\n₱${(value/1000000).toFixed(1)}M`;
+                    },
+                    display: ctx => {
+                      if (explodeProgress > 0.12) return false;
+                      const total = ctx.chart.data.datasets[0].data.reduce((a,b)=>a+b,0);
+                      return (ctx.dataset.data[ctx.dataIndex]/total) > 0.05;
+                    }
+                  }
+                },
+                animation: { duration: 500 }
+              }
+            });
+
+            new ResizeObserver(() => pieChart && pieChart.resize()).observe(wrap);
+
+            function setExplodeState(show, animate = true) {
+              if (rafId) cancelAnimationFrame(rafId);
+              const dur = animate ? 520 : 0;
+              const t0 = performance.now();
+              const from = explodeProgress;
+              const to = show ? 1 : 0;
+              pieIsExploded = show;
+              // Exploded mode is display-only: no hover highlight/tooltip noise.
+              pieChart.options.events = show ? ['click'] : undefined;
+              pieChart.options.plugins.tooltip.enabled = !show;
+              pieChart.data.datasets[0].hoverOffset = show ? 0 : 8;
+              if (dur === 0) {
+                explodeProgress = to;
+                pieChart.update('none');
+                return;
+              }
+              function step(now) {
+                const t = Math.min((now - t0) / dur, 1);
+                explodeProgress = from + (to - from) * t;
+                pieChart.draw();
+                if (t < 1) rafId = requestAnimationFrame(step);
+              }
+              rafId = requestAnimationFrame(step);
+            }
+            resetPieExplode = (animate = true) => setExplodeState(false, animate);
+
+            // Pie wrap click: expand wrap OR toggle full split
+            wrap.addEventListener('click', e => {
+              if (e.target.closest('.chart-close-btn')) return;
+              // If not yet expanded, go directly to exploded view after expand animation.
+              if (!wrap.classList.contains('chart-expanded')) {
+                expandChart('wrap-pie');
+                setTimeout(() => {
+                  if (expandedWrap === 'wrap-pie' && !pieIsExploded) setExplodeState(true);
+                }, 430);
+                return;
+              }
+              // Expanded flow:
+              // 1st click -> explode
+              // 2nd click on exploded -> go back to normal "View All Months" layout
+              if (!pieIsExploded) setExplodeState(true);
+              else collapseChart();
+            });
           }
         }, 300);
       }
@@ -263,13 +494,17 @@
         if (w.id === wrapId) { w.classList.add('chart-expanded'); w.classList.remove('chart-shrunk'); w.querySelector('.chart-close-btn').classList.add('visible'); }
         else { w.classList.add('chart-shrunk'); w.classList.remove('chart-expanded'); w.querySelector('.chart-close-btn').classList.remove('visible'); }
       });
-      setTimeout(() => [overviewChart, lineChart, pieChart].forEach(c => c && c.resize()), 380);
+      setTimeout(() => [overviewChart, lineChart, pieChart].forEach(c => c && c.resize()), 420);
     }
     function collapseChart() {
       expandedWrap = null;
       document.querySelectorAll('.overview-chart-wrap').forEach(w => { w.classList.remove('chart-expanded','chart-shrunk'); w.querySelector('.chart-close-btn').classList.remove('visible'); });
-      setTimeout(() => [overviewChart, lineChart, pieChart].forEach(c => c && c.resize()), 380);
+      resetPieExplode(false);
+      setTimeout(() => [overviewChart, lineChart, pieChart].forEach(c => c && c.resize()), 420);
     }
+    // bar and line wraps keep their onclick
+    document.getElementById('wrap-bar').addEventListener('click', () => expandChart('wrap-bar'));
+    document.getElementById('wrap-line').addEventListener('click', () => expandChart('wrap-line'));
     function openTableModal() {
       document.getElementById('modalTableBody').innerHTML = document.getElementById('excelBody').innerHTML;
       document.getElementById('tableModalOverlay').classList.remove('hidden');

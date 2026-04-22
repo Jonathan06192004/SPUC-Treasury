@@ -348,7 +348,7 @@ main {
 .th-cmm { background: #2e3f8f; }
 .th-2025 { background: #1a237e; }
 .th-2026 { background: #f5a623; }
-.th-budget { background: #ef4444; }
+.th-budget { background: #6d43ea; }
 
 .excel-table td {
   padding: 4px 8px;
@@ -366,7 +366,7 @@ main {
 
 .cell-2025 { background: #eef2ff; }
 .cell-2026 { background: #fff8ed; }
-.cell-budget { background: #fff0f0; color: #b91c1c; font-weight: 600; }
+.cell-budget { background: #ece8ff; color: #4d2bbf; font-weight: 600; }
 
 .total-row td { background: #dbeafe !important; font-weight: 700 !important; color: #1a237e; }
 
