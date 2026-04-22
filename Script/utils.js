@@ -94,7 +94,7 @@ function initMissionPage(config) {
   const datasets = [
     { label: '2025',   data: data2025,   backgroundColor: '#1a237e', borderRadius: 5 },
     { label: '2026',   data: data2026,   backgroundColor: '#f5a623', borderRadius: 5 },
-    { label: 'Budget', data: dataTarget, backgroundColor: '#ef4444', borderRadius: 5 }
+    { label: 'Budget', data: dataTarget, backgroundColor: '#6d43ea', borderRadius: 5 }
   ];
 
   const chart = new Chart(canvas.getContext('2d'), {
@@ -187,7 +187,7 @@ function initMissionPage(config) {
             data: { labels: months.slice(activeFrom,activeTo+1), datasets: [
               { label:'2025',   data:data2025.slice(activeFrom,activeTo+1),   backgroundColor:'#1a237e', borderRadius:5 },
               { label:'2026',   data:data2026.slice(activeFrom,activeTo+1),   backgroundColor:'#f5a623', borderRadius:5 },
-              { label:'Budget', data:dataTarget.slice(activeFrom,activeTo+1), backgroundColor:'#ef4444', borderRadius:5 }
+              { label:'Budget', data:dataTarget.slice(activeFrom,activeTo+1), backgroundColor:'#6d43ea', borderRadius:5 }
             ]},
             options: { responsive:true, maintainAspectRatio:false,
               plugins:{ legend:{display:true,position:'top',labels:{color:'#fff',font:{weight:'700',size:11}}}, tooltip:{callbacks:{label:ctx=>` ${ctx.dataset.label}: ₱${ctx.parsed.y.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})}`}} },
@@ -201,7 +201,7 @@ function initMissionPage(config) {
             data: { labels: months.slice(activeFrom,activeTo+1), datasets: [
               { label:'2025',   data:data2025.slice(activeFrom,activeTo+1),   borderColor:'#4f7cff', backgroundColor:'rgba(79,124,255,0.15)',  pointBackgroundColor:'#4f7cff', tension:0.4, fill:true,  pointRadius:4 },
               { label:'2026',   data:data2026.slice(activeFrom,activeTo+1),   borderColor:'#f5a623', backgroundColor:'rgba(245,166,35,0.15)', pointBackgroundColor:'#f5a623', tension:0.4, fill:true,  pointRadius:4 },
-              { label:'Budget', data:dataTarget.slice(activeFrom,activeTo+1), borderColor:'#ef4444', backgroundColor:'rgba(239,68,68,0.1)',   pointBackgroundColor:'#ef4444', tension:0.4, fill:false, borderDash:[6,3], pointRadius:4 }
+              { label:'Budget', data:dataTarget.slice(activeFrom,activeTo+1), borderColor:'#6d43ea', backgroundColor:'rgba(109,67,234,0.18)', pointBackgroundColor:'#6d43ea', tension:0.4, fill:false, borderDash:[6,3], pointRadius:4 }
             ]},
             options: { responsive:true, maintainAspectRatio:false,
               plugins:{ legend:{display:true,position:'top',labels:{color:'#fff',font:{weight:'700',size:11}}}, tooltip:{callbacks:{label:ctx=>` ${ctx.dataset.label}: ₱${ctx.parsed.y.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})}`}} },

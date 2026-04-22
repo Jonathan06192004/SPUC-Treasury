@@ -35,7 +35,6 @@
           <canvas id="offeringChart"></canvas>
         </div>
         <div class="right-col">
-          <div class="chart-legend" id="chartLegend"></div>
           <div class="excel-table-wrap" onclick="openTableModal()" title="Click to expand">
             <table class="excel-table">
               <thead><tr>
@@ -47,6 +46,7 @@
               <tbody id="excelBody"></tbody>
             </table>
           </div>
+          <div class="chart-legend" id="chartLegend"></div>
           <button class="btn-toggle-main" id="toggleMainBtn" onclick="toggleMain()">&#9660; VIEW ALL MONTHS</button>
           <div class="side-clock" id="sideClock"></div>
         </div>
@@ -190,7 +190,7 @@
     datasets.forEach((ds, i) => {
       const item = document.createElement('div');
       item.className = 'legend-item';
-      item.innerHTML = `<span class="legend-dot" style="background:${ds.backgroundColor}"></span><span class="legend-label">${ds.label}</span>`;
+      item.innerHTML = `<span class="legend-paren">(</span><span class="legend-dot" style="background:${ds.backgroundColor}"></span><span class="legend-paren">)</span><span class="legend-label">${ds.label}</span>`;
       item.addEventListener('click', () => {
         const meta = chart.getDatasetMeta(i);
         meta.hidden = !meta.hidden;
