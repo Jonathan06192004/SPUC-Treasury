@@ -809,16 +809,16 @@ footer {
 
 .mr-data-section-gap td {
   height: 31px;
-  background: linear-gradient(90deg, rgba(245,166,35,0.1) 0%, rgba(245,166,35,0.03) 100%);
+  background: linear-gradient(90deg, rgba(245,166,35,0.38) 0%, rgba(245,166,35,0.18) 100%);
   border-bottom: 1px solid #dde3f0;
-  border-left: 3px solid rgba(245,166,35,0.6);
+  border-left: 3px solid rgba(245,166,35,0.9);
 }
 
 .mr-data-row td {
   height: 28px;
   padding: 0 10px;
   border-bottom: 1px solid #edf0f7;
-  border-right: 1px solid #edf0f7;
+  border-right: 2px solid #b8c8f0;
   text-align: center;
   font-size: 0.68rem;
   color: #334155;

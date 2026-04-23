@@ -233,7 +233,15 @@
     updateSideClock();
     setInterval(updateSideClock, 1000);
 
-    initViewAllMonths({ canvasId: 'offeringChart', datasets, missionData, labels, VISIBLE_MONTHS });
+    const missionData2026 = [
+      [8006698.27, 7552696.33, 7695529.87, null, null, null, null, null, null, null, null, null], // NCMC
+      [ 187511.00,11376208.60, 6481870.30, null, null, null, null, null, null, null, null, null], // CMM
+      [4345799.53,       null, 2226651.20, null, null, null, null, null, null, null, null, null], // NMM
+      [6953639.53, 7989550.67, 6453819.17, null, null, null, null, null, null, null, null, null], // WMC
+      [4228337.27, 4222259.23, 3510290.80, null, null, null, null, null, null, null, null, null]  // ZPM
+    ];
+
+    initViewAllMonths({ canvasId: 'offeringChart', datasets, missionData, missionData2026, labels, VISIBLE_MONTHS });
   </script>
 
   <!-- Table Modal -->

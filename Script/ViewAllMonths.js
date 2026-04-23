@@ -8,7 +8,7 @@
 // }
 
 function initViewAllMonths(config) {
-  const { canvasId, datasets, missionData, labels, VISIBLE_MONTHS } = config;
+  const { canvasId, datasets, missionData, missionData2026, labels, VISIBLE_MONTHS } = config;
 
   const COLORS       = ['#4f7cff', '#f5a623', '#22d3a0', '#c084fc', '#f87171'];
   const GLOW_COLORS  = ['rgba(79,124,255,0.7)', 'rgba(245,166,35,0.7)', 'rgba(34,211,160,0.7)', 'rgba(192,132,252,0.7)', 'rgba(248,113,113,0.7)'];
@@ -59,9 +59,8 @@ function initViewAllMonths(config) {
       lineChart.update('active');
     }
     if (pieChart) {
-      pieChart.data.datasets[0].data = missionData.map(m => m.slice(from, to + 1).reduce((a, b) => a + b, 0));
+      _updatePieData();
       resetPieExplode(false);
-      pieChart.update('active');
     }
   }
 
@@ -191,6 +190,41 @@ function initViewAllMonths(config) {
     let explodeProgress = 0;
     let pieIsExploded   = false;
     let rafId           = null;
+    let pieYear         = 2025;
+
+    // ── Year toggle button ───────────────────────────────────────────────────
+    const yearToggle = document.createElement('div');
+    yearToggle.id = 'pieYearToggle';
+    yearToggle.style.cssText = 'position:absolute;top:8px;left:8px;z-index:10;display:flex;gap:4px;';
+    ['2025','2026'].forEach(yr => {
+      const btn = document.createElement('button');
+      btn.textContent = yr;
+      btn.dataset.yr = yr;
+      btn.style.cssText = `padding:3px 9px;border-radius:5px;border:1px solid rgba(255,255,255,0.35);font-family:Montserrat,sans-serif;font-weight:700;font-size:0.62rem;letter-spacing:1px;cursor:pointer;transition:background 0.2s,color 0.2s;background:${yr==='2025'?'rgba(79,124,255,0.75)':'rgba(255,255,255,0.1)'};color:#fff;`;
+      btn.addEventListener('click', e => {
+        e.stopPropagation();
+        if (parseInt(yr) === pieYear) return;
+        pieYear = parseInt(yr);
+        yearToggle.querySelectorAll('button').forEach(b => {
+          b.style.background = b.dataset.yr === yr ? 'rgba(79,124,255,0.75)' : 'rgba(255,255,255,0.1)';
+        });
+        _updatePieData();
+        resetPieExplode(false);
+      });
+      yearToggle.appendChild(btn);
+    });
+    wrap.appendChild(yearToggle);
+
+    function _getPieMissionData() {
+      const src = pieYear === 2026 && missionData2026 ? missionData2026 : missionData;
+      return src.map(m => m.slice(activeFrom, activeTo + 1).reduce((a, b) => a + (b || 0), 0));
+    }
+
+    function _updatePieData() {
+      if (!pieChart) return;
+      pieChart.data.datasets[0].data = _getPieMissionData();
+      pieChart.update('active');
+    }
 
     function easeOutBack(t) {
       return 1 + 2.70158 * Math.pow(t - 1, 3) + 1.70158 * Math.pow(t - 1, 2);
@@ -359,7 +393,7 @@ function initViewAllMonths(config) {
         c.shadowBlur  = 0;
         c.font        = '700 10px Montserrat,sans-serif';
         c.fillStyle   = 'rgba(255,255,255,0.45)';
-        c.fillText('2025', cx, cy + 19);
+        c.fillText(pieYear.toString(), cx, cy + 19);
         c.restore();
       }
     };
@@ -397,7 +431,7 @@ function initViewAllMonths(config) {
       data: {
         labels: MISSION_LABELS,
         datasets: [{
-          data: missionData.map(m => m.slice(activeFrom, activeTo + 1).reduce((a, b) => a + b, 0)),
+          data: _getPieMissionData(),
           backgroundColor: COLORS,
           borderColor:     GLOW_COLORS,
           borderWidth:     3,

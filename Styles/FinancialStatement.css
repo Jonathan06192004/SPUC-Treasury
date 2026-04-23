@@ -428,16 +428,17 @@ main {
 }
 
 #tab-income .section-header td {
-  background: #ffe600;
+  background: linear-gradient(90deg, rgba(245,166,35,0.38) 0%, rgba(245,166,35,0.18) 100%);
   color: #0a1e6e;
   font-family: 'Montserrat', sans-serif;
   font-weight: 900;
   font-size: 0.72rem;
   letter-spacing: 2px;
   padding: 8px 16px;
-  border-left: none;
+  border-left: 3px solid rgba(245,166,35,0.9);
   border-top: 2px solid #d4c000;
   border-bottom: 1px solid #d4c000;
+  border-right: none;
   text-transform: uppercase;
 }
 
@@ -451,6 +452,7 @@ main {
 
 #tab-income tbody tr td {
   border-bottom: 1px solid #e8ecf4;
+  border-right: 2px solid #b8c8f0;
   padding: 6px 16px;
 }
 
@@ -488,7 +490,7 @@ main {
 }
 
 #tab-income .income-highlight-row td {
-  background: #ffe600;
+  background: linear-gradient(90deg, rgba(245,166,35,0.38) 0%, rgba(245,166,35,0.18) 100%);
   color: #0a1e6e;
   font-family: 'Montserrat', sans-serif;
   font-weight: 900;
@@ -496,6 +498,7 @@ main {
   letter-spacing: 1px;
   border-top: 2px solid #d4c000;
   border-bottom: 1px solid #d4c000;
+  border-right: none;
   padding: 8px 16px;
   text-transform: uppercase;
 }
@@ -509,6 +512,7 @@ main {
   letter-spacing: 1px;
   border-top: 3px solid #f5a623;
   border-bottom: 3px solid #f5a623;
+  border-right: none;
   padding: 9px 16px;
   text-transform: uppercase;
 }
@@ -548,16 +552,17 @@ main {
 
 /* Yellow section headers (CURRENT ASSETS, FIXED ASSETS, etc.) */
 #tab-balance .section-header td {
-  background: #ffe600;
+  background: linear-gradient(90deg, rgba(245,166,35,0.38) 0%, rgba(245,166,35,0.18) 100%);
   color: #0a1e6e;
   font-family: 'Montserrat', sans-serif;
   font-weight: 900;
   font-size: 0.72rem;
   letter-spacing: 2px;
   padding: 8px 16px;
-  border-left: none;
+  border-left: 3px solid rgba(245,166,35,0.9);
   border-top: 2px solid #d4c000;
   border-bottom: 1px solid #d4c000;
+  border-right: none;
   text-transform: uppercase;
 }
 
@@ -572,6 +577,7 @@ main {
 
 #tab-balance tbody tr td {
   border-bottom: 1px solid #e8ecf4;
+  border-right: 2px solid #b8c8f0;
   padding: 6px 16px;
 }
 
@@ -599,17 +605,20 @@ main {
 
 /* Inline section rows (FIXED ASSETS, OTHER ASSETS, OTHER LIABILITIES) */
 #tab-balance .section-header td.fs-label {
-  background: #ffe600;
+  background: linear-gradient(90deg, rgba(245,166,35,0.38) 0%, rgba(245,166,35,0.18) 100%);
   color: #0a1e6e;
   font-weight: 900;
   text-transform: uppercase;
+  border-left: 3px solid rgba(245,166,35,0.9);
+  border-right: none;
 }
 
 #tab-balance .section-header td.fs-amount {
-  background: #ffe600;
+  background: linear-gradient(90deg, rgba(245,166,35,0.38) 0%, rgba(245,166,35,0.18) 100%);
   color: #0a1e6e;
   font-weight: 900;
   text-align: center;
+  border-right: none;
 }
 
 /* Divider row between ASSETS and LIABILITIES headers */
@@ -621,6 +630,7 @@ main {
   padding: 10px 16px;
   border-top: 3px solid #f5a623;
   border-bottom: 3px solid #f5a623;
+  border-right: none;
   text-transform: uppercase;
 }
 
@@ -640,6 +650,7 @@ main {
   letter-spacing: 1px;
   border-top: 3px solid #f5a623;
   border-bottom: 3px solid #f5a623;
+  border-right: none;
   padding: 9px 16px;
   text-transform: uppercase;
 }
@@ -669,17 +680,21 @@ main {
   border-bottom: 3px solid #f5a623; text-transform: uppercase;
 }
 #tab-cashflow .section-header td {
-  background: #ffe600; color: #0a1e6e;
+  background: linear-gradient(90deg, rgba(245,166,35,0.38) 0%, rgba(245,166,35,0.18) 100%);
+  color: #0a1e6e;
   font-family: 'Montserrat', sans-serif; font-weight: 900;
   font-size: 0.72rem; letter-spacing: 2px; padding: 8px 16px;
-  border-left: none; border-top: 2px solid #d4c000;
-  border-bottom: 1px solid #d4c000; text-transform: uppercase;
+  border-left: 3px solid rgba(245,166,35,0.9);
+  border-top: 2px solid #d4c000;
+  border-bottom: 1px solid #d4c000;
+  border-right: none;
+  text-transform: uppercase;
 }
 #tab-cashflow .fs-label.indent {
   padding-left: 24px !important; font-weight: 600;
   color: #1a237e; text-transform: uppercase; font-size: 0.7rem;
 }
-#tab-cashflow tbody tr td { border-bottom: 1px solid #e8ecf4; padding: 6px 16px; }
+#tab-cashflow tbody tr td { border-bottom: 1px solid #e8ecf4; border-right: 2px solid #b8c8f0; padding: 6px 16px; }
 #tab-cashflow tbody tr:nth-child(even) td { background: #fafbff; }
 #tab-cashflow tbody tr:hover td { background: #f0f4ff; transition: background 0.15s; }
 #tab-cashflow .subtotal-row td {
@@ -694,6 +709,7 @@ main {
   font-family: 'Montserrat', sans-serif; font-weight: 900;
   font-size: 0.75rem; letter-spacing: 1px;
   border-top: 3px solid #f5a623; border-bottom: 3px solid #f5a623;
+  border-right: none;
   padding: 9px 16px; text-transform: uppercase;
 }
 #tab-cashflow .total-row.highlight .fs-amount.gold {
@@ -715,17 +731,21 @@ main {
   border-bottom: 3px solid #f5a623; text-transform: uppercase;
 }
 #tab-equity .section-header td {
-  background: #ffe600; color: #0a1e6e;
+  background: linear-gradient(90deg, rgba(245,166,35,0.38) 0%, rgba(245,166,35,0.18) 100%);
+  color: #0a1e6e;
   font-family: 'Montserrat', sans-serif; font-weight: 900;
   font-size: 0.72rem; letter-spacing: 2px; padding: 8px 16px;
-  border-left: none; border-top: 2px solid #d4c000;
-  border-bottom: 1px solid #d4c000; text-transform: uppercase;
+  border-left: 3px solid rgba(245,166,35,0.9);
+  border-top: 2px solid #d4c000;
+  border-bottom: 1px solid #d4c000;
+  border-right: none;
+  text-transform: uppercase;
 }
 #tab-equity .fs-label.indent {
   padding-left: 24px !important; font-weight: 600;
   color: #1a237e; text-transform: uppercase; font-size: 0.7rem;
 }
-#tab-equity tbody tr td { border-bottom: 1px solid #e8ecf4; padding: 6px 16px; }
+#tab-equity tbody tr td { border-bottom: 1px solid #e8ecf4; border-right: 2px solid #b8c8f0; padding: 6px 16px; }
 #tab-equity tbody tr:nth-child(even) td { background: #fafbff; }
 #tab-equity tbody tr:hover td { background: #f0f4ff; transition: background 0.15s; }
 #tab-equity .subtotal-row td {
@@ -740,6 +760,7 @@ main {
   font-family: 'Montserrat', sans-serif; font-weight: 900;
   font-size: 0.75rem; letter-spacing: 1px;
   border-top: 3px solid #f5a623; border-bottom: 3px solid #f5a623;
+  border-right: none;
   padding: 9px 16px; text-transform: uppercase;
 }
 #tab-equity .total-row.highlight .fs-amount.gold {

@@ -218,7 +218,16 @@
       legendEl.appendChild(item);
     });
 
-    initViewAllMonths({ canvasId: 'tithesChart', datasets, missionData, labels, VISIBLE_MONTHS });
+    // Per-mission 2026 data
+    const missionData2026 = [
+      [19905842.45, 20525257.24, 20751373.20, null, null, null, null, null, null, null, null, null], // NCMC
+      [913359.61,   20656218.25, 13500858.14, null, null, null, null, null, null, null, null, null], // CMM
+      [10033625.37,  8873338.08,  7768163.00, null, null, null, null, null, null, null, null, null], // NMM
+      [19785800.90, 21100000.20, 18063964.30, null, null, null, null, null, null, null, null, null], // WMC
+      [10662601.65, 11671689.64,  8700225.47, null, null, null, null, null, null, null, null, null]  // ZPM
+    ];
+
+    initViewAllMonths({ canvasId: 'tithesChart', datasets, missionData, missionData2026, labels, VISIBLE_MONTHS });
 
     updateSideClock();
     setInterval(updateSideClock, 1000);
