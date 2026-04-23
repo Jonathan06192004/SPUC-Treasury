@@ -42,6 +42,7 @@
                 <th class="th-2025">2025</th>
                 <th class="th-2026">2026</th>
                 <th class="th-budget">BUDGET</th>
+                <th class="th-variance">VARIANCE</th>
               </tr></thead>
               <tbody id="excelBody"></tbody>
             </table>
@@ -698,13 +699,25 @@
     document.getElementById('wrap-line').addEventListener('click', () => expandChart('wrap-line'));
 
     const fmt = v => v != null ? '₱' + v.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}) : '-';
+    const fmtVariance = (v25, v26) => {
+      if (v25 == null || v26 == null) return '<td class="cell-variance">-</td>';
+      const diff = v26 - v25;
+      const pct = ((diff / v25) * 100).toFixed(1);
+      const cls = diff >= 0 ? 'variance-pos' : 'variance-neg';
+      const arrow = diff >= 0 ? '▲' : '▼';
+      return `<td class="cell-variance ${cls}">${arrow} ${fmt(Math.abs(diff))}<span class="variance-pct">${arrow} ${Math.abs(pct)}%</span></td>`;
+    };
     const d2025 = datasets[0].data, d2026 = datasets[1].data, dBudget = datasets[2].data;
     const t2025 = d2025.reduce((a,b) => a+(b||0),0);
     const t2026 = d2026.reduce((a,b) => a+(b||0),0);
     const tBudget = dBudget.reduce((a,b) => a+(b||0),0);
+    const tDiff = t2026 - t2025;
+    const tPct = ((tDiff / t2025) * 100).toFixed(1);
+    const tCls = tDiff >= 0 ? 'variance-pos' : 'variance-neg';
+    const tArrow = tDiff >= 0 ? '▲' : '▼';
     document.getElementById('excelBody').innerHTML = labels.map((m,i) =>
-      `<tr><td class="month-cell">${m}</td><td class="cell-2025">${fmt(d2025[i])}</td><td class="cell-2026">${fmt(d2026[i])}</td><td class="cell-budget">${fmt(dBudget[i])}</td></tr>`
-    ).join('') + `<tr class="total-row"><td class="month-cell">Total</td><td class="total-cell">${fmt(t2025)}</td><td class="total-cell">${fmt(t2026)}</td><td class="total-cell">${fmt(tBudget)}</td></tr>`;
+      `<tr><td class="month-cell">${m}</td><td class="cell-2025">${fmt(d2025[i])}</td><td class="cell-2026">${fmt(d2026[i])}</td><td class="cell-budget">${fmt(dBudget[i])}</td>${fmtVariance(d2025[i], d2026[i])}</tr>`
+    ).join('') + `<tr class="total-row"><td class="month-cell">Total</td><td class="total-cell">${fmt(t2025)}</td><td class="total-cell">${fmt(t2026)}</td><td class="total-cell">${fmt(tBudget)}</td><td class="total-cell ${tCls}">${tArrow} ${fmt(Math.abs(tDiff))}<span class="variance-pct">${tArrow} ${Math.abs(tPct)}%</span></td></tr>`;
 
     function openTableModal() {
       document.getElementById('modalTableBody').innerHTML = document.getElementById('excelBody').innerHTML;
@@ -734,7 +747,7 @@
     <div class="table-modal-body">
       <table class="excel-table table-modal-table">
         <thead>
-          <tr><th class="th-offerings">OFFERINGS</th><th class="th-2025">2025</th><th class="th-2026">2026</th><th class="th-budget">BUDGET</th></tr>
+          <tr><th class="th-offerings">OFFERINGS</th><th class="th-2025">2025</th><th class="th-2026">2026</th><th class="th-budget">BUDGET</th><th class="th-variance">VARIANCE</th></tr>
         </thead>
         <tbody id="modalTableBody"></tbody>
       </table>

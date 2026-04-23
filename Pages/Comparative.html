@@ -79,12 +79,8 @@
         </div>
       </div>
 
-      <!-- Right Col: Legend + Table -->
+      <!-- Right Col: Table + Legend -->
       <div class="right-col">
-        <div class="legend-row">
-          <div class="chart-legend" id="chartLegend"></div>
-          <button class="btn-year-toggle" id="yearToggleBtn" onclick="toggleYear()">VIEW 2026 &#8594;</button>
-        </div>
         <div class="summary-table-wrap" onclick="openTableModal()" title="Click to expand">
           <table class="summary-table">
             <thead>
@@ -97,6 +93,10 @@
             </thead>
             <tbody id="summaryBody"></tbody>
           </table>
+        </div>
+        <div class="legend-row">
+          <div class="chart-legend" id="chartLegend"></div>
+          <button class="btn-year-toggle" id="yearToggleBtn" onclick="toggleYear()">VIEW 2026 &#8594;</button>
         </div>
         <button class="btn-toggle-main" id="toggleMainBtn" onclick="toggleMain()">&#9660; VIEW ALL MONTHS</button>
         <div class="side-clock" id="sideClock"></div>
@@ -196,7 +196,7 @@
     datasets.forEach((ds, i) => {
       const item = document.createElement('div');
       item.className = 'legend-item';
-      item.innerHTML = `<span class="legend-dot" style="background:${ds.backgroundColor}"></span><span class="legend-label">${ds.label}</span>`;
+      item.innerHTML = `<span class="legend-paren">(</span><span class="legend-dot" style="background:${ds.backgroundColor}"></span><span class="legend-paren">)</span><span class="legend-label">${ds.label}</span>`;
       item.addEventListener('click', () => {
         const meta = chart.getDatasetMeta(i);
         meta.hidden = !meta.hidden;

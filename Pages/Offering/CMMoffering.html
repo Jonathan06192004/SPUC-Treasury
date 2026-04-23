@@ -34,7 +34,6 @@
           <canvas id="cmmOfferingChart"></canvas>
         </div>
         <div class="right-col">
-          <div class="chart-legend" id="chartLegend"></div>
           <div class="excel-table-wrap">
             <table class="excel-table">
               <thead><tr>
@@ -42,10 +41,12 @@
                 <th class="th-2025">2025</th>
                 <th class="th-2026">2026</th>
                 <th class="th-budget">BUDGET</th>
+                <th class="th-variance">VARIANCE</th>
               </tr></thead>
               <tbody id="excelBody"></tbody>
             </table>
           </div>
+          <div class="chart-legend" id="chartLegend"></div>
           <button class="btn-toggle-main" id="toggleMainBtn" onclick="toggleMain()">&#9660; VIEW ALL MONTHS</button>
           <div class="side-clock" id="sideClock"></div>
         </div>
@@ -98,6 +99,7 @@
   <script>
     initMissionPage({
       canvasId: 'cmmOfferingChart',
+      labelHeader: 'CMM OFFERINGS',
       data2025:   [2930234.20, 6108608.17, 7391777.43, 8704753.23, 8272590.83, 9679020.80, 6969523.87, 8017628.13, 8899305.50, 6555693.97, 7214962.67, 9541109.40],
       data2026:   [187511.00, 11376208.60, 6481870.30, null, null, null, null, null, null, null, null, null],
       dataTarget: [4000000, 7000000, 8000000, 9000000, 8500000, 10000000, 7500000, 8500000, 9000000, 7000000, 7500000, 10000000]

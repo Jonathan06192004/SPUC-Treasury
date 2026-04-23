@@ -34,7 +34,6 @@
           <canvas id="zpmChart"></canvas>
         </div>
         <div class="right-col">
-          <div class="chart-legend" id="chartLegend"></div>
           <div class="excel-table-wrap">
             <table class="excel-table">
               <thead><tr>
@@ -42,10 +41,12 @@
                 <th class="th-2025">2025</th>
                 <th class="th-2026">2026</th>
                 <th class="th-budget">BUDGET</th>
+                <th class="th-variance">VARIANCE</th>
               </tr></thead>
               <tbody id="excelBody"></tbody>
             </table>
           </div>
+          <div class="chart-legend" id="chartLegend"></div>
           <button class="btn-toggle-main" id="toggleMainBtn" onclick="toggleMain()">&#9660; VIEW ALL MONTHS</button>
           <div class="side-clock" id="sideClock"></div>
         </div>
@@ -111,6 +112,7 @@
   <script>
     initMissionPage({
       canvasId: 'zpmChart',
+      labelHeader: 'ZPM TITHES',
       data2025:   [12102432.80, 9804383.86, 7801789.09, 12969059.02, 10145172.90, 12802338.55, 10626935.12, 8019854.95, 11238472.36, 8770181.61, 8763006.87, 13040919.31],
       data2026:   [10662601.65, 11671689.64, 8700225.47, null, null, null, null, null, null, null, null, null],
       dataTarget: [13000000, 10500000, 8500000, 13500000, 11000000, 13500000, 11500000, 8500000, 12000000, 9500000, 9500000, 14000000]

@@ -244,19 +244,20 @@ main {
   justify-content: space-between;
   gap: 8px;
   padding: 0 4px;
+  flex-wrap: wrap;
 }
 
 .btn-year-toggle {
   flex-shrink: 0;
-  padding: 5px 14px;
+  padding: 5px 10px;
   background: rgba(255,255,255,0.1);
   border: 1px solid rgba(255,255,255,0.3);
   border-radius: 20px;
   color: #fff;
   font-family: 'Montserrat', sans-serif;
   font-weight: 700;
-  font-size: 0.65rem;
-  letter-spacing: 1.5px;
+  font-size: 0.62rem;
+  letter-spacing: 0.8px;
   cursor: pointer;
   transition: background 0.2s, border-color 0.2s;
   white-space: nowrap;
@@ -276,20 +277,27 @@ main {
 .legend-item {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 10px;
   cursor: pointer;
-  font-size: 0.82rem;
-  font-weight: 600;
+  font-size: 1rem;
+  font-weight: 700;
   color: #ffffff;
   transition: opacity 0.2s;
 }
 
 .legend-item.legend-hidden { opacity: 0.35; }
 
+.legend-paren {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: #ffffff;
+  line-height: 1;
+}
+
 .legend-dot {
-  width: 12px;
-  height: 12px;
-  border-radius: 3px;
+  width: 20px;
+  height: 20px;
+  border-radius: 5px;
   flex-shrink: 0;
 }
 

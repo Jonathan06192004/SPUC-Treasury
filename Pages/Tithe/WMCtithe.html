@@ -34,7 +34,6 @@
           <canvas id="wmcChart"></canvas>
         </div>
         <div class="right-col">
-          <div class="chart-legend" id="chartLegend"></div>
           <div class="excel-table-wrap">
             <table class="excel-table">
               <thead><tr>
@@ -42,10 +41,12 @@
                 <th class="th-2025">2025</th>
                 <th class="th-2026">2026</th>
                 <th class="th-budget">BUDGET</th>
+                <th class="th-variance">VARIANCE</th>
               </tr></thead>
               <tbody id="excelBody"></tbody>
             </table>
           </div>
+          <div class="chart-legend" id="chartLegend"></div>
           <button class="btn-toggle-main" id="toggleMainBtn" onclick="toggleMain()">&#9660; VIEW ALL MONTHS</button>
           <div class="side-clock" id="sideClock"></div>
         </div>
@@ -111,6 +112,7 @@
   <script>
     initMissionPage({
       canvasId: 'wmcChart',
+      labelHeader: 'WMC TITHES',
       data2025:   [21470361.40, 15298976.00, 14811539.90, 19149807.77, 16873462.51, 21203105.61, 18036761.13, 14558798.10, 17601704.97, 17197806.26, 17023040.69, 22382871.58],
       data2026:   [19785800.90, 21100000.20, 18063964.30, null, null, null, null, null, null, null, null, null],
       dataTarget: [22000000, 16000000, 15500000, 20000000, 17500000, 22000000, 19000000, 15500000, 18500000, 18000000, 18000000, 23000000]

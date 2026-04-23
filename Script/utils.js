@@ -118,7 +118,7 @@ function initMissionPage(config) {
   datasets.forEach((ds, i) => {
     const item = document.createElement('div');
     item.className = 'legend-item';
-    item.innerHTML = `<span class="legend-dot" style="background:${ds.backgroundColor}"></span><span class="legend-label">${ds.label}</span>`;
+    item.innerHTML = `<span class="legend-paren">(</span><span class="legend-dot" style="background:${ds.backgroundColor}"></span><span class="legend-paren">)</span><span class="legend-label">${ds.label}</span>`;
     item.addEventListener('click', () => {
       const meta = chart.getDatasetMeta(i);
       meta.hidden = !meta.hidden;
@@ -130,12 +130,87 @@ function initMissionPage(config) {
 
   // ── Excel table ──
   const fmt = v => v != null ? '₱' + v.toLocaleString('en-US', {minimumFractionDigits:2,maximumFractionDigits:2}) : '-';
-  const t25 = data2025.reduce((a,b)=>a+(b||0),0);
-  const t26 = data2026.reduce((a,b)=>a+(b||0),0);
+  const fmtVariance = (v25, v26) => {
+    if (v25 == null || v26 == null) return '<td class="cell-variance">-</td>';
+    const diff = v26 - v25;
+    const pct = ((diff / v25) * 100).toFixed(1);
+    const cls = diff >= 0 ? 'variance-pos' : 'variance-neg';
+    const arrow = diff >= 0 ? '▲' : '▼';
+    return `<td class="cell-variance ${cls}">${arrow} ${fmt(Math.abs(diff))}<span class="variance-pct">${arrow} ${Math.abs(pct)}%</span></td>`;
+  };
+  const t25  = data2025.reduce((a,b)=>a+(b||0),0);
+  const t26  = data2026.reduce((a,b)=>a+(b||0),0);
   const tBgt = dataTarget.reduce((a,b)=>a+(b||0),0);
-  document.getElementById('excelBody').innerHTML =
-    months.map((m,i) => `<tr><td class="month-cell">${m}</td><td class="cell-2025">${fmt(data2025[i])}</td><td class="cell-2026">${fmt(data2026[i])}</td><td class="cell-budget">${fmt(dataTarget[i])}</td></tr>`).join('') +
-    `<tr class="total-row"><td class="month-cell">Total</td><td class="total-cell">${fmt(t25)}</td><td class="total-cell">${fmt(t26)}</td><td class="total-cell">${fmt(tBgt)}</td></tr>`;
+  const tDiff = t26 - t25;
+  const tPct  = ((tDiff / t25) * 100).toFixed(1);
+  const tCls  = tDiff >= 0 ? 'variance-pos' : 'variance-neg';
+  const tArrow = tDiff >= 0 ? '▲' : '▼';
+  const label = config.labelHeader || 'MISSION';
+
+  function buildRows() {
+    return months.map((m,i) =>
+      `<tr><td class="month-cell">${m}</td><td class="cell-2025">${fmt(data2025[i])}</td><td class="cell-2026">${fmt(data2026[i])}</td><td class="cell-budget">${fmt(dataTarget[i])}</td>${fmtVariance(data2025[i], data2026[i])}</tr>`
+    ).join('') +
+    `<tr class="total-row"><td class="month-cell">Total</td><td class="total-cell">${fmt(t25)}</td><td class="total-cell">${fmt(t26)}</td><td class="total-cell">${fmt(tBgt)}</td><td class="total-cell ${tCls}">${tArrow} ${fmt(Math.abs(tDiff))}<span class="variance-pct">${tArrow} ${Math.abs(tPct)}%</span></td></tr>`;
+  }
+
+  document.getElementById('excelBody').innerHTML = buildRows();
+
+  // make table wrap clickable
+  const tableWrap = document.querySelector('.excel-table-wrap');
+  tableWrap.style.cursor = 'pointer';
+  tableWrap.title = 'Click to expand';
+  tableWrap.addEventListener('click', openTableModal);
+
+  function openTableModal() {
+    document.getElementById('modalTableBody').innerHTML = buildRows();
+    document.getElementById('tableModalOverlay').classList.remove('hidden');
+    const modal = document.getElementById('tableModal');
+    modal.classList.remove('hidden');
+    modal.style.animation = 'tableModalIn 0.35s cubic-bezier(0.4,0,0.2,1) forwards';
+  }
+
+  function closeTableModal() {
+    const modal = document.getElementById('tableModal');
+    modal.style.animation = 'tableModalOut 0.25s ease forwards';
+    setTimeout(() => {
+      modal.classList.add('hidden');
+      document.getElementById('tableModalOverlay').classList.add('hidden');
+    }, 250);
+  }
+
+  window.closeTableModal = closeTableModal;
+
+  // inject modal HTML if not already present
+  if (!document.getElementById('tableModal')) {
+    const overlay = document.createElement('div');
+    overlay.className = 'table-modal-overlay hidden';
+    overlay.id = 'tableModalOverlay';
+    overlay.onclick = closeTableModal;
+    document.body.appendChild(overlay);
+
+    const modal = document.createElement('div');
+    modal.className = 'table-modal hidden';
+    modal.id = 'tableModal';
+    modal.innerHTML = `
+      <div class="table-modal-header">
+        <span class="table-modal-title">${label} — JANUARY TO DECEMBER</span>
+        <button class="table-modal-close" onclick="closeTableModal()">&#10005;</button>
+      </div>
+      <div class="table-modal-body">
+        <table class="excel-table table-modal-table">
+          <thead><tr>
+            <th class="th-month">MONTH</th>
+            <th class="th-2025">2025</th>
+            <th class="th-2026">2026</th>
+            <th class="th-budget">BUDGET</th>
+            <th class="th-variance">VARIANCE</th>
+          </tr></thead>
+          <tbody id="modalTableBody"></tbody>
+        </table>
+      </div>`;
+    document.body.appendChild(modal);
+  }
 
   // ── Side clock ──
   updateSideClock();

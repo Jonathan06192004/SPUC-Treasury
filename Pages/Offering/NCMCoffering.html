@@ -34,7 +34,6 @@
           <canvas id="ncmcOfferingChart"></canvas>
         </div>
         <div class="right-col">
-          <div class="chart-legend" id="chartLegend"></div>
           <div class="excel-table-wrap">
             <table class="excel-table">
               <thead><tr>
@@ -42,10 +41,12 @@
                 <th class="th-2025">2025</th>
                 <th class="th-2026">2026</th>
                 <th class="th-budget">BUDGET</th>
+                <th class="th-variance">VARIANCE</th>
               </tr></thead>
               <tbody id="excelBody"></tbody>
             </table>
           </div>
+          <div class="chart-legend" id="chartLegend"></div>
           <button class="btn-toggle-main" id="toggleMainBtn" onclick="toggleMain()">&#9660; VIEW ALL MONTHS</button>
           <div class="side-clock" id="sideClock"></div>
         </div>
@@ -98,6 +99,7 @@
   <script>
     initMissionPage({
       canvasId: 'ncmcOfferingChart',
+      labelHeader: 'NCMC OFFERINGS',
       data2025:   [8423978.37, 5890144.37, 6749753.63, 8640243.73, 5713093.73, 7387405.67, 7967638.30, 5647825.33, 10416009.03, 5008471.43, 4981968.80, 7654224.13],
       data2026:   [8006698.27, 7552696.33, 7695529.87, null, null, null, null, null, null, null, null, null],
       dataTarget: [9000000, 7000000, 7500000, 9000000, 7000000, 8000000, 8500000, 7000000, 10000000, 6000000, 6000000, 8500000]
