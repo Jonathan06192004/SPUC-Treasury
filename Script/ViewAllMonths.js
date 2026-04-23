@@ -231,17 +231,14 @@ function initViewAllMonths(config) {
     }
 
     function drawArrowHead(ctx2, x, y, ang, color, alpha) {
-      const len = 8;
       ctx2.save();
       ctx2.globalAlpha = alpha;
-      ctx2.strokeStyle = color;
-      ctx2.lineWidth = 2;
+      ctx2.fillStyle = 'rgba(255,255,255,0.95)';
+      ctx2.shadowColor = 'rgba(255,255,255,0.6)';
+      ctx2.shadowBlur = 6;
       ctx2.beginPath();
-      ctx2.moveTo(x, y);
-      ctx2.lineTo(x - Math.cos(ang - 0.35) * len, y - Math.sin(ang - 0.35) * len);
-      ctx2.moveTo(x, y);
-      ctx2.lineTo(x - Math.cos(ang + 0.35) * len, y - Math.sin(ang + 0.35) * len);
-      ctx2.stroke();
+      ctx2.arc(x, y, 6, 0, Math.PI * 2);
+      ctx2.fill();
       ctx2.restore();
     }
 
@@ -304,24 +301,42 @@ function initViewAllMonths(config) {
           ctx2.shadowBlur = 0;
           ctx2.restore();
 
-          // Connector + arrow
+          // Connector + arrow — cubic bezier curving from pie edge to label text
           const sx  = cx  + Math.cos(midAngle) * (outerR + 2);
           const sy  = cy  + Math.sin(midAngle) * (outerR + 2);
-          const ex  = dcx + Math.cos(drawMid)  * (detachedInner - 3);
-          const ey  = dcy + Math.sin(drawMid)  * (detachedInner - 3);
-          const nx  = -Math.sin(drawMid);
-          const ny  =  Math.cos(drawMid);
-          const bend = (i % 2 === 0 ? -1 : 1) * (10 + 10 * p);
-          const cpx = (sx + ex) * 0.5 + nx * bend;
-          const cpy = (sy + ey) * 0.5 + ny * bend;
-          ctx2.strokeStyle = 'rgba(255,255,255,0.88)';
+          // Arrow tip: point at the label text center inside the detached arc, but stay outside the colored arc
+          const labelR = detachedInner + (detachedOuter - detachedInner) * 0.5;
+          const tx_tip = dcx + Math.cos(drawMid) * labelR;
+          const ty_tip = dcy + Math.sin(drawMid) * labelR;
+          // Stop arrow just outside the detached arc outer edge + small gap
+          const arrowGap = 8;
+          const rawEx = dcx + Math.cos(drawMid) * (detachedOuter + arrowGap);
+          const rawEy = dcy + Math.sin(drawMid) * (detachedOuter + arrowGap);
+          const shortenTip = { NCMC: 160, CMM: 160, WMC: 160, NMM: 100, ZPM: 100 }[label] || 100;
+          const lineDist = Math.hypot(rawEx - sx, rawEy - sy);
+          const trimT = Math.max(0, 1 - shortenTip / lineDist);
+          const ex = sx + (rawEx - sx) * trimT;
+          const ey = sy + (rawEy - sy) * trimT;
+          // Two control points for a deep S-curve
+          const dist = Math.hypot(ex - sx, ey - sy);
+          const cp1x = sx + Math.cos(midAngle) * dist * 0.55;
+          const cp1y = sy + Math.sin(midAngle) * dist * 0.55;
+          const cp2x = ex - Math.cos(drawMid)  * dist * 0.45;
+          const cp2y = ey - Math.sin(drawMid)  * dist * 0.45;
+          ctx2.save();
+          ctx2.strokeStyle = 'rgba(255,255,255,0.9)';
           ctx2.lineWidth   = 2.2;
           ctx2.lineCap     = 'round';
+          ctx2.shadowColor = 'rgba(255,255,255,0.3)';
+          ctx2.shadowBlur  = 4 * p;
           ctx2.beginPath();
           ctx2.moveTo(sx, sy);
-          ctx2.quadraticCurveTo(cpx, cpy, ex, ey);
+          ctx2.bezierCurveTo(cp1x, cp1y, cp2x, cp2y, ex, ey);
           ctx2.stroke();
-          drawArrowHead(ctx2, ex, ey, Math.atan2(ey - cpy, ex - cpx), 'rgba(255,255,255,0.88)', alpha);
+          ctx2.shadowBlur = 0;
+          ctx2.restore();
+          // Arrowhead pointing toward the label text center
+          drawArrowHead(ctx2, ex, ey, Math.atan2(ty_tip - ey, tx_tip - ex), 'rgba(255,255,255,0.95)', alpha);
 
           // Labels inside detached arc
           if (p > 0.22) {
