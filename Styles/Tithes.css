@@ -997,4 +997,17 @@ footer {
 #wrap-pie {
   overflow: visible;
   position: relative;
+  background: radial-gradient(ellipse at center, rgba(30,50,140,0.55) 0%, rgba(10,20,80,0.35) 100%);
+  border: 2px solid rgba(79,124,255,0.35);
+  box-shadow: 0 0 32px rgba(79,124,255,0.18), inset 0 0 24px rgba(79,124,255,0.08);
+}
+
+#wrap-pie:hover {
+  border-color: rgba(79,124,255,0.65);
+  box-shadow: 0 0 48px rgba(79,124,255,0.32), inset 0 0 28px rgba(79,124,255,0.12);
+}
+
+#wrap-pie.chart-expanded {
+  background: radial-gradient(ellipse at center, rgba(20,40,120,0.7) 0%, rgba(8,16,60,0.5) 100%);
+  box-shadow: 0 0 64px rgba(79,124,255,0.4), inset 0 0 40px rgba(79,124,255,0.15);
 }

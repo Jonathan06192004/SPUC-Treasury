@@ -254,7 +254,8 @@
           if (!pieChart) {
             const pieCanvas = document.getElementById('pieChart');
             const wrap = document.getElementById('wrap-pie');
-            const colors = ['#1a3a8f','#f5a623','#22c55e','#a855f7','#ef4444'];
+            const colors = ['#4f7cff','#f5a623','#22d3a0','#c084fc','#f87171'];
+            const glowColors = ['rgba(79,124,255,0.7)','rgba(245,166,35,0.7)','rgba(34,211,160,0.7)','rgba(192,132,252,0.7)','rgba(248,113,113,0.7)'];
             const missionLabels = ['NCMC','CMM','NMM','WMC','ZPM'];
             let explodeProgress = 0; // progress 0..1 for detached arc view
             let pieIsExploded = false;
@@ -342,12 +343,17 @@
                   const dcy = clamp(proposedY, minY + detachedOuter, maxY - detachedOuter);
 
                   // Detached arc
+                  ctx2.save();
+                  ctx2.shadowColor = glowColors[i];
+                  ctx2.shadowBlur = 18 * p;
                   ctx2.fillStyle = colors[i];
                   ctx2.beginPath();
                   ctx2.arc(dcx, dcy, detachedOuter, drawStart, drawEnd);
                   ctx2.arc(dcx, dcy, detachedInner, drawEnd, drawStart, true);
                   ctx2.closePath();
                   ctx2.fill();
+                  ctx2.shadowBlur = 0;
+                  ctx2.restore();
 
                   // Connector line (curved + arrow)
                   const sx = cx + Math.cos(midAngle) * (outerR + 2);
@@ -384,23 +390,47 @@
                       'ZPM':  ['Zamboanga', 'Peninsular', 'Mission']
                     };
                     const lines = fullNames[label] || [label];
-                    const labelR = detachedInner + (detachedOuter - detachedInner) * 0.56;
+                    const labelR = detachedInner + (detachedOuter - detachedInner) * 0.5;
                     const tx = dcx + Math.cos(drawMid) * labelR;
                     const ty = dcy + Math.sin(drawMid) * labelR;
-                    const nameSize = Math.max(9, Math.round(8 + 3 * p));
-                    const dataSize = Math.max(9, Math.round(8 + 2 * p));
-                    const lineH = nameSize + 3;
+                    const nameSize = Math.max(10, Math.round(9 + 4 * p));
+                    const dataSize = Math.max(11, Math.round(10 + 4 * p));
+                    const lineH = nameSize + 4;
                     const totalLines = lines.length + 2;
                     const startY = ty - (totalLines / 2) * lineH + lineH * 0.5;
 
-                    ctx2.fillStyle = '#111827';
                     ctx2.textAlign = 'center';
                     ctx2.textBaseline = 'middle';
+
+                    // Mission name lines — white with dark shadow
+                    ctx2.shadowColor = 'rgba(0,0,0,0.85)';
+                    ctx2.shadowBlur = 5;
+                    ctx2.fillStyle = '#ffffff';
                     ctx2.font = `800 ${nameSize}px Montserrat,sans-serif`;
                     lines.forEach((ln, li) => ctx2.fillText(ln, tx, startY + li * lineH));
+
+                    // Divider line
+                    const divY = startY + lines.length * lineH - lineH * 0.3;
+                    const divHalfW = Math.min(detachedOuter * 0.38, 36);
+                    ctx2.shadowBlur = 0;
+                    ctx2.strokeStyle = 'rgba(255,255,255,0.5)';
+                    ctx2.lineWidth = 1;
+                    ctx2.beginPath();
+                    ctx2.moveTo(tx - divHalfW, divY);
+                    ctx2.lineTo(tx + divHalfW, divY);
+                    ctx2.stroke();
+
+                    // Percentage — bright arc color
+                    ctx2.shadowColor = 'rgba(0,0,0,0.9)';
+                    ctx2.shadowBlur = 6;
+                    ctx2.fillStyle = '#ffffff';
+                    ctx2.font = `900 ${dataSize + 2}px Montserrat,sans-serif`;
+                    ctx2.fillText(pct, tx, startY + lines.length * lineH + lineH * 0.55);
+
+                    // Money — slightly smaller, softer white
+                    ctx2.fillStyle = 'rgba(255,255,255,0.88)';
                     ctx2.font = `700 ${dataSize}px Montserrat,sans-serif`;
-                    ctx2.fillText(pct,   tx, startY + lines.length * lineH);
-                    ctx2.fillText(money, tx, startY + (lines.length + 1) * lineH);
+                    ctx2.fillText(money, tx, startY + (lines.length + 1) * lineH + lineH * 0.55);
                     ctx2.shadowBlur = 0;
                   }
                   ctx2.restore();
@@ -408,27 +438,96 @@
               }
             };
 
+            // Center label plugin
+            const centerLabelPlugin = {
+              id: 'centerLabel',
+              afterDraw(chart) {
+                if (explodeProgress > 0.12) return;
+                const { ctx: c, chartArea } = chart;
+                if (!chartArea) return;
+                const cx = (chartArea.left + chartArea.right) / 2;
+                const cy = (chartArea.top + chartArea.bottom) / 2;
+                const total = chart.data.datasets[0].data.reduce((a,b)=>a+b,0);
+                const totalM = (total/1000000).toFixed(1);
+                c.save();
+                c.textAlign = 'center';
+                c.textBaseline = 'middle';
+                c.font = '800 13px Montserrat,sans-serif';
+                c.fillStyle = 'rgba(255,255,255,0.55)';
+                c.fillText('TOTAL', cx, cy - 13);
+                c.font = '900 15px Montserrat,sans-serif';
+                c.fillStyle = '#f5a623';
+                c.shadowColor = 'rgba(245,166,35,0.8)';
+                c.shadowBlur = 10;
+                c.fillText('₱' + totalM + 'M', cx, cy + 4);
+                c.shadowBlur = 0;
+                c.font = '700 10px Montserrat,sans-serif';
+                c.fillStyle = 'rgba(255,255,255,0.45)';
+                c.fillText('2025', cx, cy + 19);
+                c.restore();
+              }
+            };
+
+            // Outer pulse ring plugin
+            let pulseT = 0;
+            const pulsePlugin = {
+              id: 'pulseRing',
+              afterDraw(chart) {
+                if (explodeProgress > 0.05) return;
+                const meta = chart.getDatasetMeta(0);
+                if (!meta.data.length) return;
+                const { ctx: c, chartArea } = chart;
+                const cx = (chartArea.left + chartArea.right) / 2;
+                const cy = (chartArea.top + chartArea.bottom) / 2;
+                const outerR = meta.data[0].outerRadius;
+                pulseT = (pulseT + 0.018) % (Math.PI * 2);
+                const pulse = 1 + Math.sin(pulseT) * 0.012;
+                const r = outerR * pulse + 6;
+                c.save();
+                const grad = c.createRadialGradient(cx, cy, r - 4, cx, cy, r + 4);
+                grad.addColorStop(0, 'rgba(79,124,255,0.0)');
+                grad.addColorStop(0.5, 'rgba(79,124,255,0.35)');
+                grad.addColorStop(1, 'rgba(79,124,255,0.0)');
+                c.beginPath();
+                c.arc(cx, cy, r, 0, Math.PI * 2);
+                c.strokeStyle = grad;
+                c.lineWidth = 8;
+                c.stroke();
+                c.restore();
+              }
+            };
+
             pieChart = new Chart(pieCanvas.getContext('2d'), {
               type: 'doughnut',
-              plugins: [ChartDataLabels, explodePlugin],
+              plugins: [ChartDataLabels, explodePlugin, centerLabelPlugin, pulsePlugin],
               data: {
                 labels: missionLabels,
                 datasets: [{
                   data: missionData.map(m => m.slice(activeFrom,activeTo+1).reduce((a,b)=>a+b,0)),
                   backgroundColor: colors,
-                  borderColor: 'rgba(255,255,255,0.25)',
-                  borderWidth: 2,
-                  hoverOffset: 8
+                  borderColor: glowColors,
+                  borderWidth: 3,
+                  hoverOffset: 14,
+                  hoverBorderWidth: 4,
+                  hoverBorderColor: '#fff'
                 }]
               },
               options: {
-                responsive: true, maintainAspectRatio: false, radius: '76%', cutout: '34%',
+                responsive: true, maintainAspectRatio: false, radius: '76%', cutout: '40%',
                 plugins: {
                   legend: { display: false },
-                  tooltip: { callbacks: { label: ctx => ` ${ctx.label}: ₱${ctx.parsed.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})}` } },
+                  tooltip: {
+                    backgroundColor: 'rgba(10,20,80,0.92)',
+                    borderColor: 'rgba(255,255,255,0.2)',
+                    borderWidth: 1,
+                    titleColor: '#f5a623',
+                    bodyColor: '#fff',
+                    padding: 10,
+                    callbacks: { label: ctx => ` ${ctx.label}: ₱${ctx.parsed.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})}` }
+                  },
                   datalabels: {
-                    color: '#fff', font: { weight: '700', size: 10 },
-                    textShadowBlur: 4, textShadowColor: 'rgba(0,0,0,0.6)',
+                    color: '#fff', font: { weight: '800', size: 11 },
+                    textShadowBlur: 6, textShadowColor: 'rgba(0,0,0,0.8)',
                     formatter: (value, ctx) => {
                       const total = ctx.chart.data.datasets[0].data.reduce((a,b)=>a+b,0);
                       const pct = ((value/total)*100).toFixed(1);
@@ -441,9 +540,14 @@
                     }
                   }
                 },
-                animation: { duration: 500 }
+                animation: { duration: 600, easing: 'easeOutQuart' }
               }
             });
+
+            // Animate pulse ring continuously
+            (function animatePulse() {
+              if (pieChart) { pieChart.draw(); requestAnimationFrame(animatePulse); }
+            })();
 
             new ResizeObserver(() => pieChart && pieChart.resize()).observe(wrap);
 
