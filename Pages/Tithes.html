@@ -376,19 +376,31 @@
                     const value = chart.data.datasets[0].data[i];
                     const pct = ((value / total) * 100).toFixed(1) + '%';
                     const money = '₱' + (value / 1000000).toFixed(1) + 'M';
+                    const fullNames = {
+                      'NCMC': ['North Central', 'Mindanao', 'Conference'],
+                      'CMM':  ['Central', 'Mindanao', 'Mission'],
+                      'NMM':  ['Northeastern', 'Mindanao', 'Mission'],
+                      'WMC':  ['Western', 'Mindanao', 'Conference'],
+                      'ZPM':  ['Zamboanga', 'Peninsular', 'Mission']
+                    };
+                    const lines = fullNames[label] || [label];
                     const labelR = detachedInner + (detachedOuter - detachedInner) * 0.56;
                     const tx = dcx + Math.cos(drawMid) * labelR;
                     const ty = dcy + Math.sin(drawMid) * labelR;
+                    const nameSize = Math.max(9, Math.round(8 + 3 * p));
+                    const dataSize = Math.max(9, Math.round(8 + 2 * p));
+                    const lineH = nameSize + 3;
+                    const totalLines = lines.length + 2;
+                    const startY = ty - (totalLines / 2) * lineH + lineH * 0.5;
 
                     ctx2.fillStyle = '#111827';
                     ctx2.textAlign = 'center';
                     ctx2.textBaseline = 'middle';
-                    ctx2.font = `800 ${Math.max(12, Math.round(11 + 4 * p))}px Montserrat,sans-serif`;
-                    ctx2.fillText(label, tx, ty - 16);
-                    ctx2.font = `800 ${Math.max(11, Math.round(10 + 3 * p))}px Montserrat,sans-serif`;
-                    ctx2.fillText(pct, tx, ty + 2);
-                    ctx2.font = `800 ${Math.max(11, Math.round(10 + 3 * p))}px Montserrat,sans-serif`;
-                    ctx2.fillText(money, tx, ty + 19);
+                    ctx2.font = `800 ${nameSize}px Montserrat,sans-serif`;
+                    lines.forEach((ln, li) => ctx2.fillText(ln, tx, startY + li * lineH));
+                    ctx2.font = `700 ${dataSize}px Montserrat,sans-serif`;
+                    ctx2.fillText(pct,   tx, startY + lines.length * lineH);
+                    ctx2.fillText(money, tx, startY + (lines.length + 1) * lineH);
                     ctx2.shadowBlur = 0;
                   }
                   ctx2.restore();
