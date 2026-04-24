@@ -102,10 +102,12 @@ function initViewAllMonths(config) {
   function toggleMain() {
     const mainCard    = document.getElementById('mainChartCard');
     const overviewCard = document.getElementById('overviewCard');
+    const headerBackBtn = document.getElementById('headerBackBtn');
     const isOverview  = !overviewCard.classList.contains('hidden');
 
     if (isOverview) {
       overviewCard.style.animation = 'fadeSlideOut 0.3s ease forwards';
+      if (headerBackBtn) headerBackBtn.classList.add('hidden');
       setTimeout(() => {
         overviewCard.classList.add('hidden');
         overviewCard.style.animation = '';
@@ -115,6 +117,7 @@ function initViewAllMonths(config) {
       }, 300);
     } else {
       mainCard.style.animation = 'fadeSlideOut 0.3s ease forwards';
+      if (headerBackBtn) headerBackBtn.classList.remove('hidden');
       setTimeout(() => {
         mainCard.classList.add('hidden');
         mainCard.style.animation = '';

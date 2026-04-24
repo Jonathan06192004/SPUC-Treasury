@@ -129,7 +129,7 @@ function initMissionPage(config) {
   });
 
   // ── Excel table ──
-  const fmt = v => v != null ? '₱' + v.toLocaleString('en-US', {minimumFractionDigits:2,maximumFractionDigits:2}) : '-';
+  const fmt = v => v != null ? v.toLocaleString('en-US', {minimumFractionDigits:2,maximumFractionDigits:2}) : '-';
   const fmtVariance = (v25, v26) => {
     if (v25 == null || v26 == null) return '<td class="cell-variance">-</td>';
     const diff = v26 - v25;
@@ -194,7 +194,7 @@ function initMissionPage(config) {
     modal.id = 'tableModal';
     modal.innerHTML = `
       <div class="table-modal-header">
-        <span class="table-modal-title">${label} — JANUARY TO DECEMBER</span>
+        <span class="table-modal-title">${label} — JANUARY TO DECEMBER <span style="font-size:0.6em;opacity:0.75;font-weight:600;letter-spacing:1px;text-transform:none;">(in PESO)</span></span>
         <button class="table-modal-close" onclick="closeTableModal()">&#10005;</button>
       </div>
       <div class="table-modal-body">

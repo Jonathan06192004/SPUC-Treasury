@@ -410,7 +410,7 @@ main {
 
 .excel-table td {
   padding: 4px 8px;
-  text-align: right;
+  text-align: center;
   border: 1px solid #dde3f0;
   white-space: nowrap;
   font-size: 0.72rem;
@@ -623,7 +623,7 @@ footer {
 
 .table-modal .table-modal-table { width: 100%; border-collapse: collapse; table-layout: fixed; font-size: clamp(1rem, 1.2vw, 1.35rem) !important; color: #1e293b; }
 .table-modal .table-modal-table th { font-size: clamp(0.95rem, 1.1vw, 1.25rem) !important; padding: 7px 10px !important; text-align: center; font-weight: 700; white-space: nowrap; border: 1px solid #c7d0e8; color: #fff; }
-.table-modal .table-modal-table td { font-size: clamp(1rem, 1.2vw, 1.35rem) !important; padding: 7px 10px !important; text-align: right; border: 1px solid #dde3f0; white-space: nowrap; }
+.table-modal .table-modal-table td { font-size: clamp(1rem, 1.2vw, 1.35rem) !important; padding: 7px 10px !important; text-align: center; border: 1px solid #dde3f0; white-space: nowrap; }
 .table-modal .table-modal-table .month-cell { text-align: center !important; }
 .table-modal .table-modal-table tbody tr:nth-child(even) td { background: #f8faff; }
 .table-modal .table-modal-table tbody tr:hover td { background: #eef2ff; transition: background 0.15s; }

@@ -18,6 +18,7 @@
         <strong>Southwestern Philippines</strong> Union Conference
       </div>
     </div>
+    <button class="btn-back" onclick="history.back()">&#8592; Back</button>
   </header>
 
   <main>
@@ -37,7 +38,7 @@
           <button class="tab-btn active" onclick="switchTab('balance', this)">BALANCE SHEET</button>
           <button class="tab-btn" onclick="switchTab('income', this)">INCOME STATEMENT</button>
           <button class="tab-btn" onclick="switchTab('cashflow', this)">CASH FLOW</button>
-          <button class="tab-btn" onclick="switchTab('equity', this)">FINANCIAL LIQUIDITY</button>
+          <button class="tab-btn" onclick="switchTab('equity', this)">FINANCIAL INDICATOR</button>
         </div>
 
         <!-- INCOME STATEMENT -->
@@ -147,10 +148,10 @@
           </div>
         </div>
 
-        <!-- FINANCIAL LIQUIDITY -->
+        <!-- FINANCIAL INDICATOR -->
         <div class="fs-panel" id="tab-equity">
           <div class="fs-panel-header">
-            <span class="fs-panel-title">STATEMENT OF FINANCIAL LIQUIDITY</span>
+            <span class="fs-panel-title">STATEMENT OF FINANCIAL INDICATOR</span>
             <div class="bs-month-wrap">
               <span class="fs-panel-period" id="flPeriodLabel">JANUARY 2026</span>
               <select class="bs-month-select" id="flMonthSelect" onchange="renderFinancialLiquidity()">
@@ -656,7 +657,7 @@
       document.getElementById('cfZoomLabel').textContent = cfZoomLevel + '%';
     }
 
-    // ---- Financial Liquidity monthly data ----
+    // ---- Financial Indicator monthly data ----
     const flData = [
       { unrestrictedBeg:97176784.42, restrictedBeg:24000000, tithes:61301229.98, offerings:23721985.60, expenses:62200000, unrestrictedEnd:120000000, restrictedEnd:24000000 },
       { unrestrictedBeg:120000000, restrictedBeg:24000000, tithes:58420180, offerings:22380450, expenses:59800000, unrestrictedEnd:141000630, restrictedEnd:24000000 },

@@ -45,6 +45,27 @@ header {
 }
 .btn-back:hover { transform: translateY(-3px) scale(1.04); background: rgba(245,166,35,0.3); }
 
+.btn-dashboard {
+  background: linear-gradient(135deg, #1a237e, #0f1e5c);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(79,124,255,0.6);
+  color: #fff;
+  padding: 10px 22px;
+  border-radius: 6px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: 'Montserrat', sans-serif;
+  letter-spacing: 1.5px;
+  box-shadow: 0 0 10px rgba(79,124,255,0.3), inset 0 0 0 1px rgba(79,124,255,0.4);
+  transition: transform 0.25s ease, background 0.25s ease, box-shadow 0.25s ease;
+}
+.btn-dashboard:hover {
+  transform: translateY(-3px) scale(1.04);
+  background: linear-gradient(135deg, #2a3a9e, #1a2e7e);
+  box-shadow: 0 0 18px rgba(79,124,255,0.5), inset 0 0 0 1px rgba(79,124,255,0.7);
+}
+
 .logo-area { display: flex; align-items: center; gap: 12px; }
 .logo-img { width: 52px; height: 52px; object-fit: contain; }
 .org-name { font-size: 0.85rem; font-weight: 400; line-height: 1.3; }
@@ -287,7 +308,7 @@ main {
 
 .excel-table td {
   padding: 4px 8px;
-  text-align: right;
+  text-align: center;
   border: 1px solid #dde3f0;
   white-space: nowrap;
   font-size: 0.72rem;
@@ -449,7 +470,7 @@ footer {
 .table-modal-body { overflow: auto; flex: 1; padding: 0; }
 .table-modal .table-modal-table { width: 100%; border-collapse: collapse; table-layout: fixed; font-size: clamp(1rem, 1.2vw, 1.35rem) !important; color: #1e293b; }
 .table-modal .table-modal-table th { font-size: clamp(0.95rem, 1.1vw, 1.25rem) !important; padding: 7px 10px !important; text-align: center; font-weight: 700; white-space: nowrap; border: 1px solid #c7d0e8; color: #fff; }
-.table-modal .table-modal-table td { font-size: clamp(1rem, 1.2vw, 1.35rem) !important; padding: 7px 10px !important; text-align: right; border: 1px solid #dde3f0; white-space: nowrap; }
+.table-modal .table-modal-table td { font-size: clamp(1rem, 1.2vw, 1.35rem) !important; padding: 7px 10px !important; text-align: center; border: 1px solid #dde3f0; white-space: nowrap; }
 .table-modal .table-modal-table .month-cell { text-align: center !important; }
 .table-modal .table-modal-table tbody tr:nth-child(even) td { background: #f8faff; }
 .table-modal .table-modal-table tbody tr:hover td { background: #eef2ff; transition: background 0.15s; }
