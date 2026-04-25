@@ -208,7 +208,7 @@
     });
 
     // Summary Table
-    const fmt = v => v != null ? '₱' + v.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}) : '-';
+    const fmt = v => v != null ? v.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}) : '-';
 
     function renderTable(tithes, offerings) {
       const tbody = document.getElementById('summaryBody');

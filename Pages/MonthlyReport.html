@@ -49,10 +49,15 @@
               <option value="December">December</option>
             </select>
             <span class="mr-year-label">2026</span>
+            <div class="mr-zoom-wrap">
+              <button class="mr-zoom-btn" onclick="mrZoom(-1)" title="Zoom Out">&#8722;</button>
+              <span class="mr-zoom-label" id="mrZoomLabel">100%</span>
+              <button class="mr-zoom-btn" onclick="mrZoom(1)" title="Zoom In">&#43;</button>
+            </div>
           </div>
         </div>
         <div class="mr-scroll">
-          <div class="mr-split">
+          <div class="mr-split" id="mrSplit">
 
             <!-- LEFT: Institutions Panel -->
             <div class="mr-inst-panel" id="instPanel">
@@ -273,9 +278,12 @@
     function updateMonthLabel() {
       const sel = document.getElementById('mrMonthSelect');
       const month = sel.value.toUpperCase();
-      document.querySelector('.mr-year-label').textContent = '2026 — ' + month;
+      document.querySelector('.mr-year-label').textContent = month + ' 2026';
       document.getElementById('mrSummaryPeriod').textContent = month + ' 2026';
     }
+    // Set default month to current month
+    const currentMonth = new Date().toLocaleString('en-US', { month: 'long' });
+    document.getElementById('mrMonthSelect').value = currentMonth;
     updateMonthLabel();
 
     // Sync vertical scroll between institutions panel and data grid
@@ -283,6 +291,19 @@
     const dataScroll = document.getElementById('dataScroll');
     instPanel.addEventListener('scroll', () => { dataScroll.scrollTop = instPanel.scrollTop; });
     dataScroll.addEventListener('scroll', () => { instPanel.scrollTop = dataScroll.scrollTop; });
+
+    // Zoom
+    let mrZoomLevel = 100;
+    function mrZoom(dir) {
+      mrZoomLevel = Math.min(200, Math.max(60, mrZoomLevel + dir * 10));
+      const inner = document.getElementById('mrSplit');
+      const scale = mrZoomLevel / 100;
+      inner.style.transformOrigin = 'top left';
+      inner.style.transform = `scale(${scale})`;
+      inner.style.width = (100 / scale) + '%';
+      inner.style.height = (100 / scale) + '%';
+      document.getElementById('mrZoomLabel').textContent = mrZoomLevel + '%';
+    }
   </script>
 </body>
 </html>

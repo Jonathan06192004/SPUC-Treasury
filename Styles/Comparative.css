@@ -374,7 +374,7 @@ main {
 
 .summary-table td {
   padding: 3px 6px;
-  text-align: right;
+  text-align: center;
   border: 1px solid #dde3f0;
   white-space: nowrap;
   font-size: 0.68rem;
@@ -489,7 +489,7 @@ main {
 .table-modal .table-modal-table td {
   font-size: clamp(1rem, 1.2vw, 1.35rem) !important;
   padding: 7px 10px !important;
-  text-align: right;
+  text-align: center;
   border: 1px solid #dde3f0;
   white-space: nowrap;
 }

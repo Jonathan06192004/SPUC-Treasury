@@ -45,6 +45,27 @@ header {
 }
 .btn-back:hover { transform: translateY(-3px) scale(1.04); background: rgba(245,166,35,0.3); }
 
+.btn-dashboard {
+  background: linear-gradient(135deg, #1a237e, #0f1e5c);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(79,124,255,0.6);
+  color: #fff;
+  padding: 10px 22px;
+  border-radius: 6px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: 'Montserrat', sans-serif;
+  letter-spacing: 1.5px;
+  box-shadow: 0 0 10px rgba(79,124,255,0.3), inset 0 0 0 1px rgba(79,124,255,0.4);
+  transition: transform 0.25s ease, background 0.25s ease, box-shadow 0.25s ease;
+}
+.btn-dashboard:hover {
+  transform: translateY(-3px) scale(1.04);
+  background: linear-gradient(135deg, #2a3a9e, #1a2e7e);
+  box-shadow: 0 0 18px rgba(79,124,255,0.5), inset 0 0 0 1px rgba(79,124,255,0.7);
+}
+
 .logo-area { display: flex; align-items: center; gap: 12px; }
 .logo-img { width: 52px; height: 52px; object-fit: contain; }
 .org-name { font-size: 0.85rem; font-weight: 400; line-height: 1.3; }
