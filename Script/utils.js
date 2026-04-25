@@ -83,6 +83,46 @@ function initMissionPage(config) {
   const VISIBLE_MONTHS = 4;
   const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
   const { canvasId, data2025, data2026, dataTarget } = config;
+  const headerBackBtn = document.getElementById('headerBackBtn');
+
+  // Keep mission-page "Back to Detail View" visuals aligned with Tithes/Offerings.
+  if (!document.getElementById('missionBackBtnStyles')) {
+    const style = document.createElement('style');
+    style.id = 'missionBackBtnStyles';
+    style.textContent = `
+      .btn-toggle-back-header {
+        padding: 10px 22px;
+        background: linear-gradient(135deg, rgba(245,166,35,0.25), rgba(245,166,35,0.15));
+        border: 2px solid #f5a623;
+        border-radius: 6px;
+        color: #fff;
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 600;
+        font-size: 0.82rem;
+        letter-spacing: 2px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 0 20px rgba(245,166,35,0.4), inset 0 0 20px rgba(245,166,35,0.1);
+        text-shadow: 0 2px 8px rgba(0,0,0,0.5);
+      }
+      .btn-toggle-back-header:hover {
+        background: linear-gradient(135deg, rgba(245,166,35,0.4), rgba(245,166,35,0.25));
+        transform: translateY(-3px) scale(1.05);
+        box-shadow: 0 0 30px rgba(245,166,35,0.6), inset 0 0 25px rgba(245,166,35,0.2);
+        border-color: #ffc107;
+      }
+      .btn-toggle-back-header.hidden { display: none !important; }
+      .btn-toggle-back-inline { display: none; }
+    `;
+    document.head.appendChild(style);
+  }
+
+  if (headerBackBtn) {
+    headerBackBtn.classList.add('btn-toggle-back');
+    headerBackBtn.classList.add('btn-toggle-back-header');
+    headerBackBtn.classList.add('hidden');
+    headerBackBtn.textContent = 'BACK TO DETAIL VIEW';
+  }
 
   // ── Main scrollable bar chart ──
   const canvas = document.getElementById(canvasId);
@@ -245,6 +285,7 @@ function initMissionPage(config) {
     const isOverview   = !overviewCard.classList.contains('hidden');
     if (isOverview) {
       overviewCard.style.animation = 'fadeSlideOut 0.3s ease forwards';
+      if (headerBackBtn) headerBackBtn.classList.add('hidden');
       setTimeout(() => {
         overviewCard.classList.add('hidden'); overviewCard.style.animation = '';
         mainCard.classList.remove('hidden'); mainCard.style.animation = 'fadeSlideIn 0.4s ease forwards';
@@ -252,6 +293,7 @@ function initMissionPage(config) {
       }, 300);
     } else {
       mainCard.style.animation = 'fadeSlideOut 0.3s ease forwards';
+      if (headerBackBtn) headerBackBtn.classList.remove('hidden');
       setTimeout(() => {
         mainCard.classList.add('hidden'); mainCard.style.animation = '';
         overviewCard.classList.remove('hidden'); overviewCard.style.animation = 'fadeSlideIn 0.4s ease forwards';

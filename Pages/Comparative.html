@@ -72,7 +72,6 @@
             </div>
             <span class="filter-active-pill hidden" id="filterActivePill"></span>
           </div>
-          <button class="btn-toggle-back" onclick="toggleMain()">&#9650; BACK TO DETAIL VIEW</button>
         </div>
         <div class="overview-charts-row">
           <div class="overview-chart-wrap"><canvas id="overviewChart"></canvas></div>
@@ -361,12 +360,14 @@
     function toggleMain() {
       const mainCard = document.getElementById('mainChartCard');
       const overviewCard = document.getElementById('overviewCard');
+      const toggleMainBtn = document.getElementById('toggleMainBtn');
       const isOverview = !overviewCard.classList.contains('hidden');
       if (isOverview) {
         overviewCard.style.animation = 'fadeSlideOut 0.3s ease forwards';
         setTimeout(() => {
           overviewCard.classList.add('hidden'); overviewCard.style.animation = '';
           mainCard.classList.remove('hidden'); mainCard.style.animation = 'fadeSlideIn 0.4s ease forwards';
+          toggleMainBtn.innerHTML = '&#9660; VIEW ALL MONTHS';
           setTimeout(() => mainCard.style.animation = '', 400);
         }, 300);
       } else {
@@ -374,6 +375,7 @@
         setTimeout(() => {
           mainCard.classList.add('hidden'); mainCard.style.animation = '';
           overviewCard.classList.remove('hidden'); overviewCard.style.animation = 'fadeSlideIn 0.4s ease forwards';
+          toggleMainBtn.innerHTML = '&#9650; BACK TO DETAIL VIEW';
           setTimeout(() => overviewCard.style.animation = '', 400);
           const tithes = currentYear === 2025 ? dataTithes2025 : dataTithes2026;
           const offerings = currentYear === 2025 ? dataOfferings2025 : dataOfferings2026;

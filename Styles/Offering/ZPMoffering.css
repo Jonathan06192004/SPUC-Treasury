@@ -234,6 +234,29 @@ main {
 @keyframes fadeInBtn { from { opacity: 0; transform: scale(0.6); } to { opacity: 1; transform: scale(1); } }
 .btn-toggle-back { flex-shrink: 0; padding: 5px 12px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.25); border-radius: 6px; color: #fff; font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 0.65rem; letter-spacing: 1.5px; cursor: pointer; transition: background 0.2s; }
 .btn-toggle-back:hover { background: rgba(255,255,255,0.2); }
+
+.btn-toggle-back-header {
+  padding: 10px 22px;
+  background: linear-gradient(135deg, rgba(245,166,35,0.25), rgba(245,166,35,0.15));
+  border: 2px solid #f5a623;
+  border-radius: 6px;
+  color: #fff;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 600;
+  font-size: 0.82rem;
+  letter-spacing: 2px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 0 20px rgba(245,166,35,0.4), inset 0 0 20px rgba(245,166,35,0.1);
+  text-shadow: 0 2px 8px rgba(0,0,0,0.5);
+}
+.btn-toggle-back-header:hover {
+  background: linear-gradient(135deg, rgba(245,166,35,0.4), rgba(245,166,35,0.25));
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: 0 0 30px rgba(245,166,35,0.6), inset 0 0 25px rgba(245,166,35,0.2);
+  border-color: #ffc107;
+}
+.btn-toggle-back-header.hidden { display: none; }
 .overview-top-bar { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-shrink: 0; }
 .month-filter-wrap { position: relative; display: flex; align-items: center; gap: 8px; }
 .btn-month-filter { padding: 5px 12px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.25); border-radius: 6px; color: #fff; font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 0.65rem; letter-spacing: 1.5px; cursor: pointer; transition: background 0.2s; white-space: nowrap; }
