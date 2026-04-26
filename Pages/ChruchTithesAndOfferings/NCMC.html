@@ -254,11 +254,38 @@
   <div class="church-modal-overlay hidden" id="churchModalOverlay" onclick="closeChurchModal()"></div>
   <div class="church-modal hidden" id="churchModal">
     <div class="church-modal-header">
-      <span class="church-modal-title" id="churchModalTitle">Churches</span>
+      <div>
+        <span class="church-modal-title" id="churchModalTitle">District Profile</span>
+        <p class="church-modal-subtitle" id="churchModalSubtitle">0 churches</p>
+      </div>
       <button class="church-modal-close" onclick="closeChurchModal()">&#10005;</button>
     </div>
     <div class="church-modal-body">
-      <ul class="church-modal-list" id="churchModalList"></ul>
+      <div class="church-profile-strip">
+        <div class="church-profile-avatar" id="churchProfileAvatar">D</div>
+        <div class="church-profile-meta">
+          <p class="church-profile-label">District</p>
+          <p class="church-profile-name" id="churchProfileName">-</p>
+        </div>
+      </div>
+      <div class="church-modal-tabs">
+        <button class="church-modal-tab active" id="churchModalTabTithes" onclick="setChurchModalTab('tithes')">Tithes</button>
+        <button class="church-modal-tab" id="churchModalTabOfferings" onclick="setChurchModalTab('offerings')">Offerings</button>
+      </div>
+      <div class="church-modal-table-wrap">
+        <table class="church-modal-data-table" id="churchModalTable">
+          <thead>
+            <tr>
+              <th>Church</th>
+              <th>2025</th>
+              <th>2026</th>
+              <th>Variance %</th>
+              <th>Inc/Dec vs Prev Yr</th>
+            </tr>
+          </thead>
+          <tbody id="churchModalTableBody"></tbody>
+        </table>
+      </div>
     </div>
   </div>
 
@@ -627,10 +654,83 @@
       return generated;
     }
 
-    function openChurchModal(district, count) {
+    const CHURCH_MODAL_DATA = {};
+
+    function formatCurrencyValue(value) {
+      return '₱' + currency.format(value);
+    }
+
+    function formatDeltaValue(value) {
+      const sign = value >= 0 ? '+' : '-';
+      return `${sign}₱${currency.format(Math.abs(value))}`;
+    }
+
+    function buildChurchMetrics(district, names, type) {
+      const districtSeed = district.split('').reduce((sum, ch) => sum + ch.charCodeAt(0), 0);
+      const baseMin = type === 'tithes' ? 28000 : 7000;
+      const baseRange = type === 'tithes' ? 260000 : 78000;
+      return names.map((church, idx) => {
+        const churchSeed = church.split('').reduce((sum, ch) => sum + ch.charCodeAt(0), 0);
+        const seed = districtSeed + churchSeed + idx * 37 + (type === 'tithes' ? 111 : 59);
+        const y2025 = baseMin + (seed * 179) % baseRange;
+        const swingRatio = 0.72 + ((seed * 17) % 61) / 100;
+        const y2026 = y2025 * swingRatio;
+        const variancePct = ((y2026 - y2025) / y2025) * 100;
+        const incDec = y2026 - y2025;
+        return {
+          church,
+          y2025,
+          y2026,
+          variancePct,
+          incDec
+        };
+      });
+    }
+
+    function getChurchModalData(district, count) {
+      const cacheKey = `${district}|${count}`;
+      if (CHURCH_MODAL_DATA[cacheKey]) return CHURCH_MODAL_DATA[cacheKey];
       const names = getChurchNames(district, count);
-      document.getElementById('churchModalTitle').textContent = `${district} (${count} churches)`;
-      document.getElementById('churchModalList').innerHTML = names.map((name) => `<li>${name}</li>`).join('');
+      const built = {
+        tithes: buildChurchMetrics(district, names, 'tithes'),
+        offerings: buildChurchMetrics(district, names, 'offerings')
+      };
+      CHURCH_MODAL_DATA[cacheKey] = built;
+      return built;
+    }
+
+    function renderChurchModalTable(tab) {
+      const district = document.getElementById('churchProfileName').textContent;
+      const count = Number(document.getElementById('churchModalSubtitle').dataset.count || '0');
+      const modalData = getChurchModalData(district, count)[tab];
+      const body = document.getElementById('churchModalTableBody');
+      body.innerHTML = modalData.map((row) => {
+        const varianceClass = row.variancePct >= 0 ? 'pos' : 'neg';
+        const deltaClass = row.incDec >= 0 ? 'pos' : 'neg';
+        return `<tr>
+          <td class="church-name-cell">${row.church}</td>
+          <td>${formatCurrencyValue(row.y2025)}</td>
+          <td>${formatCurrencyValue(row.y2026)}</td>
+          <td class="${varianceClass}">${row.variancePct >= 0 ? '+' : ''}${row.variancePct.toFixed(1)}%</td>
+          <td class="${deltaClass}">${formatDeltaValue(row.incDec)}</td>
+        </tr>`;
+      }).join('');
+    }
+
+    function setChurchModalTab(tab) {
+      const isTithes = tab === 'tithes';
+      document.getElementById('churchModalTabTithes').classList.toggle('active', isTithes);
+      document.getElementById('churchModalTabOfferings').classList.toggle('active', !isTithes);
+      renderChurchModalTable(tab);
+    }
+
+    function openChurchModal(district, count) {
+      document.getElementById('churchModalTitle').textContent = `${district} District Profile`;
+      document.getElementById('churchModalSubtitle').textContent = `${count} churches`;
+      document.getElementById('churchModalSubtitle').dataset.count = String(count);
+      document.getElementById('churchProfileName').textContent = district;
+      document.getElementById('churchProfileAvatar').textContent = district.charAt(0).toUpperCase();
+      setChurchModalTab('tithes');
       document.getElementById('churchModalOverlay').classList.remove('hidden');
       document.getElementById('churchModal').classList.remove('hidden');
     }

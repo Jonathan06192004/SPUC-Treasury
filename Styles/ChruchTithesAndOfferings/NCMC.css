@@ -605,7 +605,7 @@ main {
 .church-modal {
   position: fixed;
   z-index: 251;
-  width: min(520px, 92vw);
+  width: min(760px, 94vw);
   max-height: 80vh;
   left: 50%;
   top: 50%;
@@ -640,9 +640,16 @@ main {
 
 .church-modal-title {
   font-family: 'Montserrat', sans-serif;
-  font-size: 0.8rem;
+  font-size: 0.9rem;
   letter-spacing: 1px;
   font-weight: 800;
+}
+
+.church-modal-subtitle {
+  margin-top: 3px;
+  font-size: 0.7rem;
+  color: rgba(255,255,255,0.82);
+  letter-spacing: 0.7px;
 }
 
 .church-modal-close {
@@ -657,16 +664,132 @@ main {
 }
 
 .church-modal-body {
-  padding: 12px 14px;
+  padding: 12px 14px 14px;
   max-height: calc(80vh - 54px);
   overflow: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
-.church-modal-list {
+.church-profile-strip {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 10px;
+  background: linear-gradient(135deg, #eef3ff, #e8efff);
+  border: 1px solid #d3def7;
+  border-radius: 10px;
+}
+
+.church-profile-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #1a237e, #2e3f8f);
+  color: #f5c24d;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 1rem;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+}
+
+.church-profile-label {
+  font-size: 0.68rem;
+  color: #64748b;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  font-weight: 700;
+}
+
+.church-profile-name {
+  font-size: 0.98rem;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 800;
+  color: #10274a;
+  margin-top: 2px;
+}
+
+.church-modal-tabs {
+  display: flex;
+  gap: 6px;
+}
+
+.church-modal-tab {
+  border: 1px solid #b8c8e0;
+  background: linear-gradient(135deg, #e8edf8, #dde5f5);
+  color: #1e3a8a;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 1px;
+  padding: 6px 14px;
+  border-radius: 7px;
+  cursor: pointer;
+  font-family: 'Montserrat', sans-serif;
+  transition: all 0.2s ease;
+}
+
+.church-modal-tab.active {
+  background: linear-gradient(135deg, #1a237e, #0f1e5c);
+  color: #f5a623;
+  border-color: rgba(245,166,35,0.5);
+}
+
+.church-modal-table-wrap {
+  border: 1px solid #cdd8eb;
+  border-radius: 8px;
+  overflow: auto;
+  max-height: 46vh;
+  box-shadow: inset 0 2px 8px rgba(15,23,42,0.05);
+}
+
+.church-modal-data-table {
+  width: 100%;
+  border-collapse: collapse;
   color: #0f172a;
-  margin-left: 20px;
-  display: grid;
-  gap: 7px;
+  font-size: 0.72rem;
+}
+
+.church-modal-data-table th {
+  position: sticky;
+  top: 0;
+  background: #1a237e;
+  color: #fff;
+  border: 1px solid rgba(255,255,255,0.14);
+  padding: 7px 8px;
+  text-align: right;
+  white-space: nowrap;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.62rem;
+  letter-spacing: 0.7px;
+}
+
+.church-modal-data-table th:first-child {
+  text-align: left;
+}
+
+.church-modal-data-table td {
+  border: 1px solid #e2e8f0;
+  padding: 5px 8px;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.church-modal-data-table tr:nth-child(odd) td {
+  background: #f8fafc;
+}
+
+.church-modal-data-table tr:nth-child(even) td {
+  background: #f1f5f9;
+}
+
+.church-name-cell {
+  text-align: left !important;
+  font-weight: 700;
+  color: #1e3a8a;
 }
 
 /* ---- Right Column ---- */

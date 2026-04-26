@@ -1,0 +1,1050 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>NMM Dashboard | Treasury SPUC</title>
+  <link rel="icon" type="image/png" href="../../Assets/logo.png"/>
+  <link rel="stylesheet" href="../../Styles/ChruchTithesAndOfferings/NMM.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Montserrat:wght@700;800;900&display=swap" rel="stylesheet"/>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+  <script src="../../Script/utils.js"></script>
+</head>
+<body>
+
+  <header>
+    <div class="logo-area" onclick="location.href='../../index.html'" style="cursor:pointer;">
+      <img src="../../Assets/logo.png" alt="Logo" class="logo-img"/>
+      <div class="org-name">
+        <strong>Southwestern Philippines</strong> Union Conference
+      </div>
+    </div>
+    <div style="display:flex;gap:10px;">
+      <button class="btn-back" onclick="history.back()">&#8592; Back</button>
+    </div>
+  </header>
+
+  <main>
+    <div class="title-row">
+      <div class="title-left"></div>
+      <p class="page-subtitle">Northeastern Mindanao Mission</p>
+      <h1 class="page-title page-title-text">CHURCH TITHES AND OFFERINGS</h1>
+    </div>
+
+    <div class="dashboard-body">
+
+      <!-- LEFT: Charts -->
+      <div class="dash-left">
+
+        <!-- Charts Row: side by side -->
+        <div class="charts-row" id="chartsRow">
+
+          <!-- Bar Chart Panel -->
+          <div class="dash-chart-panel bar-panel" id="barPanel" onclick="expandChart('bar')">
+            <div class="dash-panel-header">
+              <div style="display:flex;align-items:center;gap:10px;">
+                <span class="dash-panel-title">CHURCH TITHES &amp; OFFERINGS</span>
+                <span class="dash-panel-period" id="barPeriodLabel">2022 - 2026</span>
+              </div>
+              <div style="display:flex;align-items:center;gap:8px;" onclick="event.stopPropagation()">
+                <div class="year-select-wrap">
+                  <span class="year-select-label">VIEW:</span>
+                  <select class="year-select" id="yearSelect" onchange="updateCharts()">
+                    <option value="all">All Years</option>
+                    <option value="2022">2022</option>
+                    <option value="2023">2023</option>
+                    <option value="2024">2024</option>
+                    <option value="2025">2025</option>
+                    <option value="2026">2026</option>
+                  </select>
+                </div>
+                <button class="chart-expand-btn" id="barExpandBtn" onclick="event.stopPropagation(); expandChart('bar')">&#x26F6;</button>
+                <button class="chart-collapse-btn hidden" id="barCollapseBtn" onclick="event.stopPropagation(); collapseCharts()">&#10005;</button>
+              </div>
+            </div>
+            <div class="chart-inner">
+              <canvas id="barChart"></canvas>
+            </div>
+          </div>
+
+          <!-- Donut Chart Panel -->
+          <div class="dash-chart-panel donut-panel" id="donutPanel" onclick="expandChart('donut')">
+            <div class="dash-panel-header">
+              <div style="display:flex;align-items:center;gap:10px;">
+                <span class="dash-panel-title">TITHE SOURCE BREAKDOWN</span>
+                <span class="dash-panel-period">2026</span>
+              </div>
+              <div style="display:flex;align-items:center;gap:8px;" onclick="event.stopPropagation()">
+                <button class="chart-expand-btn" id="donutExpandBtn" onclick="event.stopPropagation(); expandChart('donut')">&#x26F6;</button>
+                <button class="chart-collapse-btn hidden" id="donutCollapseBtn" onclick="event.stopPropagation(); collapseCharts()">&#10005;</button>
+              </div>
+            </div>
+            <div class="chart-inner" id="wrap-pie" style="position:relative;">
+              <canvas id="donutChart"></canvas>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- SEE TABLE button outside charts -->
+        <div class="table-toggle-row">
+          <button class="btn-see-table" id="seeTableBtn" onclick="toggleTablePanel()">&#128203; SEE TABLE</button>
+        </div>
+
+        <div class="table-section hidden" id="tableSection">
+          <div class="table-tabs">
+            <button class="table-tab active" id="tabTithes" onclick="setTableTab('tithes')">&#128203; TITHES</button>
+            <button class="table-tab" id="tabOfferings" onclick="setTableTab('offerings')">&#128591; OFFERINGS</button>
+          </div>
+
+          <div class="table-content active" id="tithesTableWrap">
+            <div class="table-scroll-wrap">
+              <table class="ncmc-data-table">
+                <thead>
+                  <tr class="title-row-main">
+                    <th colspan="2"></th>
+                    <th colspan="4">TITHE FROM CHURCHES &mdash; as of January 2026</th>
+                    <th>Generosity Index</th>
+                    <th># of Churches</th>
+                    <th>Membership</th>
+                  </tr>
+                  <tr>
+                    <th>#</th>
+                    <th>DISTRICT</th>
+                    <th>2026</th>
+                    <th>2025</th>
+                    <th>Variance</th>
+                    <th>%</th>
+                    <th>Gen. Index</th>
+                    <th>Churches</th>
+                    <th>Members</th>
+                  </tr>
+                </thead>
+                <tbody id="tithesTableBody"></tbody>
+                <tfoot>
+                  <tr class="summary-sub-row">
+                    <td colspan="2">Tithe from Churches</td>
+                    <td>9,825,342.95</td>
+                    <td>11,693,864.40</td>
+                    <td class="neg">(1,868,521.45)</td>
+                    <td class="neg">(16%)</td>
+                    <td colspan="3"></td>
+                  </tr>
+                  <tr class="summary-sub-row">
+                    <td colspan="2">Tithe from Workers</td>
+                    <td>302,733.70</td>
+                    <td>786,773.40</td>
+                    <td class="neg">(484,039.70)</td>
+                    <td class="neg">(62%)</td>
+                    <td colspan="3"></td>
+                  </tr>
+                  <tr class="summary-sub-row">
+                    <td colspan="2">Tithe from LES</td>
+                    <td>0.00</td>
+                    <td>5,359.19</td>
+                    <td class="neg">(5,359.19)</td>
+                    <td class="neg">(100%)</td>
+                    <td colspan="3"></td>
+                  </tr>
+                  <tr class="summary-sub-row">
+                    <td colspan="2">Tithe from Outside</td>
+                    <td>534,525.00</td>
+                    <td>349,095.56</td>
+                    <td class="pos">185,429.44</td>
+                    <td class="pos">53%</td>
+                    <td colspan="3"></td>
+                  </tr>
+                  <tr class="tfoot-total">
+                    <td colspan="2">TOTAL TITHE INCOME</td>
+                    <td>10,662,601.65</td>
+                    <td>12,835,092.55</td>
+                    <td class="neg">(2,172,490.90)</td>
+                    <td class="neg">(17%)</td>
+                    <td>54.40</td>
+                    <td>337</td>
+                    <td>76,539</td>
+                  </tr>
+                </tfoot>
+              </table>
+            </div>
+          </div>
+
+          <div class="table-content" id="offeringsTableWrap">
+            <div class="table-scroll-wrap">
+              <table class="ncmc-data-table ncmc-offering-table">
+                <thead>
+                  <tr class="title-row-main">
+                    <th colspan="2"></th>
+                    <th colspan="4">OFFERINGS FROM CHURCHES &mdash; as of January 2026</th>
+                  </tr>
+                  <tr>
+                    <th>#</th>
+                    <th>DISTRICT</th>
+                    <th>2026</th>
+                    <th>2025</th>
+                    <th>Variance</th>
+                    <th>%</th>
+                  </tr>
+                </thead>
+                <tbody id="offeringsTableBody"></tbody>
+                <tfoot>
+                  <tr class="summary-sub-row">
+                    <td colspan="2">Offerings from Churches</td>
+                    <td>2,094,824.13</td>
+                    <td>3,074,187.05</td>
+                    <td class="neg">(979,362.92)</td>
+                    <td class="neg">-32%</td>
+                  </tr>
+                  <tr class="tfoot-total">
+                    <td colspan="2">TOTAL OFFERINGS</td>
+                    <td>2,094,824.13</td>
+                    <td>3,074,187.05</td>
+                    <td class="neg">(979,362.92)</td>
+                    <td class="neg">-32%</td>
+                  </tr>
+                </tfoot>
+              </table>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- RIGHT: KPIs + Stats -->
+      <div class="dash-right">
+
+        <div class="kpi-card kpi-blue">
+          <p class="kpi-label">TOTAL TITHE (2026)</p>
+          <p class="kpi-value" id="kpiTithe">PHP 9,825,342.95</p>
+          <p class="kpi-sub">Jan 2026 YTD</p>
+        </div>
+
+        <div class="kpi-card kpi-gold">
+          <p class="kpi-label">TOTAL OFFERINGS (2026)</p>
+          <p class="kpi-value" id="kpiOffering">PHP 4,189,643.26</p>
+          <p class="kpi-sub">Jan 2026 YTD</p>
+        </div>
+
+        <div class="kpi-card kpi-red">
+          <p class="kpi-label">TARGET (2026)</p>
+          <p class="kpi-value" id="kpiTarget">PHP 10,000,000.00</p>
+          <p class="kpi-sub">Annual target</p>
+        </div>
+
+        <div class="kpi-card kpi-green">
+          <p class="kpi-label">VARIANCE</p>
+          <p class="kpi-value" id="kpiVariance">-PHP 174,657.05</p>
+          <p class="kpi-sub">Tithe vs Target</p>
+        </div>
+
+        <div class="kpi-card kpi-blue">
+          <p class="kpi-label">COMBINED TOTAL (2026)</p>
+          <p class="kpi-value" id="kpiCombined">PHP 14,014,986.21</p>
+          <p class="kpi-sub">Tithe + Offerings</p>
+        </div>
+
+        <!-- Clock -->
+        <div class="side-clock" id="sideClock"></div>
+
+      </div>
+    </div>
+  </main>
+
+  <div class="church-modal-overlay hidden" id="churchModalOverlay" onclick="closeChurchModal()"></div>
+  <div class="church-modal hidden" id="churchModal">
+    <div class="church-modal-header">
+      <div>
+        <span class="church-modal-title" id="churchModalTitle">District Profile</span>
+        <p class="church-modal-subtitle" id="churchModalSubtitle">0 churches</p>
+      </div>
+      <button class="church-modal-close" onclick="closeChurchModal()">&#10005;</button>
+    </div>
+    <div class="church-modal-body">
+      <div class="church-profile-strip">
+        <div class="church-profile-avatar" id="churchProfileAvatar">D</div>
+        <div class="church-profile-meta">
+          <p class="church-profile-label">District</p>
+          <p class="church-profile-name" id="churchProfileName">-</p>
+        </div>
+      </div>
+      <div class="church-modal-tabs">
+        <button class="church-modal-tab active" id="churchModalTabTithes" onclick="setChurchModalTab('tithes')">Tithes</button>
+        <button class="church-modal-tab" id="churchModalTabOfferings" onclick="setChurchModalTab('offerings')">Offerings</button>
+      </div>
+      <div class="church-modal-table-wrap">
+        <table class="church-modal-data-table" id="churchModalTable">
+          <thead>
+            <tr>
+              <th>Church</th>
+              <th>2025</th>
+              <th>2026</th>
+              <th>Variance %</th>
+              <th>Inc/Dec vs Prev Yr</th>
+            </tr>
+          </thead>
+          <tbody id="churchModalTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <div class="footer-bottom">
+      <button class="btn-home" onclick="location.href='../../index.html'">
+        <span class="icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V9.5z"/><path d="M9 21V12h6v9"/></svg>
+        </span>
+        <span class="label">HOMEPAGE</span>
+      </button>
+      <div class="footer-divider"></div>
+      <div class="nav-buttons">
+        <button class="btn-nav" onclick="location.href='../Tithe/NMMtithe.html'">NMM<br/>TITHES</button>
+        <button class="btn-nav" onclick="location.href='../Offering/NMMoffering.html'">NMM<br/>OFFERINGS</button>
+      </div>
+      <a href="https://spucadventist.org" class="footer-link">spucadventist.org</a>
+    </div>
+  </footer>
+
+  <script>
+    // Clock
+    updateSideClock();
+    setInterval(updateSideClock, 1000);
+
+    // ---- Chart expand/collapse ----
+    let expandedChart = null;
+
+    function expandChart(which) {
+      if (expandedChart === which) return;
+      expandedChart = which;
+      const barPanel   = document.getElementById('barPanel');
+      const donutPanel = document.getElementById('donutPanel');
+      const barExp     = document.getElementById('barExpandBtn');
+      const donutExp   = document.getElementById('donutExpandBtn');
+      const barCol     = document.getElementById('barCollapseBtn');
+      const donutCol   = document.getElementById('donutCollapseBtn');
+
+      if (which === 'bar') {
+        barPanel.classList.add('chart-expanded');
+        donutPanel.classList.add('chart-shrunk');
+        barExp.classList.add('hidden');
+        barCol.classList.remove('hidden');
+        donutExp.classList.remove('hidden');
+        donutCol.classList.add('hidden');
+      } else {
+        donutPanel.classList.add('chart-expanded');
+        barPanel.classList.add('chart-shrunk');
+        donutExp.classList.add('hidden');
+        donutCol.classList.remove('hidden');
+        barExp.classList.remove('hidden');
+        barCol.classList.add('hidden');
+      }
+      setTimeout(() => {
+        barChartInst && barChartInst.resize();
+        if (window._refreshDonutLayout) window._refreshDonutLayout();
+      }, 420);
+    }
+
+    function collapseCharts() {
+      expandedChart = null;
+      const barPanel   = document.getElementById('barPanel');
+      const donutPanel = document.getElementById('donutPanel');
+      barPanel.classList.remove('chart-expanded', 'chart-shrunk');
+      donutPanel.classList.remove('chart-expanded', 'chart-shrunk');
+      document.getElementById('barExpandBtn').classList.remove('hidden');
+      document.getElementById('barCollapseBtn').classList.add('hidden');
+      document.getElementById('donutExpandBtn').classList.remove('hidden');
+      document.getElementById('donutCollapseBtn').classList.add('hidden');
+      if (window._pieResetOnCollapse) window._pieResetOnCollapse();
+      setTimeout(() => {
+        barChartInst && barChartInst.resize();
+        if (window._refreshDonutLayout) window._refreshDonutLayout();
+      }, 420);
+    }
+
+    const currency = new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+    const ALL_YEARS   = ['2022', '2023', '2024', '2025', '2026'];
+    const ALL_TITHE   = [8252589.02, 9457675.66, 11130410.64, 11693864.40, 9825342.95];
+    const ALL_OFFER   = [1089694.13, 1900086.56, 4054794.40, 6048374.90, 4189643.26];
+    const ALL_TARGET  = [7000000, 8000000, 9000000, 10000000, 10000000];
+
+    const TITHE_TABLE_ROWS = [
+      ['District 1','1,245,320.55','1,130,219.40','115,101.15','10%','6.20','12','4,210'],
+      ['District 2','982,154.88','1,010,450.75','(28,295.87)','(3%)','5.85','9','3,502'],
+      ['District 3','1,358,220.10','1,199,805.00','158,415.10','13%','7.10','14','4,955'],
+      ['District 4','896,443.67','921,563.11','(25,119.44)','(3%)','5.20','8','2,980'],
+      ['District 5','1,102,984.22','1,034,650.60','68,333.62','7%','6.45','11','3,844'],
+      ['District 6','785,662.30','810,222.25','(24,559.95)','(3%)','4.95','7','2,611'],
+      ['District 7','1,412,430.99','1,336,912.48','75,518.51','6%','7.35','16','5,140'],
+      ['District 8','1,001,126.24','945,318.72','55,807.52','6%','5.90','10','3,728']
+    ];
+
+    const OFFERING_TABLE_ROWS = [
+      ['District 1','298,240.50','274,112.30','24,128.20','9%'],
+      ['District 2','251,119.10','263,455.66','(12,336.56)','-5%'],
+      ['District 3','342,775.88','310,954.40','31,821.48','10%'],
+      ['District 4','196,420.35','205,887.19','(9,466.84)','-5%'],
+      ['District 5','287,140.66','271,215.00','15,925.66','6%'],
+      ['District 6','164,908.42','172,339.85','(7,431.43)','-4%'],
+      ['District 7','355,770.20','333,910.74','21,859.46','7%'],
+      ['District 8','241,903.77','225,556.28','16,347.49','7%']
+    ];
+
+    const CHURCH_NAMES_BY_DISTRICT = {
+      'District 1': ['Central Church', 'East Church', 'West Church', 'North Church', 'South Church', 'Hillside Church', 'Riverside Church', 'Garden Church', 'Hope Church', 'Faith Church', 'Light Church', 'Grace Church'],
+      'District 2': ['Alpha Church', 'Beta Church', 'Gamma Church', 'Delta Church', 'Omega Church', 'New Life Church', 'Peace Church', 'Unity Church', 'Harvest Church'],
+      'District 3': ['Covenant Church', 'Shalom Church', 'Bethany Church', 'Zion Church', 'Bethesda Church', 'Calvary Church', 'Maranatha Church', 'Cornerstone Church', 'Providence Church', 'Morning Star Church', 'Shepherd Church', 'Redeemer Church', 'Evergreen Church', 'Trinity Church']
+    };
+
+    const valueLabelPlugin = {
+      id: 'valueLabel',
+      afterDatasetsDraw(chart) {
+        const { ctx } = chart;
+        chart.data.datasets.forEach((ds, di) => {
+          chart.getDatasetMeta(di).data.forEach((bar, i) => {
+            const val = ds.data[i];
+            if (val == null) return;
+            ctx.save();
+            ctx.fillStyle = di === 0 ? '#3b82f6' : di === 1 ? '#d97706' : '#dc2626';
+            ctx.font = '600 10px Inter';
+            ctx.textAlign = 'center';
+            ctx.fillText('PHP ' + (val / 1e6).toFixed(2) + 'M', bar.x, bar.y - 7);
+            ctx.restore();
+          });
+        });
+      }
+    };
+
+    let barChartInst = null;
+
+    function makeBarGradient(context, colorTop, colorBottom) {
+      const { chart } = context;
+      const { ctx, chartArea } = chart;
+      if (!chartArea) return colorTop;
+      const gradient = ctx.createLinearGradient(0, chartArea.top, 0, chartArea.bottom);
+      gradient.addColorStop(0, colorTop);
+      gradient.addColorStop(1, colorBottom);
+      return gradient;
+    }
+
+    function buildBarData(filter) {
+      if (filter === 'all') return { labels: ALL_YEARS, tithe: ALL_TITHE, offer: ALL_OFFER, target: ALL_TARGET };
+      const idx = ALL_YEARS.indexOf(filter);
+      if (idx === -1) return { labels: ALL_YEARS, tithe: ALL_TITHE, offer: ALL_OFFER, target: ALL_TARGET };
+      return { labels: [filter], tithe: [ALL_TITHE[idx]], offer: [ALL_OFFER[idx]], target: [ALL_TARGET[idx]] };
+    }
+
+    function updateCharts() {
+      const filter = document.getElementById('yearSelect').value;
+      const { labels, tithe, offer, target } = buildBarData(filter);
+      const periodText = filter === 'all' ? '2022 - 2026' : filter;
+      document.getElementById('barPeriodLabel').textContent = periodText;
+
+      if (barChartInst) {
+        barChartInst.data.labels = labels;
+        barChartInst.data.datasets[0].data = tithe;
+        barChartInst.data.datasets[1].data = offer;
+        barChartInst.data.datasets[2].data = target;
+        barChartInst.update();
+      }
+
+      // Update KPIs for selected year
+      const idx = filter === 'all' ? ALL_YEARS.length - 1 : ALL_YEARS.indexOf(filter);
+      const t = ALL_TITHE[idx], o = ALL_OFFER[idx], tg = ALL_TARGET[idx];
+      document.getElementById('kpiTithe').textContent    = 'PHP ' + currency.format(t);
+      document.getElementById('kpiOffering').textContent = 'PHP ' + currency.format(o);
+      document.getElementById('kpiTarget').textContent   = 'PHP ' + currency.format(tg);
+      const variance = t - tg;
+      const varEl = document.getElementById('kpiVariance');
+      varEl.textContent = (variance >= 0 ? '+PHP ' : '-PHP ') + currency.format(Math.abs(variance));
+      varEl.style.color = variance >= 0 ? '#6ee7b7' : '#fca5a5';
+      document.getElementById('kpiCombined').textContent = 'PHP ' + currency.format(t + o);
+    }
+
+    function renderTables() {
+      const tithesBody = document.getElementById('tithesTableBody');
+      const offeringsBody = document.getElementById('offeringsTableBody');
+
+      tithesBody.innerHTML = TITHE_TABLE_ROWS.map((row, index) => {
+        const varianceClass = row[3].includes('(') ? 'neg' : 'pos';
+        const pctClass = row[4].includes('(') ? 'neg' : 'pos';
+        const churchCount = Number(row[6]);
+        return `<tr>
+          <td>${index + 1}</td>
+          <td class="district">${row[0]}</td>
+          <td>${row[1]}</td>
+          <td>${row[2]}</td>
+          <td class="${varianceClass}">${row[3]}</td>
+          <td class="${pctClass}">${row[4]}</td>
+          <td>${row[5]}</td>
+          <td><button class="church-count-btn" onclick="openChurchModal('${row[0].replace(/'/g, "\\'")}', ${churchCount})">${row[6]}</button></td>
+          <td>${row[7]}</td>
+        </tr>`;
+      }).join('');
+
+      offeringsBody.innerHTML = OFFERING_TABLE_ROWS.map((row, index) => {
+        const varianceClass = row[3].includes('(') ? 'neg' : 'pos';
+        const pctClass = row[4].includes('-') ? 'neg' : 'pos';
+        return `<tr>
+          <td>${index + 1}</td>
+          <td class="district">${row[0]}</td>
+          <td>${row[1]}</td>
+          <td>${row[2]}</td>
+          <td class="${varianceClass}">${row[3]}</td>
+          <td class="${pctClass}">${row[4]}</td>
+        </tr>`;
+      }).join('');
+    }
+
+    function toggleTablePanel() {
+      const panel      = document.getElementById('tableSection');
+      const chartsRow  = document.getElementById('chartsRow');
+      const dashRight  = document.querySelector('.dash-right');
+      const btn        = document.getElementById('seeTableBtn');
+      const isHidden   = panel.classList.contains('hidden');
+
+      if (isHidden) {
+        // Show table  slide charts out, slide table in
+        chartsRow.style.transition = 'opacity 0.35s ease, transform 0.35s ease';
+        dashRight.style.transition = 'opacity 0.35s ease, transform 0.35s ease';
+        chartsRow.style.opacity  = '0';
+        chartsRow.style.transform = 'translateY(-18px)';
+        dashRight.style.opacity  = '0';
+        dashRight.style.transform = 'translateX(24px)';
+        setTimeout(() => {
+          chartsRow.style.display = 'none';
+          dashRight.style.display = 'none';
+          panel.classList.remove('hidden');
+          panel.style.opacity   = '0';
+          panel.style.transform = 'translateY(18px)';
+          panel.style.transition = 'opacity 0.38s ease, transform 0.38s ease';
+          requestAnimationFrame(() => {
+            panel.style.opacity   = '1';
+            panel.style.transform = 'translateY(0)';
+          });
+        }, 340);
+        btn.textContent = 'HIDE TABLE';
+        btn.style.background = 'linear-gradient(135deg,rgba(239,68,68,0.25),rgba(239,68,68,0.12))';
+        btn.style.borderColor = 'rgba(239,68,68,0.6)';
+        btn.style.color = '#fca5a5';
+      } else {
+        // Hide table  slide table out, slide charts back in
+        panel.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+        panel.style.opacity   = '0';
+        panel.style.transform = 'translateY(18px)';
+        setTimeout(() => {
+          panel.classList.add('hidden');
+          chartsRow.style.display = '';
+          dashRight.style.display = '';
+          chartsRow.style.opacity  = '0';
+          chartsRow.style.transform = 'translateY(-18px)';
+          dashRight.style.opacity  = '0';
+          dashRight.style.transform = 'translateX(24px)';
+          requestAnimationFrame(() => {
+            chartsRow.style.transition = 'opacity 0.38s ease, transform 0.38s ease';
+            dashRight.style.transition = 'opacity 0.38s ease, transform 0.38s ease';
+            chartsRow.style.opacity  = '1';
+            chartsRow.style.transform = 'translateY(0)';
+            dashRight.style.opacity  = '1';
+            dashRight.style.transform = 'translateX(0)';
+          });
+          setTimeout(() => { barChartInst && barChartInst.resize(); }, 420);
+        }, 300);
+        btn.textContent = 'SEE TABLE';
+        btn.style.background = '';
+        btn.style.borderColor = '';
+        btn.style.color = '';
+      }
+    }
+
+    function setTableTab(tab) {
+      const tithesWrap = document.getElementById('tithesTableWrap');
+      const offeringsWrap = document.getElementById('offeringsTableWrap');
+      const tabTithes = document.getElementById('tabTithes');
+      const tabOfferings = document.getElementById('tabOfferings');
+
+      const tithesActive = tab === 'tithes';
+      tithesWrap.classList.toggle('active', tithesActive);
+      offeringsWrap.classList.toggle('active', !tithesActive);
+      tabTithes.classList.toggle('active', tithesActive);
+      tabOfferings.classList.toggle('active', !tithesActive);
+    }
+
+    function getChurchNames(district, count) {
+      const fromMap = CHURCH_NAMES_BY_DISTRICT[district];
+      if (fromMap && fromMap.length >= count) return fromMap.slice(0, count);
+      if (fromMap && fromMap.length > 0 && fromMap.length < count) {
+        const filled = [...fromMap];
+        for (let i = fromMap.length + 1; i <= count; i += 1) filled.push(`${district} Church ${i}`);
+        return filled;
+      }
+      const generated = [];
+      for (let i = 1; i <= count; i += 1) generated.push(`${district} Church ${i}`);
+      return generated;
+    }
+
+    const CHURCH_MODAL_DATA = {};
+
+    function formatCurrencyValue(value) {
+      return 'PHP ' + currency.format(value);
+    }
+
+    function formatDeltaValue(value) {
+      const sign = value >= 0 ? '+' : '-';
+      return `${sign}PHP ${currency.format(Math.abs(value))}`;
+    }
+
+    function buildChurchMetrics(district, names, type) {
+      const districtSeed = district.split('').reduce((sum, ch) => sum + ch.charCodeAt(0), 0);
+      const baseMin = type === 'tithes' ? 28000 : 7000;
+      const baseRange = type === 'tithes' ? 260000 : 78000;
+      return names.map((church, idx) => {
+        const churchSeed = church.split('').reduce((sum, ch) => sum + ch.charCodeAt(0), 0);
+        const seed = districtSeed + churchSeed + idx * 37 + (type === 'tithes' ? 111 : 59);
+        const y2025 = baseMin + (seed * 179) % baseRange;
+        const swingRatio = 0.72 + ((seed * 17) % 61) / 100;
+        const y2026 = y2025 * swingRatio;
+        const variancePct = ((y2026 - y2025) / y2025) * 100;
+        const incDec = y2026 - y2025;
+        return {
+          church,
+          y2025,
+          y2026,
+          variancePct,
+          incDec
+        };
+      });
+    }
+
+    function getChurchModalData(district, count) {
+      const cacheKey = `${district}|${count}`;
+      if (CHURCH_MODAL_DATA[cacheKey]) return CHURCH_MODAL_DATA[cacheKey];
+      const names = getChurchNames(district, count);
+      const built = {
+        tithes: buildChurchMetrics(district, names, 'tithes'),
+        offerings: buildChurchMetrics(district, names, 'offerings')
+      };
+      CHURCH_MODAL_DATA[cacheKey] = built;
+      return built;
+    }
+
+    function renderChurchModalTable(tab) {
+      const district = document.getElementById('churchProfileName').textContent;
+      const count = Number(document.getElementById('churchModalSubtitle').dataset.count || '0');
+      const modalData = getChurchModalData(district, count)[tab];
+      const body = document.getElementById('churchModalTableBody');
+      body.innerHTML = modalData.map((row) => {
+        const varianceClass = row.variancePct >= 0 ? 'pos' : 'neg';
+        const deltaClass = row.incDec >= 0 ? 'pos' : 'neg';
+        return `<tr>
+          <td class="church-name-cell">${row.church}</td>
+          <td>${formatCurrencyValue(row.y2025)}</td>
+          <td>${formatCurrencyValue(row.y2026)}</td>
+          <td class="${varianceClass}">${row.variancePct >= 0 ? '+' : ''}${row.variancePct.toFixed(1)}%</td>
+          <td class="${deltaClass}">${formatDeltaValue(row.incDec)}</td>
+        </tr>`;
+      }).join('');
+    }
+
+    function setChurchModalTab(tab) {
+      const isTithes = tab === 'tithes';
+      document.getElementById('churchModalTabTithes').classList.toggle('active', isTithes);
+      document.getElementById('churchModalTabOfferings').classList.toggle('active', !isTithes);
+      renderChurchModalTable(tab);
+    }
+
+    function openChurchModal(district, count) {
+      document.getElementById('churchModalTitle').textContent = `${district} District Profile`;
+      document.getElementById('churchModalSubtitle').textContent = `${count} churches`;
+      document.getElementById('churchModalSubtitle').dataset.count = String(count);
+      document.getElementById('churchProfileName').textContent = district;
+      document.getElementById('churchProfileAvatar').textContent = district.charAt(0).toUpperCase();
+      setChurchModalTab('tithes');
+      document.getElementById('churchModalOverlay').classList.remove('hidden');
+      document.getElementById('churchModal').classList.remove('hidden');
+    }
+
+    function closeChurchModal() {
+      document.getElementById('churchModalOverlay').classList.add('hidden');
+      document.getElementById('churchModal').classList.add('hidden');
+    }
+
+    const barGlowPlugin = {
+      id: 'barGlow',
+      beforeDatasetsDraw(chart) {
+        const { ctx } = chart;
+        chart.data.datasets.forEach((_, datasetIndex) => {
+          const meta = chart.getDatasetMeta(datasetIndex);
+          if (meta.hidden) return;
+          const glowColors = ['rgba(79,124,255,0.55)', 'rgba(245,158,11,0.50)', 'rgba(239,68,68,0.45)'];
+          ctx.save();
+          ctx.shadowColor = glowColors[datasetIndex] || 'rgba(255,255,255,0.35)';
+          ctx.shadowBlur = 14;
+          ctx.shadowOffsetX = 0;
+          ctx.shadowOffsetY = 4;
+          meta.data.forEach((bar) => bar.draw(ctx));
+          ctx.restore();
+        });
+      }
+    };
+
+    // Init bar chart
+    barChartInst = new Chart(document.getElementById('barChart'), {
+      type: 'bar',
+      data: {
+        labels: ALL_YEARS,
+        datasets: [
+          {
+            label: 'Tithe',
+            data: ALL_TITHE,
+            backgroundColor: (context) => makeBarGradient(context, 'rgba(111,159,255,0.97)', 'rgba(56,108,230,0.70)'),
+            borderColor: '#9dc3ff',
+            borderWidth: 1.2,
+            borderRadius: 7,
+            borderSkipped: false
+          },
+          {
+            label: 'Offerings',
+            data: ALL_OFFER,
+            backgroundColor: (context) => makeBarGradient(context, 'rgba(251,191,36,0.95)', 'rgba(217,119,6,0.72)'),
+            borderColor: '#ffd36a',
+            borderWidth: 1.2,
+            borderRadius: 7,
+            borderSkipped: false
+          },
+          {
+            label: 'Target',
+            data: ALL_TARGET,
+            backgroundColor: (context) => makeBarGradient(context, 'rgba(248,113,113,0.92)', 'rgba(220,38,38,0.66)'),
+            borderColor: '#fca5a5',
+            borderWidth: 1.2,
+            borderRadius: 7,
+            borderSkipped: false
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        layout: { padding: { top: 26, left: 6, right: 6, bottom: 4 } },
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: {
+              color: 'rgba(255,255,255,0.84)',
+              callback: v => 'PHP ' + (v/1e6).toFixed(1) + 'M',
+              font: { size: 11, weight: '700' }
+            },
+            grid: { color: 'rgba(79,124,255,0.16)', borderDash: [4, 5] },
+            border: { color: 'rgba(255,255,255,0.20)' }
+          },
+          x: {
+            ticks: { color: '#fff', font: { size: 13, weight: '800' } },
+            grid: { display: false },
+            border: { color: 'rgba(255,255,255,0.20)' }
+          }
+        },
+        plugins: {
+          legend: {
+            labels: {
+              color: '#fff',
+              usePointStyle: true,
+              pointStyle: 'circle',
+              boxWidth: 10,
+              boxHeight: 10,
+              font: { size: 12, weight: '800' },
+              padding: 18
+            }
+          },
+          tooltip: {
+            backgroundColor: 'rgba(10,20,80,0.92)',
+            borderColor: 'rgba(255,255,255,0.2)',
+            borderWidth: 1,
+            titleColor: '#f5a623',
+            bodyColor: '#fff',
+            padding: 10,
+            callbacks: { label: ctx => `${ctx.dataset.label}: PHP ${currency.format(ctx.parsed.y)}` }
+          }
+        }
+      },
+      plugins: [valueLabelPlugin, barGlowPlugin]
+    });
+
+    // Donut chart with HTML label cards shown only when expanded
+    const PIE_COLORS = ['#4f7cff', '#f59e0b', '#facc15'];
+    const PIE_GLOW  = ['rgba(79,124,255,0.6)', 'rgba(245,158,11,0.6)', 'rgba(250,204,21,0.6)'];
+    const PIE_LABELS = ['From Churches', 'From Workers', 'From Outside'];
+    const PIE_DATA_2026 = [9825342.95 * 0.921, 9825342.95 * 0.028, 9825342.95 * 0.051];
+    const PIE_DATA_2025 = [11693864.40 * 0.921, 11693864.40 * 0.028, 11693864.40 * 0.051];
+    const pieCanvas = document.getElementById('donutChart');
+    const pieWrap   = document.getElementById('wrap-pie');
+    let pieChartInst = null;
+    let pieYear = 2026;
+    let labelsVisible = false;
+
+    //  HTML label cards container 
+    const cardsContainer = document.createElement('div');
+    cardsContainer.id = 'pieCards';
+    cardsContainer.style.cssText = 'position:absolute;inset:0;pointer-events:none;z-index:5;opacity:0;transition:opacity 0.4s ease;';
+    pieWrap.appendChild(cardsContainer);
+
+    function updateLabelCards() {
+      const data  = pieChartInst.data.datasets[0].data;
+      const total = data.reduce((a,b) => a+b, 0) || 1;
+      const meta  = pieChartInst.getDatasetMeta(0);
+      if (!meta.data.length) return;
+      const area   = pieChartInst.chartArea;
+      const cx     = (area.left + area.right) / 2;
+      const cy     = (area.top  + area.bottom) / 2;
+      const outerR = meta.data[0].outerRadius;
+      const W      = pieWrap.clientWidth;
+      const H      = pieWrap.clientHeight;
+
+      const cardW = 168;
+      const cardH = 90;
+      const pad   = 10;
+
+      // Fixed positions: left side stacked, right side centered
+      const anchors = [
+        { side: 'right', cx: W - pad - cardW / 2 - 130,  cy: H * 0.50 },  // Churches
+        { side: 'left',  cx: pad + cardW / 2 + 110,       cy: H * 0.25 },  // Workers
+        { side: 'left',  cx: pad + cardW / 2 + 110,       cy: H * 0.68 },  // Outside
+      ];
+
+      cardsContainer.innerHTML = '';
+
+      data.forEach((value, i) => {
+        const pct   = ((value / total) * 100).toFixed(1);
+        const money = '\u20b1' + (value / 1e6).toFixed(2) + 'M';
+        const arc   = meta.data[i];
+        const midAngle = (arc.startAngle + arc.endAngle) / 2;
+        const lineStartX = cx + Math.cos(midAngle) * (outerR + 8);
+        const lineStartY = cy + Math.sin(midAngle) * (outerR + 8);
+        const a = anchors[i];
+
+        // Card left/top
+        const cardLeft = Math.max(pad, Math.min(W - cardW - pad, a.cx - cardW / 2));
+        const cardTop  = Math.max(pad, Math.min(H - cardH - pad, a.cy - cardH / 2));
+
+        // Line endpoint: edge of card closest to pie
+        const lineEndX = a.side === 'right' ? cardLeft : cardLeft + cardW;
+        const lineEndY = cardTop + cardH / 2;
+
+        // SVG connector
+        const svg = document.createElementNS('http://www.w3.org/2000/svg','svg');
+        svg.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;overflow:visible;pointer-events:none;';
+        const cpX = (lineStartX + lineEndX) / 2;
+        const cpY = Math.min(lineStartY, lineEndY) - 30;
+        const path = document.createElementNS('http://www.w3.org/2000/svg','path');
+        path.setAttribute('d', `M${lineStartX},${lineStartY} Q${cpX},${cpY} ${lineEndX},${lineEndY}`);
+        path.setAttribute('stroke', PIE_COLORS[i]);
+        path.setAttribute('stroke-width', '1.8');
+        path.setAttribute('fill', 'none');
+        path.setAttribute('stroke-linecap', 'round');
+        path.style.filter = `drop-shadow(0 0 3px ${PIE_GLOW[i]})`;
+        svg.appendChild(path);
+
+        // Dot at pie edge
+        const dotS = document.createElementNS('http://www.w3.org/2000/svg','circle');
+        dotS.setAttribute('cx', lineStartX); dotS.setAttribute('cy', lineStartY);
+        dotS.setAttribute('r', '3.5'); dotS.setAttribute('fill', PIE_COLORS[i]);
+        svg.appendChild(dotS);
+
+        // Dot at card edge
+        const dotE = document.createElementNS('http://www.w3.org/2000/svg','circle');
+        dotE.setAttribute('cx', lineEndX); dotE.setAttribute('cy', lineEndY);
+        dotE.setAttribute('r', '3.5'); dotE.setAttribute('fill', PIE_COLORS[i]);
+        dotE.style.filter = `drop-shadow(0 0 5px ${PIE_GLOW[i]})`;
+        svg.appendChild(dotE);
+        cardsContainer.appendChild(svg);
+
+        // Card
+        const card = document.createElement('div');
+        card.style.cssText = `
+          position:absolute;
+          left:${cardLeft}px;
+          top:${cardTop}px;
+          width:${cardW}px;
+          height:${cardH}px;
+          background:rgba(8,16,60,0.88);
+          border:1.5px solid ${PIE_COLORS[i]};
+          border-radius:12px;
+          padding:10px 14px;
+          box-shadow:0 6px 24px rgba(0,0,0,0.5), 0 0 14px ${PIE_GLOW[i]};
+          backdrop-filter:blur(10px);
+          pointer-events:none;
+          display:flex;
+          flex-direction:column;
+          justify-content:center;
+          gap:4px;
+          animation:cardFadeIn 0.45s ease forwards;
+        `;
+        card.innerHTML = `
+          <div style="display:flex;align-items:center;gap:6px;">
+            <span style="width:11px;height:11px;border-radius:50%;background:${PIE_COLORS[i]};flex-shrink:0;box-shadow:0 0 7px ${PIE_GLOW[i]};"></span>
+            <span style="font-family:Montserrat,sans-serif;font-weight:800;font-size:0.72rem;letter-spacing:0.6px;color:rgba(255,255,255,0.9);white-space:nowrap;">${PIE_LABELS[i]}</span>
+          </div>
+          <div style="font-family:Montserrat,sans-serif;font-weight:900;font-size:1.65rem;color:${PIE_COLORS[i]};line-height:1;text-shadow:0 0 10px ${PIE_GLOW[i]};">${pct}%</div>
+          <div style="font-family:Montserrat,sans-serif;font-weight:700;font-size:0.78rem;color:rgba(255,255,255,0.65);">${money}</div>
+        `;
+        cardsContainer.appendChild(card);
+      });
+    }
+
+    function showPieLabels() {
+      labelsVisible = true;
+      updateLabelCards();
+      requestAnimationFrame(() => { cardsContainer.style.opacity = '1'; });
+    }
+
+    function hidePieLabels() {
+      labelsVisible = false;
+      cardsContainer.style.opacity = '0';
+    }
+
+    //  Plugins 
+    let pulseT = 0;
+    const pulsePlugin = {
+      id: 'pulseRing',
+      afterDraw(chart) {
+        const meta = chart.getDatasetMeta(0);
+        if (!meta.data.length) return;
+        const { ctx: c, chartArea } = chart;
+        const cx     = (chartArea.left + chartArea.right) / 2;
+        const cy     = (chartArea.top  + chartArea.bottom) / 2;
+        const outerR = meta.data[0].outerRadius;
+        pulseT = (pulseT + 0.018) % (Math.PI * 2);
+        const r    = outerR * (1 + Math.sin(pulseT) * 0.012) + 6;
+        const grad = c.createRadialGradient(cx, cy, r-4, cx, cy, r+4);
+        grad.addColorStop(0,   'rgba(79,124,255,0.0)');
+        grad.addColorStop(0.5, 'rgba(79,124,255,0.35)');
+        grad.addColorStop(1,   'rgba(79,124,255,0.0)');
+        c.save();
+        c.beginPath();
+        c.arc(cx, cy, r, 0, Math.PI * 2);
+        c.strokeStyle = grad;
+        c.lineWidth   = 8;
+        c.stroke();
+        c.restore();
+      }
+    };
+
+    const centerLabelPlugin = {
+      id: 'centerLabel',
+      afterDraw(chart) {
+        const { ctx: c, chartArea } = chart;
+        if (!chartArea) return;
+        const total = chart.data.datasets[0].data.reduce((a,b) => a+b, 0);
+        const cx = (chartArea.left + chartArea.right) / 2;
+        const cy = (chartArea.top  + chartArea.bottom) / 2;
+        c.save();
+        c.textAlign = 'center'; c.textBaseline = 'middle';
+        c.fillStyle = 'rgba(255,255,255,0.55)';
+        c.font = '700 11px Montserrat,sans-serif';
+        c.fillText('TOTAL TITHE', cx, cy - 10);
+        c.fillStyle = '#f5a623';
+        c.shadowColor = 'rgba(245,166,35,0.8)';
+        c.shadowBlur  = 10;
+        c.font = '900 15px Montserrat,sans-serif';
+        c.fillText('\u20b1' + (total/1e6).toFixed(2) + 'M', cx, cy + 8);
+        c.shadowBlur = 0;
+        c.fillStyle = 'rgba(255,255,255,0.4)';
+        c.font = '600 10px Montserrat,sans-serif';
+        c.fillText(pieYear.toString(), cx, cy + 22);
+        c.restore();
+      }
+    };
+
+    pieChartInst = new Chart(pieCanvas.getContext('2d'), {
+      type: 'doughnut',
+      plugins: [pulsePlugin, centerLabelPlugin],
+      data: {
+        labels: PIE_LABELS,
+        datasets: [{
+          data: PIE_DATA_2026,
+          backgroundColor: PIE_COLORS,
+          borderColor: PIE_GLOW,
+          borderWidth: 2.5,
+          hoverOffset: 10,
+          hoverBorderWidth: 3,
+          hoverBorderColor: '#fff'
+        }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        radius: '84%', cutout: '32%',
+        layout: { padding: { left: 28, right: 28, top: 10, bottom: 10 } },
+        animation: { duration: 500, easing: 'easeOutQuart' },
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            backgroundColor: 'rgba(10,20,80,0.92)',
+            borderColor: 'rgba(255,255,255,0.2)', borderWidth: 1,
+            titleColor: '#f5a623', bodyColor: '#fff', padding: 10,
+            callbacks: { label: ctx => ` ${ctx.label}: \u20b1${ctx.parsed.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})}` }
+          }
+        }
+      }
+    });
+
+    // Pulse animation loop
+    (function animatePulse() {
+      if (pieChartInst) { pieChartInst.draw(); requestAnimationFrame(animatePulse); }
+    })();
+
+    new ResizeObserver(() => {
+      if (pieChartInst) pieChartInst.resize();
+      if (labelsVisible) updateLabelCards();
+    }).observe(pieWrap);
+
+    function applyDonutViewportSettings() {
+      if (!pieChartInst) return;
+      const donutExpanded = document.getElementById('donutPanel').classList.contains('chart-expanded');
+      if (donutExpanded) {
+        // Expanded view: keep your current satisfied callout layout.
+        pieChartInst.options.radius = '72%';
+        pieChartInst.options.cutout = '42%';
+        pieChartInst.options.layout.padding = { left: 170, right: 170, top: 16, bottom: 16 };
+      } else {
+        // Default view: larger donut and cleaner center like your first screenshot.
+        pieChartInst.options.radius = '84%';
+        pieChartInst.options.cutout = '32%';
+        pieChartInst.options.layout.padding = { left: 28, right: 28, top: 10, bottom: 10 };
+      }
+      pieChartInst.update('none');
+    }
+
+    // Show/hide labels based on expand state
+    window._refreshDonutLayout = function() {
+      applyDonutViewportSettings();
+      if (labelsVisible) updateLabelCards();
+    };
+    window._pieResetOnCollapse = function() {
+      hidePieLabels();
+      applyDonutViewportSettings();
+    };
+
+    // Click on donut panel: expand  show labels; click again  collapse
+    pieWrap.addEventListener('click', e => {
+      if (e.target.closest('button')) return;
+      const donutPanel = document.getElementById('donutPanel');
+      if (!donutPanel.classList.contains('chart-expanded')) {
+        expandChart('donut');
+        setTimeout(() => showPieLabels(), 450);
+      } else {
+        hidePieLabels();
+        setTimeout(() => collapseCharts(), 300);
+      }
+    });
+
+    applyDonutViewportSettings();
+    renderTables();
+  </script>
+</body>
+</html>
+
+
+
+
+
