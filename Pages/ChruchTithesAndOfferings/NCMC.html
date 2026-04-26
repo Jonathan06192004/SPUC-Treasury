@@ -22,7 +22,6 @@
     </div>
     <div style="display:flex;gap:10px;">
       <button class="btn-back" onclick="history.back()">&#8592; Back</button>
-      <button class="btn-dashboard">&#9783; NCMC TREASURY DASHBOARD</button>
     </div>
   </header>
 
@@ -273,7 +272,6 @@
       </button>
       <div class="footer-divider"></div>
       <div class="nav-buttons">
-        <button class="btn-nav active" onclick="location.href='NCMC.html'">NCMC<br/>DASHBOARD</button>
         <button class="btn-nav" onclick="location.href='../Tithe/NCMCtithe.html'">NCMC<br/>TITHES</button>
         <button class="btn-nav" onclick="location.href='../Offering/NCMCoffering.html'">NCMC<br/>OFFERINGS</button>
       </div>
@@ -463,6 +461,16 @@
 
     let barChartInst = null;
 
+    function makeBarGradient(context, colorTop, colorBottom) {
+      const { chart } = context;
+      const { ctx, chartArea } = chart;
+      if (!chartArea) return colorTop;
+      const gradient = ctx.createLinearGradient(0, chartArea.top, 0, chartArea.bottom);
+      gradient.addColorStop(0, colorTop);
+      gradient.addColorStop(1, colorBottom);
+      return gradient;
+    }
+
     function buildBarData(filter) {
       if (filter === 'all') return { labels: ALL_YEARS, tithe: ALL_TITHE, offer: ALL_OFFER, target: ALL_TARGET };
       const idx = ALL_YEARS.indexOf(filter);
@@ -632,44 +640,105 @@
       document.getElementById('churchModal').classList.add('hidden');
     }
 
+    const barGlowPlugin = {
+      id: 'barGlow',
+      beforeDatasetsDraw(chart) {
+        const { ctx } = chart;
+        chart.data.datasets.forEach((_, datasetIndex) => {
+          const meta = chart.getDatasetMeta(datasetIndex);
+          if (meta.hidden) return;
+          const glowColors = ['rgba(79,124,255,0.55)', 'rgba(245,158,11,0.50)', 'rgba(239,68,68,0.45)'];
+          ctx.save();
+          ctx.shadowColor = glowColors[datasetIndex] || 'rgba(255,255,255,0.35)';
+          ctx.shadowBlur = 14;
+          ctx.shadowOffsetX = 0;
+          ctx.shadowOffsetY = 4;
+          meta.data.forEach((bar) => bar.draw(ctx));
+          ctx.restore();
+        });
+      }
+    };
+
     // Init bar chart
     barChartInst = new Chart(document.getElementById('barChart'), {
       type: 'bar',
       data: {
         labels: ALL_YEARS,
         datasets: [
-          { label: 'Tithe',     data: ALL_TITHE,  backgroundColor: 'rgba(59,130,246,0.85)',  borderRadius: 4 },
-          { label: 'Offerings', data: ALL_OFFER,  backgroundColor: 'rgba(245,158,11,0.85)', borderRadius: 4 },
-          { label: 'Target',    data: ALL_TARGET, backgroundColor: 'rgba(239,68,68,0.75)',  borderRadius: 4 }
+          {
+            label: 'Tithe',
+            data: ALL_TITHE,
+            backgroundColor: (context) => makeBarGradient(context, 'rgba(111,159,255,0.97)', 'rgba(56,108,230,0.70)'),
+            borderColor: '#9dc3ff',
+            borderWidth: 1.2,
+            borderRadius: 7,
+            borderSkipped: false
+          },
+          {
+            label: 'Offerings',
+            data: ALL_OFFER,
+            backgroundColor: (context) => makeBarGradient(context, 'rgba(251,191,36,0.95)', 'rgba(217,119,6,0.72)'),
+            borderColor: '#ffd36a',
+            borderWidth: 1.2,
+            borderRadius: 7,
+            borderSkipped: false
+          },
+          {
+            label: 'Target',
+            data: ALL_TARGET,
+            backgroundColor: (context) => makeBarGradient(context, 'rgba(248,113,113,0.92)', 'rgba(220,38,38,0.66)'),
+            borderColor: '#fca5a5',
+            borderWidth: 1.2,
+            borderRadius: 7,
+            borderSkipped: false
+          }
         ]
       },
       options: {
         responsive: true,
         maintainAspectRatio: false,
-        layout: { padding: { top: 24 } },
+        layout: { padding: { top: 26, left: 6, right: 6, bottom: 4 } },
         scales: {
           y: {
             beginAtZero: true,
-            ticks: { color: 'rgba(255,255,255,0.7)', callback: v => '₱' + (v/1e6).toFixed(1) + 'M', font: { size: 11 } },
-            grid: { color: 'rgba(255,255,255,0.08)' },
-            border: { color: 'rgba(255,255,255,0.15)' }
+            ticks: {
+              color: 'rgba(255,255,255,0.84)',
+              callback: v => '₱' + (v/1e6).toFixed(1) + 'M',
+              font: { size: 11, weight: '700' }
+            },
+            grid: { color: 'rgba(79,124,255,0.16)', borderDash: [4, 5] },
+            border: { color: 'rgba(255,255,255,0.20)' }
           },
           x: {
-            ticks: { color: '#fff', font: { size: 13, weight: '700' } },
+            ticks: { color: '#fff', font: { size: 13, weight: '800' } },
             grid: { display: false },
-            border: { color: 'rgba(255,255,255,0.15)' }
+            border: { color: 'rgba(255,255,255,0.20)' }
           }
         },
         plugins: {
           legend: {
-            labels: { color: '#fff', boxWidth: 14, boxHeight: 14, font: { size: 12, weight: '700' }, padding: 16 }
+            labels: {
+              color: '#fff',
+              usePointStyle: true,
+              pointStyle: 'circle',
+              boxWidth: 10,
+              boxHeight: 10,
+              font: { size: 12, weight: '800' },
+              padding: 18
+            }
           },
           tooltip: {
+            backgroundColor: 'rgba(10,20,80,0.92)',
+            borderColor: 'rgba(255,255,255,0.2)',
+            borderWidth: 1,
+            titleColor: '#f5a623',
+            bodyColor: '#fff',
+            padding: 10,
             callbacks: { label: ctx => `${ctx.dataset.label}: ₱${currency.format(ctx.parsed.y)}` }
           }
         }
       },
-      plugins: [valueLabelPlugin]
+      plugins: [valueLabelPlugin, barGlowPlugin]
     });
 
     // Donut chart with HTML label cards shown only when expanded
