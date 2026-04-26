@@ -185,21 +185,16 @@ main {
 }
 
 .fs-panel-period {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
   font-size: 0.72rem;
   font-weight: 800;
-  color: #ffe600;
+  color: #ffffff;
   letter-spacing: 2px;
-  background: rgba(245,166,35,0.18);
-  border: 1px solid rgba(245,166,35,0.5);
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.4);
   border-radius: 6px;
   padding: 3px 12px;
-  text-align: center;
   white-space: nowrap;
-  text-shadow: 0 0 8px rgba(255,230,0,0.4);
-  pointer-events: none;
+  text-shadow: 0 0 8px rgba(255,255,255,0.9), 0 0 18px rgba(255,255,255,0.6), 0 0 32px rgba(255,255,255,0.3);
 }
 
 /* ---- Balance Sheet month selector ---- */

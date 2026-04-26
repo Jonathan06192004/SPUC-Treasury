@@ -680,21 +680,16 @@ footer {
 .mr-month-select option { background: #0a1e6e; color: #fff; }
 
 .mr-year-label {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
   font-size: 0.72rem;
   font-weight: 800;
-  color: #ffe600;
+  color: #ffffff;
   letter-spacing: 2px;
-  text-shadow: 0 0 8px rgba(255,230,0,0.4);
-  background: rgba(245,166,35,0.18);
-  border: 1px solid rgba(245,166,35,0.5);
+  text-shadow: 0 0 8px rgba(255,255,255,0.9), 0 0 18px rgba(255,255,255,0.6), 0 0 32px rgba(255,255,255,0.3);
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.4);
   border-radius: 6px;
   padding: 3px 12px;
-  text-align: center;
   white-space: nowrap;
-  pointer-events: none;
 }
 
 .mr-scroll {

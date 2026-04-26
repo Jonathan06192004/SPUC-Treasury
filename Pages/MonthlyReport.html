@@ -31,7 +31,10 @@
     <div class="mr-body">
       <div class="mr-table-wrap">
         <div class="mr-table-header-row">
-          <span class="mr-table-title">MONTHLY REPORT</span>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <span class="mr-table-title">MONTHLY REPORT</span>
+            <span class="mr-year-label" id="mrYearLabel">APRIL 2026</span>
+          </div>
           <div class="mr-month-select-wrap">
             <label class="mr-month-label">MONTH:</label>
             <select class="mr-month-select" id="mrMonthSelect" onchange="updateMonthLabel()">
@@ -48,7 +51,6 @@
               <option value="November">November</option>
               <option value="December">December</option>
             </select>
-            <span class="mr-year-label">2026</span>
             <div class="mr-zoom-wrap">
               <button class="mr-zoom-btn" onclick="mrZoom(-1)" title="Zoom Out">&#8722;</button>
               <span class="mr-zoom-label" id="mrZoomLabel">100%</span>
@@ -278,7 +280,7 @@
     function updateMonthLabel() {
       const sel = document.getElementById('mrMonthSelect');
       const month = sel.value.toUpperCase();
-      document.querySelector('.mr-year-label').textContent = month + ' 2026';
+      document.getElementById('mrYearLabel').textContent = month + ' 2026';
       document.getElementById('mrSummaryPeriod').textContent = month + ' 2026';
     }
     // Set default month to current month

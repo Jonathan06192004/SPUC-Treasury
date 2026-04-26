@@ -1,0 +1,946 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>NCMC Dashboard | Treasury SPUC</title>
+  <link rel="icon" type="image/png" href="../../Assets/logo.png"/>
+  <link rel="stylesheet" href="../../Styles/ChruchTithesAndOfferings/NCMC.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Montserrat:wght@700;800;900&display=swap" rel="stylesheet"/>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+  <script src="../../Script/utils.js"></script>
+</head>
+<body>
+
+  <header>
+    <div class="logo-area" onclick="location.href='../../index.html'" style="cursor:pointer;">
+      <img src="../../Assets/logo.png" alt="Logo" class="logo-img"/>
+      <div class="org-name">
+        <strong>Southwestern Philippines</strong> Union Conference
+      </div>
+    </div>
+    <div style="display:flex;gap:10px;">
+      <button class="btn-back" onclick="history.back()">&#8592; Back</button>
+      <button class="btn-dashboard">&#9783; NCMC TREASURY DASHBOARD</button>
+    </div>
+  </header>
+
+  <main>
+    <div class="title-row">
+      <div class="title-left"></div>
+      <p class="page-subtitle">North Central Mindanao Conference</p>
+      <h1 class="page-title page-title-text">CHURCH TITHES AND OFFERINGS</h1>
+    </div>
+
+    <div class="dashboard-body">
+
+      <!-- LEFT: Charts -->
+      <div class="dash-left">
+
+        <!-- Charts Row: side by side -->
+        <div class="charts-row" id="chartsRow">
+
+          <!-- Bar Chart Panel -->
+          <div class="dash-chart-panel bar-panel" id="barPanel" onclick="expandChart('bar')">
+            <div class="dash-panel-header">
+              <div style="display:flex;align-items:center;gap:10px;">
+                <span class="dash-panel-title">CHURCH TITHES &amp; OFFERINGS</span>
+                <span class="dash-panel-period" id="barPeriodLabel">2022 – 2026</span>
+              </div>
+              <div style="display:flex;align-items:center;gap:8px;" onclick="event.stopPropagation()">
+                <div class="year-select-wrap">
+                  <span class="year-select-label">VIEW:</span>
+                  <select class="year-select" id="yearSelect" onchange="updateCharts()">
+                    <option value="all">All Years</option>
+                    <option value="2022">2022</option>
+                    <option value="2023">2023</option>
+                    <option value="2024">2024</option>
+                    <option value="2025">2025</option>
+                    <option value="2026">2026</option>
+                  </select>
+                </div>
+                <button class="chart-expand-btn" id="barExpandBtn" onclick="event.stopPropagation(); expandChart('bar')">&#x26F6;</button>
+                <button class="chart-collapse-btn hidden" id="barCollapseBtn" onclick="event.stopPropagation(); collapseCharts()">&#10005;</button>
+              </div>
+            </div>
+            <div class="chart-inner">
+              <canvas id="barChart"></canvas>
+            </div>
+          </div>
+
+          <!-- Donut Chart Panel -->
+          <div class="dash-chart-panel donut-panel" id="donutPanel" onclick="expandChart('donut')">
+            <div class="dash-panel-header">
+              <div style="display:flex;align-items:center;gap:10px;">
+                <span class="dash-panel-title">TITHE SOURCE BREAKDOWN</span>
+                <span class="dash-panel-period">2026</span>
+              </div>
+              <div style="display:flex;align-items:center;gap:8px;" onclick="event.stopPropagation()">
+                <button class="chart-expand-btn" id="donutExpandBtn" onclick="event.stopPropagation(); expandChart('donut')">&#x26F6;</button>
+                <button class="chart-collapse-btn hidden" id="donutCollapseBtn" onclick="event.stopPropagation(); collapseCharts()">&#10005;</button>
+              </div>
+            </div>
+            <div class="chart-inner" id="wrap-pie" style="position:relative;">
+              <canvas id="donutChart"></canvas>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- SEE TABLE button outside charts -->
+        <div class="table-toggle-row">
+          <button class="btn-see-table" id="seeTableBtn" onclick="toggleTablePanel()">&#128203; SEE TABLE</button>
+        </div>
+
+        <div class="table-section hidden" id="tableSection">
+          <div class="table-tabs">
+            <button class="table-tab active" id="tabTithes" onclick="setTableTab('tithes')">&#128203; TITHES</button>
+            <button class="table-tab" id="tabOfferings" onclick="setTableTab('offerings')">&#128591; OFFERINGS</button>
+          </div>
+
+          <div class="table-content active" id="tithesTableWrap">
+            <div class="table-scroll-wrap">
+              <table class="ncmc-data-table">
+                <thead>
+                  <tr class="title-row-main">
+                    <th colspan="2"></th>
+                    <th colspan="4">TITHE FROM CHURCHES &mdash; as of January 2026</th>
+                    <th>Generosity Index</th>
+                    <th># of Churches</th>
+                    <th>Membership</th>
+                  </tr>
+                  <tr>
+                    <th>#</th>
+                    <th>DISTRICT</th>
+                    <th>2026</th>
+                    <th>2025</th>
+                    <th>Variance</th>
+                    <th>%</th>
+                    <th>Gen. Index</th>
+                    <th>Churches</th>
+                    <th>Members</th>
+                  </tr>
+                </thead>
+                <tbody id="tithesTableBody"></tbody>
+                <tfoot>
+                  <tr class="summary-sub-row">
+                    <td colspan="2">Tithe from Churches</td>
+                    <td>9,825,342.95</td>
+                    <td>11,693,864.40</td>
+                    <td class="neg">(1,868,521.45)</td>
+                    <td class="neg">(16%)</td>
+                    <td colspan="3"></td>
+                  </tr>
+                  <tr class="summary-sub-row">
+                    <td colspan="2">Tithe from Workers</td>
+                    <td>302,733.70</td>
+                    <td>786,773.40</td>
+                    <td class="neg">(484,039.70)</td>
+                    <td class="neg">(62%)</td>
+                    <td colspan="3"></td>
+                  </tr>
+                  <tr class="summary-sub-row">
+                    <td colspan="2">Tithe from LES</td>
+                    <td>0.00</td>
+                    <td>5,359.19</td>
+                    <td class="neg">(5,359.19)</td>
+                    <td class="neg">(100%)</td>
+                    <td colspan="3"></td>
+                  </tr>
+                  <tr class="summary-sub-row">
+                    <td colspan="2">Tithe from Outside</td>
+                    <td>534,525.00</td>
+                    <td>349,095.56</td>
+                    <td class="pos">185,429.44</td>
+                    <td class="pos">53%</td>
+                    <td colspan="3"></td>
+                  </tr>
+                  <tr class="tfoot-total">
+                    <td colspan="2">TOTAL TITHE INCOME</td>
+                    <td>10,662,601.65</td>
+                    <td>12,835,092.55</td>
+                    <td class="neg">(2,172,490.90)</td>
+                    <td class="neg">(17%)</td>
+                    <td>54.40</td>
+                    <td>337</td>
+                    <td>76,539</td>
+                  </tr>
+                </tfoot>
+              </table>
+            </div>
+          </div>
+
+          <div class="table-content" id="offeringsTableWrap">
+            <div class="table-scroll-wrap">
+              <table class="ncmc-data-table ncmc-offering-table">
+                <thead>
+                  <tr class="title-row-main">
+                    <th colspan="2"></th>
+                    <th colspan="4">OFFERINGS FROM CHURCHES &mdash; as of January 2026</th>
+                  </tr>
+                  <tr>
+                    <th>#</th>
+                    <th>DISTRICT</th>
+                    <th>2026</th>
+                    <th>2025</th>
+                    <th>Variance</th>
+                    <th>%</th>
+                  </tr>
+                </thead>
+                <tbody id="offeringsTableBody"></tbody>
+                <tfoot>
+                  <tr class="summary-sub-row">
+                    <td colspan="2">Offerings from Churches</td>
+                    <td>2,094,824.13</td>
+                    <td>3,074,187.05</td>
+                    <td class="neg">(979,362.92)</td>
+                    <td class="neg">-32%</td>
+                  </tr>
+                  <tr class="tfoot-total">
+                    <td colspan="2">TOTAL OFFERINGS</td>
+                    <td>2,094,824.13</td>
+                    <td>3,074,187.05</td>
+                    <td class="neg">(979,362.92)</td>
+                    <td class="neg">-32%</td>
+                  </tr>
+                </tfoot>
+              </table>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- RIGHT: KPIs + Stats -->
+      <div class="dash-right">
+
+        <div class="kpi-card kpi-blue">
+          <p class="kpi-label">TOTAL TITHE (2026)</p>
+          <p class="kpi-value" id="kpiTithe">₱9,825,342.95</p>
+          <p class="kpi-sub">Jan 2026 YTD</p>
+        </div>
+
+        <div class="kpi-card kpi-gold">
+          <p class="kpi-label">TOTAL OFFERINGS (2026)</p>
+          <p class="kpi-value" id="kpiOffering">₱4,189,643.26</p>
+          <p class="kpi-sub">Jan 2026 YTD</p>
+        </div>
+
+        <div class="kpi-card kpi-red">
+          <p class="kpi-label">TARGET (2026)</p>
+          <p class="kpi-value" id="kpiTarget">₱10,000,000.00</p>
+          <p class="kpi-sub">Annual target</p>
+        </div>
+
+        <div class="kpi-card kpi-green">
+          <p class="kpi-label">VARIANCE</p>
+          <p class="kpi-value" id="kpiVariance">-₱174,657.05</p>
+          <p class="kpi-sub">Tithe vs Target</p>
+        </div>
+
+        <div class="kpi-card kpi-blue">
+          <p class="kpi-label">COMBINED TOTAL (2026)</p>
+          <p class="kpi-value" id="kpiCombined">₱14,014,986.21</p>
+          <p class="kpi-sub">Tithe + Offerings</p>
+        </div>
+
+        <!-- Clock -->
+        <div class="side-clock" id="sideClock"></div>
+
+      </div>
+    </div>
+  </main>
+
+  <div class="church-modal-overlay hidden" id="churchModalOverlay" onclick="closeChurchModal()"></div>
+  <div class="church-modal hidden" id="churchModal">
+    <div class="church-modal-header">
+      <span class="church-modal-title" id="churchModalTitle">Churches</span>
+      <button class="church-modal-close" onclick="closeChurchModal()">&#10005;</button>
+    </div>
+    <div class="church-modal-body">
+      <ul class="church-modal-list" id="churchModalList"></ul>
+    </div>
+  </div>
+
+  <footer>
+    <div class="footer-bottom">
+      <button class="btn-home" onclick="location.href='../../index.html'">
+        <span class="icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V9.5z"/><path d="M9 21V12h6v9"/></svg>
+        </span>
+        <span class="label">HOMEPAGE</span>
+      </button>
+      <div class="footer-divider"></div>
+      <div class="nav-buttons">
+        <button class="btn-nav active" onclick="location.href='NCMC.html'">NCMC<br/>DASHBOARD</button>
+        <button class="btn-nav" onclick="location.href='../Tithe/NCMCtithe.html'">NCMC<br/>TITHES</button>
+        <button class="btn-nav" onclick="location.href='../Offering/NCMCoffering.html'">NCMC<br/>OFFERINGS</button>
+      </div>
+      <a href="https://spucadventist.org" class="footer-link">spucadventist.org</a>
+    </div>
+  </footer>
+
+  <script>
+    // Clock
+    updateSideClock();
+    setInterval(updateSideClock, 1000);
+
+    // ---- Chart expand/collapse ----
+    let expandedChart = null;
+
+    function expandChart(which) {
+      if (expandedChart === which) return;
+      expandedChart = which;
+      const barPanel   = document.getElementById('barPanel');
+      const donutPanel = document.getElementById('donutPanel');
+      const barExp     = document.getElementById('barExpandBtn');
+      const donutExp   = document.getElementById('donutExpandBtn');
+      const barCol     = document.getElementById('barCollapseBtn');
+      const donutCol   = document.getElementById('donutCollapseBtn');
+
+      if (which === 'bar') {
+        barPanel.classList.add('chart-expanded');
+        donutPanel.classList.add('chart-shrunk');
+        barExp.classList.add('hidden');
+        barCol.classList.remove('hidden');
+        donutExp.classList.remove('hidden');
+        donutCol.classList.add('hidden');
+      } else {
+        donutPanel.classList.add('chart-expanded');
+        barPanel.classList.add('chart-shrunk');
+        donutExp.classList.add('hidden');
+        donutCol.classList.remove('hidden');
+        barExp.classList.remove('hidden');
+        barCol.classList.add('hidden');
+      }
+      setTimeout(() => {
+        barChartInst && barChartInst.resize();
+        if (window._refreshDonutLayout) window._refreshDonutLayout();
+      }, 420);
+    }
+
+    function collapseCharts() {
+      expandedChart = null;
+      const barPanel   = document.getElementById('barPanel');
+      const donutPanel = document.getElementById('donutPanel');
+      barPanel.classList.remove('chart-expanded', 'chart-shrunk');
+      donutPanel.classList.remove('chart-expanded', 'chart-shrunk');
+      document.getElementById('barExpandBtn').classList.remove('hidden');
+      document.getElementById('barCollapseBtn').classList.add('hidden');
+      document.getElementById('donutExpandBtn').classList.remove('hidden');
+      document.getElementById('donutCollapseBtn').classList.add('hidden');
+      if (window._pieResetOnCollapse) window._pieResetOnCollapse();
+      setTimeout(() => {
+        barChartInst && barChartInst.resize();
+        if (window._refreshDonutLayout) window._refreshDonutLayout();
+      }, 420);
+    }
+
+    const currency = new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+    const ALL_YEARS   = ['2022', '2023', '2024', '2025', '2026'];
+    const ALL_TITHE   = [8252589.02, 9457675.66, 11130410.64, 11693864.40, 9825342.95];
+    const ALL_OFFER   = [1089694.13, 1900086.56, 4054794.40, 6048374.90, 4189643.26];
+    const ALL_TARGET  = [7000000, 8000000, 9000000, 10000000, 10000000];
+
+    const TITHE_TABLE_ROWS = [
+      ['Alicia','85,469.49','171,520.00','(86,050.51)','(50%)','0.00','6','1,490'],
+      ['Baliguan','124,422.00','129,085.00','(4,663.00)','(4%)','5.00','5','1,170'],
+      ['Batu Church','271,486.50','229,386.50','42,100.00','18%','6.50','1','1,346'],
+      ['Basilan','98,462.50','203,115.50','(104,653.00)','(52%)','5.50','9','1,215'],
+      ['Bayog Church','233,629.00','373,639.50','(140,010.50)','(37%)','9.50','1','1,037'],
+      ['Bayog','193,987.50','209,310.00','(15,322.50)','(7%)','0.00','10','3,609'],
+      ['Buug','318,142.90','300,718.74','17,424.16','6%','8.74','7','2,231'],
+      ['Diplahan','351,960.50','301,257.00','50,703.50','17%','7.00','11','2,611'],
+      ['Gutalac','168,457.00','155,247.50','13,209.50','9%','7.50','10','1,929'],
+      ['Imelda','261,500.75','275,583.73','(14,082.98)','(5%)','3.73','6','1,214'],
+      ['Ipil D1','355,183.90','380,771.00','(25,587.10)','(7%)','1.00','6','2,757'],
+      ['Ipil D2','313,896.57','347,276.25','(33,379.68)','(10%)','6.25','8','1,379'],
+      ['Kabasalan-Naga','219,463.69','235,576.50','(16,112.81)','(7%)','6.50','9','3,255'],
+      ['Kalawit','101,346.00','109,417.15','(8,071.15)','(7%)','7.15','8','1,801'],
+      ['Lake-Kumalarang','137,809.00','128,000.50','9,808.50','8%','0.50','11','2,026'],
+      ['Leon Postigo','285,964.50','247,066.25','38,898.25','16%','6.25','13','3,007'],
+      ['Liloy-Jabson','534,464.50','450,756.95','83,707.55','19%','6.95','10','3,117'],
+      ['Manukan-JDalman','147,110.30','219,725.50','(72,615.20)','(33%)','5.50','18','3,366'],
+      ['Malangas','190,578.00','254,510.60','(63,932.60)','(25%)','0.60','7','1,384'],
+      ['Olutalma','151,517.50','143,454.75','8,062.75','6%','4.75','10','1,674'],
+      ['PAC','399,911.80','114,843.12','285,068.68','248%','3.12','1','409'],
+      ['Payao','96,985.00','96,188.00','797.00','1%','8.00','5','1,261'],
+      ['RT Lim','270,422.00','182,417.50','88,004.50','48%','7.50','14','2,308'],
+      ['Salug Central','277,548.40','210,014.47','67,533.93','32%','4.47','2','822'],
+      ['Salug-Godod','223,813.00','395,367.00','(171,554.00)','(43%)','7.00','13','3,000'],
+      ['Siay','141,597.00','102,524.50','39,072.50','38%','4.50','6','756'],
+      ['Siayan-Sindangan','271,340.15','237,306.50','34,033.65','14%','6.50','18','4,317'],
+      ['Sindangan-Mega','237,390.20','201,343.00','36,047.20','18%','3.00','1','3,194'],
+      ['Sindangan','272,495.86','1,873,753.66','(1,601,257.80)','(85%)','3.66','12','2,043'],
+      ['Siocon-Sirawai','379,105.50','365,381.12','13,724.38','4%','1.12','9','1,741'],
+      ['Sulu-TawiTawi','229,367.00','369,030.80','(139,663.80)','(38%)','0.80','12','1,336'],
+      ['Tampilisan','179,862.50','190,105.10','(10,242.60)','(5%)','5.10','9','1,509'],
+      ['Titay','199,539.00','230,000.50','(30,461.50)','(13%)','0.50','12','1,599'],
+      ['Tungawan D1','183,654.64','193,226.15','(9,571.51)','(5%)','6.15','9','1,073'],
+      ['Tungawan D2','138,394.00','174,392.46','(35,998.46)','(21%)','2.46','9','1,240'],
+      ['ZAC','553,421.50','900,351.75','(346,930.25)','(39%)','1.75','1','1,719'],
+      ['Zamboanga Metro','442,523.50','351,021.00','91,502.50','26%','1.00','6','2,028'],
+      ['Zamboanga D1','404,246.50','291,208.75','113,037.75','39%','8.75','8','1,313'],
+      ['Zamboanga D2','191,887.30','152,319.10','39,568.20','26%','9.10','14','1,742'],
+      ['Zamboanga D3','186,986.00','197,651.00','(10,665.00)','(5%)','1.00','10','1,559']
+    ];
+
+    const OFFERING_TABLE_ROWS = [
+      ['Alicia','19,231.49','43,551.78','(24,320.29)','-56%'],
+      ['Baliguan','21,462.75','19,389.75','2,073.00','11%'],
+      ['Batu Church','48,683.75','49,040.25','(356.50)','-1%'],
+      ['Basilan','21,898.25','75,950.75','(54,052.50)','-71%'],
+      ['Bayog Church','36,333.00','35,079.75','1,253.25','4%'],
+      ['Bayog','37,214.50','62,239.50','(25,025.00)','-40%'],
+      ['Buug','85,009.35','85,099.81','(90.46)','-0%'],
+      ['Diplahan','47,007.25','35,028.75','11,978.50','34%'],
+      ['Gutalac','38,638.75','57,115.75','(18,477.00)','-32%'],
+      ['Imelda','46,269.75','29,750.08','16,519.67','56%'],
+      ['Ipil D1','47,920.62','74,059.20','(26,138.58)','-35%'],
+      ['Ipil D2','161,979.88','190,530.05','(28,550.17)','-15%'],
+      ['Kabasalan-Naga','17,358.50','25,919.75','(8,561.25)','-33%'],
+      ['Kalawit','29,829.25','26,792.50','3,036.75','11%'],
+      ['Lake-Kumalarang','26,364.00','25,560.00','804.00','3%'],
+      ['Leon Postigo','36,920.37','28,951.62','7,968.75','28%'],
+      ['Liloy-Labason','94,479.05','126,420.68','(31,941.63)','-25%'],
+      ['Manukan-JDalman','28,368.25','39,365.75','(10,997.50)','-28%'],
+      ['Malangas','45,751.55','36,696.00','9,055.55','25%'],
+      ['Olutalma','30,638.25','35,266.25','(4,628.00)','-13%'],
+      ['PAC','5,380.00','0.00','5,380.00','#DIV/0!'],
+      ['Payao','15,615.75','25,771.50','(10,155.75)','-39%'],
+      ['RT Lim','27,764.50','28,462.50','(698.00)','-2%'],
+      ['Salug Central','108,723.35','64,379.85','44,343.50','69%'],
+      ['Salug-Godod','60,506.50','131,693.00','(71,186.50)','-54%'],
+      ['Siay','42,547.00','32,225.75','10,321.25','32%'],
+      ['Siayan-Sindangan','26,333.50','27,077.25','(743.75)','-3%'],
+      ['Sindangan-Mega','44,390.40','54,221.00','(9,830.60)','-18%'],
+      ['Sindangan','43,111.34','854,087.58','(810,976.24)','-95%'],
+      ['Siocon-Sirawai','70,594.00','58,442.41','12,151.59','21%'],
+      ['Sulu-TawiTawi','71,968.00','76,496.25','(4,528.25)','-6%'],
+      ['Tampilisan','55,367.00','52,482.40','2,884.60','5%'],
+      ['Titay','26,919.25','31,714.95','(4,795.70)','-15%'],
+      ['Tungawan D1','42,426.57','47,478.30','(5,051.73)','-11%'],
+      ['Tungawan D2','50,604.25','24,109.25','26,495.00','110%'],
+      ['ZAC','75,751.38','157,659.37','(81,907.99)','-52%'],
+      ['Zamboanga Metro','147,894.85','101,856.00','46,038.85','45%'],
+      ['Zamboanga D1','142,044.25','100,268.62','41,775.63','42%'],
+      ['Zamboanga D2','47,213.90','56,822.00','(9,608.10)','-17%'],
+      ['Zamboanga D3','68,309.78','47,131.10','21,178.68','45%']
+    ];
+
+    const CHURCH_NAMES_BY_DISTRICT = {
+      'Alicia': ['Alicia Central', 'Alicia East', 'Alicia West', 'Alicia North', 'Alicia South', 'Alicia Heights'],
+      'Baliguan': ['Baliguan Central', 'Baliguan Proper', 'Baliguan Riverside', 'Baliguan Norte', 'Baliguan Sur'],
+      'Batu Church': ['Batu SDA Church'],
+      'Basilan': ['Basilan I', 'Basilan II', 'Basilan III', 'Basilan IV', 'Basilan V', 'Basilan VI', 'Basilan VII', 'Basilan VIII', 'Basilan IX'],
+      'Bayog Church': ['Bayog Church'],
+      'Bayog': ['Bayog 1', 'Bayog 2', 'Bayog 3', 'Bayog 4', 'Bayog 5', 'Bayog 6', 'Bayog 7', 'Bayog 8', 'Bayog 9', 'Bayog 10'],
+      'Buug': ['Buug Central', 'Buug East', 'Buug West', 'Buug North', 'Buug South', 'Buug Hills', 'Buug Riverside'],
+      'Diplahan': ['Diplahan Central', 'Diplahan 1', 'Diplahan 2', 'Diplahan 3', 'Diplahan 4', 'Diplahan 5', 'Diplahan 6', 'Diplahan 7', 'Diplahan 8', 'Diplahan 9', 'Diplahan 10'],
+      'PAC': ['PAC Church']
+    };
+
+    const valueLabelPlugin = {
+      id: 'valueLabel',
+      afterDatasetsDraw(chart) {
+        const { ctx } = chart;
+        chart.data.datasets.forEach((ds, di) => {
+          chart.getDatasetMeta(di).data.forEach((bar, i) => {
+            const val = ds.data[i];
+            if (val == null) return;
+            ctx.save();
+            ctx.fillStyle = di === 0 ? '#3b82f6' : di === 1 ? '#d97706' : '#dc2626';
+            ctx.font = '600 10px Inter';
+            ctx.textAlign = 'center';
+            ctx.fillText('₱' + (val / 1e6).toFixed(2) + 'M', bar.x, bar.y - 7);
+            ctx.restore();
+          });
+        });
+      }
+    };
+
+    let barChartInst = null;
+
+    function buildBarData(filter) {
+      if (filter === 'all') return { labels: ALL_YEARS, tithe: ALL_TITHE, offer: ALL_OFFER, target: ALL_TARGET };
+      const idx = ALL_YEARS.indexOf(filter);
+      if (idx === -1) return { labels: ALL_YEARS, tithe: ALL_TITHE, offer: ALL_OFFER, target: ALL_TARGET };
+      return { labels: [filter], tithe: [ALL_TITHE[idx]], offer: [ALL_OFFER[idx]], target: [ALL_TARGET[idx]] };
+    }
+
+    function updateCharts() {
+      const filter = document.getElementById('yearSelect').value;
+      const { labels, tithe, offer, target } = buildBarData(filter);
+      const periodText = filter === 'all' ? '2022 – 2026' : filter;
+      document.getElementById('barPeriodLabel').textContent = periodText;
+
+      if (barChartInst) {
+        barChartInst.data.labels = labels;
+        barChartInst.data.datasets[0].data = tithe;
+        barChartInst.data.datasets[1].data = offer;
+        barChartInst.data.datasets[2].data = target;
+        barChartInst.update();
+      }
+
+      // Update KPIs for selected year
+      const idx = filter === 'all' ? ALL_YEARS.length - 1 : ALL_YEARS.indexOf(filter);
+      const t = ALL_TITHE[idx], o = ALL_OFFER[idx], tg = ALL_TARGET[idx];
+      document.getElementById('kpiTithe').textContent    = '₱' + currency.format(t);
+      document.getElementById('kpiOffering').textContent = '₱' + currency.format(o);
+      document.getElementById('kpiTarget').textContent   = '₱' + currency.format(tg);
+      const variance = t - tg;
+      const varEl = document.getElementById('kpiVariance');
+      varEl.textContent = (variance >= 0 ? '+₱' : '-₱') + currency.format(Math.abs(variance));
+      varEl.style.color = variance >= 0 ? '#6ee7b7' : '#fca5a5';
+      document.getElementById('kpiCombined').textContent = '₱' + currency.format(t + o);
+    }
+
+    function renderTables() {
+      const tithesBody = document.getElementById('tithesTableBody');
+      const offeringsBody = document.getElementById('offeringsTableBody');
+
+      tithesBody.innerHTML = TITHE_TABLE_ROWS.map((row, index) => {
+        const varianceClass = row[3].includes('(') ? 'neg' : 'pos';
+        const pctClass = row[4].includes('(') ? 'neg' : 'pos';
+        const churchCount = Number(row[6]);
+        return `<tr>
+          <td>${index + 1}</td>
+          <td class="district">${row[0]}</td>
+          <td>${row[1]}</td>
+          <td>${row[2]}</td>
+          <td class="${varianceClass}">${row[3]}</td>
+          <td class="${pctClass}">${row[4]}</td>
+          <td>${row[5]}</td>
+          <td><button class="church-count-btn" onclick="openChurchModal('${row[0].replace(/'/g, "\\'")}', ${churchCount})">${row[6]}</button></td>
+          <td>${row[7]}</td>
+        </tr>`;
+      }).join('');
+
+      offeringsBody.innerHTML = OFFERING_TABLE_ROWS.map((row, index) => {
+        const varianceClass = row[3].includes('(') ? 'neg' : 'pos';
+        const pctClass = row[4].includes('-') ? 'neg' : 'pos';
+        return `<tr>
+          <td>${index + 1}</td>
+          <td class="district">${row[0]}</td>
+          <td>${row[1]}</td>
+          <td>${row[2]}</td>
+          <td class="${varianceClass}">${row[3]}</td>
+          <td class="${pctClass}">${row[4]}</td>
+        </tr>`;
+      }).join('');
+    }
+
+    function toggleTablePanel() {
+      const panel      = document.getElementById('tableSection');
+      const chartsRow  = document.getElementById('chartsRow');
+      const dashRight  = document.querySelector('.dash-right');
+      const btn        = document.getElementById('seeTableBtn');
+      const isHidden   = panel.classList.contains('hidden');
+
+      if (isHidden) {
+        // Show table — slide charts out, slide table in
+        chartsRow.style.transition = 'opacity 0.35s ease, transform 0.35s ease';
+        dashRight.style.transition = 'opacity 0.35s ease, transform 0.35s ease';
+        chartsRow.style.opacity  = '0';
+        chartsRow.style.transform = 'translateY(-18px)';
+        dashRight.style.opacity  = '0';
+        dashRight.style.transform = 'translateX(24px)';
+        setTimeout(() => {
+          chartsRow.style.display = 'none';
+          dashRight.style.display = 'none';
+          panel.classList.remove('hidden');
+          panel.style.opacity   = '0';
+          panel.style.transform = 'translateY(18px)';
+          panel.style.transition = 'opacity 0.38s ease, transform 0.38s ease';
+          requestAnimationFrame(() => {
+            panel.style.opacity   = '1';
+            panel.style.transform = 'translateY(0)';
+          });
+        }, 340);
+        btn.textContent = 'HIDE TABLE';
+        btn.style.background = 'linear-gradient(135deg,rgba(239,68,68,0.25),rgba(239,68,68,0.12))';
+        btn.style.borderColor = 'rgba(239,68,68,0.6)';
+        btn.style.color = '#fca5a5';
+      } else {
+        // Hide table — slide table out, slide charts back in
+        panel.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+        panel.style.opacity   = '0';
+        panel.style.transform = 'translateY(18px)';
+        setTimeout(() => {
+          panel.classList.add('hidden');
+          chartsRow.style.display = '';
+          dashRight.style.display = '';
+          chartsRow.style.opacity  = '0';
+          chartsRow.style.transform = 'translateY(-18px)';
+          dashRight.style.opacity  = '0';
+          dashRight.style.transform = 'translateX(24px)';
+          requestAnimationFrame(() => {
+            chartsRow.style.transition = 'opacity 0.38s ease, transform 0.38s ease';
+            dashRight.style.transition = 'opacity 0.38s ease, transform 0.38s ease';
+            chartsRow.style.opacity  = '1';
+            chartsRow.style.transform = 'translateY(0)';
+            dashRight.style.opacity  = '1';
+            dashRight.style.transform = 'translateX(0)';
+          });
+          setTimeout(() => { barChartInst && barChartInst.resize(); }, 420);
+        }, 300);
+        btn.textContent = 'SEE TABLE';
+        btn.style.background = '';
+        btn.style.borderColor = '';
+        btn.style.color = '';
+      }
+    }
+
+    function setTableTab(tab) {
+      const tithesWrap = document.getElementById('tithesTableWrap');
+      const offeringsWrap = document.getElementById('offeringsTableWrap');
+      const tabTithes = document.getElementById('tabTithes');
+      const tabOfferings = document.getElementById('tabOfferings');
+
+      const tithesActive = tab === 'tithes';
+      tithesWrap.classList.toggle('active', tithesActive);
+      offeringsWrap.classList.toggle('active', !tithesActive);
+      tabTithes.classList.toggle('active', tithesActive);
+      tabOfferings.classList.toggle('active', !tithesActive);
+    }
+
+    function getChurchNames(district, count) {
+      const fromMap = CHURCH_NAMES_BY_DISTRICT[district];
+      if (fromMap && fromMap.length >= count) return fromMap.slice(0, count);
+      if (fromMap && fromMap.length > 0 && fromMap.length < count) {
+        const filled = [...fromMap];
+        for (let i = fromMap.length + 1; i <= count; i += 1) filled.push(`${district} Church ${i}`);
+        return filled;
+      }
+      const generated = [];
+      for (let i = 1; i <= count; i += 1) generated.push(`${district} Church ${i}`);
+      return generated;
+    }
+
+    function openChurchModal(district, count) {
+      const names = getChurchNames(district, count);
+      document.getElementById('churchModalTitle').textContent = `${district} (${count} churches)`;
+      document.getElementById('churchModalList').innerHTML = names.map((name) => `<li>${name}</li>`).join('');
+      document.getElementById('churchModalOverlay').classList.remove('hidden');
+      document.getElementById('churchModal').classList.remove('hidden');
+    }
+
+    function closeChurchModal() {
+      document.getElementById('churchModalOverlay').classList.add('hidden');
+      document.getElementById('churchModal').classList.add('hidden');
+    }
+
+    // Init bar chart
+    barChartInst = new Chart(document.getElementById('barChart'), {
+      type: 'bar',
+      data: {
+        labels: ALL_YEARS,
+        datasets: [
+          { label: 'Tithe',     data: ALL_TITHE,  backgroundColor: 'rgba(59,130,246,0.85)',  borderRadius: 4 },
+          { label: 'Offerings', data: ALL_OFFER,  backgroundColor: 'rgba(245,158,11,0.85)', borderRadius: 4 },
+          { label: 'Target',    data: ALL_TARGET, backgroundColor: 'rgba(239,68,68,0.75)',  borderRadius: 4 }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        layout: { padding: { top: 24 } },
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: { color: 'rgba(255,255,255,0.7)', callback: v => '₱' + (v/1e6).toFixed(1) + 'M', font: { size: 11 } },
+            grid: { color: 'rgba(255,255,255,0.08)' },
+            border: { color: 'rgba(255,255,255,0.15)' }
+          },
+          x: {
+            ticks: { color: '#fff', font: { size: 13, weight: '700' } },
+            grid: { display: false },
+            border: { color: 'rgba(255,255,255,0.15)' }
+          }
+        },
+        plugins: {
+          legend: {
+            labels: { color: '#fff', boxWidth: 14, boxHeight: 14, font: { size: 12, weight: '700' }, padding: 16 }
+          },
+          tooltip: {
+            callbacks: { label: ctx => `${ctx.dataset.label}: ₱${currency.format(ctx.parsed.y)}` }
+          }
+        }
+      },
+      plugins: [valueLabelPlugin]
+    });
+
+    // Donut chart with HTML label cards shown only when expanded
+    const PIE_COLORS = ['#4f7cff', '#f59e0b', '#facc15'];
+    const PIE_GLOW  = ['rgba(79,124,255,0.6)', 'rgba(245,158,11,0.6)', 'rgba(250,204,21,0.6)'];
+    const PIE_LABELS = ['From Churches', 'From Workers', 'From Outside'];
+    const PIE_DATA_2026 = [9825342.95 * 0.921, 9825342.95 * 0.028, 9825342.95 * 0.051];
+    const PIE_DATA_2025 = [11693864.40 * 0.921, 11693864.40 * 0.028, 11693864.40 * 0.051];
+    const pieCanvas = document.getElementById('donutChart');
+    const pieWrap   = document.getElementById('wrap-pie');
+    let pieChartInst = null;
+    let pieYear = 2026;
+    let labelsVisible = false;
+
+    // ── HTML label cards container ───────────────────────────────────────────
+    const cardsContainer = document.createElement('div');
+    cardsContainer.id = 'pieCards';
+    cardsContainer.style.cssText = 'position:absolute;inset:0;pointer-events:none;z-index:5;opacity:0;transition:opacity 0.4s ease;';
+    pieWrap.appendChild(cardsContainer);
+
+    function updateLabelCards() {
+      const data  = pieChartInst.data.datasets[0].data;
+      const total = data.reduce((a,b) => a+b, 0) || 1;
+      const meta  = pieChartInst.getDatasetMeta(0);
+      if (!meta.data.length) return;
+      const area   = pieChartInst.chartArea;
+      const cx     = (area.left + area.right) / 2;
+      const cy     = (area.top  + area.bottom) / 2;
+      const outerR = meta.data[0].outerRadius;
+      const W      = pieWrap.clientWidth;
+      const H      = pieWrap.clientHeight;
+
+      const cardW = 168;
+      const cardH = 90;
+      const pad   = 10;
+
+      // Fixed positions: left side stacked, right side centered
+      const anchors = [
+        { side: 'right', cx: W - pad - cardW / 2 - 130,  cy: H * 0.50 },  // Churches
+        { side: 'left',  cx: pad + cardW / 2 + 110,       cy: H * 0.25 },  // Workers
+        { side: 'left',  cx: pad + cardW / 2 + 110,       cy: H * 0.68 },  // Outside
+      ];
+
+      cardsContainer.innerHTML = '';
+
+      data.forEach((value, i) => {
+        const pct   = ((value / total) * 100).toFixed(1);
+        const money = '\u20b1' + (value / 1e6).toFixed(2) + 'M';
+        const arc   = meta.data[i];
+        const midAngle = (arc.startAngle + arc.endAngle) / 2;
+        const lineStartX = cx + Math.cos(midAngle) * (outerR + 8);
+        const lineStartY = cy + Math.sin(midAngle) * (outerR + 8);
+        const a = anchors[i];
+
+        // Card left/top
+        const cardLeft = Math.max(pad, Math.min(W - cardW - pad, a.cx - cardW / 2));
+        const cardTop  = Math.max(pad, Math.min(H - cardH - pad, a.cy - cardH / 2));
+
+        // Line endpoint: edge of card closest to pie
+        const lineEndX = a.side === 'right' ? cardLeft : cardLeft + cardW;
+        const lineEndY = cardTop + cardH / 2;
+
+        // SVG connector
+        const svg = document.createElementNS('http://www.w3.org/2000/svg','svg');
+        svg.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;overflow:visible;pointer-events:none;';
+        const cpX = (lineStartX + lineEndX) / 2;
+        const cpY = Math.min(lineStartY, lineEndY) - 30;
+        const path = document.createElementNS('http://www.w3.org/2000/svg','path');
+        path.setAttribute('d', `M${lineStartX},${lineStartY} Q${cpX},${cpY} ${lineEndX},${lineEndY}`);
+        path.setAttribute('stroke', PIE_COLORS[i]);
+        path.setAttribute('stroke-width', '1.8');
+        path.setAttribute('fill', 'none');
+        path.setAttribute('stroke-linecap', 'round');
+        path.style.filter = `drop-shadow(0 0 3px ${PIE_GLOW[i]})`;
+        svg.appendChild(path);
+
+        // Dot at pie edge
+        const dotS = document.createElementNS('http://www.w3.org/2000/svg','circle');
+        dotS.setAttribute('cx', lineStartX); dotS.setAttribute('cy', lineStartY);
+        dotS.setAttribute('r', '3.5'); dotS.setAttribute('fill', PIE_COLORS[i]);
+        svg.appendChild(dotS);
+
+        // Dot at card edge
+        const dotE = document.createElementNS('http://www.w3.org/2000/svg','circle');
+        dotE.setAttribute('cx', lineEndX); dotE.setAttribute('cy', lineEndY);
+        dotE.setAttribute('r', '3.5'); dotE.setAttribute('fill', PIE_COLORS[i]);
+        dotE.style.filter = `drop-shadow(0 0 5px ${PIE_GLOW[i]})`;
+        svg.appendChild(dotE);
+        cardsContainer.appendChild(svg);
+
+        // Card
+        const card = document.createElement('div');
+        card.style.cssText = `
+          position:absolute;
+          left:${cardLeft}px;
+          top:${cardTop}px;
+          width:${cardW}px;
+          height:${cardH}px;
+          background:rgba(8,16,60,0.88);
+          border:1.5px solid ${PIE_COLORS[i]};
+          border-radius:12px;
+          padding:10px 14px;
+          box-shadow:0 6px 24px rgba(0,0,0,0.5), 0 0 14px ${PIE_GLOW[i]};
+          backdrop-filter:blur(10px);
+          pointer-events:none;
+          display:flex;
+          flex-direction:column;
+          justify-content:center;
+          gap:4px;
+          animation:cardFadeIn 0.45s ease forwards;
+        `;
+        card.innerHTML = `
+          <div style="display:flex;align-items:center;gap:6px;">
+            <span style="width:11px;height:11px;border-radius:50%;background:${PIE_COLORS[i]};flex-shrink:0;box-shadow:0 0 7px ${PIE_GLOW[i]};"></span>
+            <span style="font-family:Montserrat,sans-serif;font-weight:800;font-size:0.72rem;letter-spacing:0.6px;color:rgba(255,255,255,0.9);white-space:nowrap;">${PIE_LABELS[i]}</span>
+          </div>
+          <div style="font-family:Montserrat,sans-serif;font-weight:900;font-size:1.65rem;color:${PIE_COLORS[i]};line-height:1;text-shadow:0 0 10px ${PIE_GLOW[i]};">${pct}%</div>
+          <div style="font-family:Montserrat,sans-serif;font-weight:700;font-size:0.78rem;color:rgba(255,255,255,0.65);">${money}</div>
+        `;
+        cardsContainer.appendChild(card);
+      });
+    }
+
+    function showPieLabels() {
+      labelsVisible = true;
+      updateLabelCards();
+      requestAnimationFrame(() => { cardsContainer.style.opacity = '1'; });
+    }
+
+    function hidePieLabels() {
+      labelsVisible = false;
+      cardsContainer.style.opacity = '0';
+    }
+
+    // ── Plugins ──────────────────────────────────────────────────────────────
+    let pulseT = 0;
+    const pulsePlugin = {
+      id: 'pulseRing',
+      afterDraw(chart) {
+        const meta = chart.getDatasetMeta(0);
+        if (!meta.data.length) return;
+        const { ctx: c, chartArea } = chart;
+        const cx     = (chartArea.left + chartArea.right) / 2;
+        const cy     = (chartArea.top  + chartArea.bottom) / 2;
+        const outerR = meta.data[0].outerRadius;
+        pulseT = (pulseT + 0.018) % (Math.PI * 2);
+        const r    = outerR * (1 + Math.sin(pulseT) * 0.012) + 6;
+        const grad = c.createRadialGradient(cx, cy, r-4, cx, cy, r+4);
+        grad.addColorStop(0,   'rgba(79,124,255,0.0)');
+        grad.addColorStop(0.5, 'rgba(79,124,255,0.35)');
+        grad.addColorStop(1,   'rgba(79,124,255,0.0)');
+        c.save();
+        c.beginPath();
+        c.arc(cx, cy, r, 0, Math.PI * 2);
+        c.strokeStyle = grad;
+        c.lineWidth   = 8;
+        c.stroke();
+        c.restore();
+      }
+    };
+
+    const centerLabelPlugin = {
+      id: 'centerLabel',
+      afterDraw(chart) {
+        const { ctx: c, chartArea } = chart;
+        if (!chartArea) return;
+        const total = chart.data.datasets[0].data.reduce((a,b) => a+b, 0);
+        const cx = (chartArea.left + chartArea.right) / 2;
+        const cy = (chartArea.top  + chartArea.bottom) / 2;
+        c.save();
+        c.textAlign = 'center'; c.textBaseline = 'middle';
+        c.fillStyle = 'rgba(255,255,255,0.55)';
+        c.font = '700 11px Montserrat,sans-serif';
+        c.fillText('TOTAL TITHE', cx, cy - 10);
+        c.fillStyle = '#f5a623';
+        c.shadowColor = 'rgba(245,166,35,0.8)';
+        c.shadowBlur  = 10;
+        c.font = '900 15px Montserrat,sans-serif';
+        c.fillText('\u20b1' + (total/1e6).toFixed(2) + 'M', cx, cy + 8);
+        c.shadowBlur = 0;
+        c.fillStyle = 'rgba(255,255,255,0.4)';
+        c.font = '600 10px Montserrat,sans-serif';
+        c.fillText(pieYear.toString(), cx, cy + 22);
+        c.restore();
+      }
+    };
+
+    pieChartInst = new Chart(pieCanvas.getContext('2d'), {
+      type: 'doughnut',
+      plugins: [pulsePlugin, centerLabelPlugin],
+      data: {
+        labels: PIE_LABELS,
+        datasets: [{
+          data: PIE_DATA_2026,
+          backgroundColor: PIE_COLORS,
+          borderColor: PIE_GLOW,
+          borderWidth: 2.5,
+          hoverOffset: 10,
+          hoverBorderWidth: 3,
+          hoverBorderColor: '#fff'
+        }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        radius: '84%', cutout: '32%',
+        layout: { padding: { left: 28, right: 28, top: 10, bottom: 10 } },
+        animation: { duration: 500, easing: 'easeOutQuart' },
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            backgroundColor: 'rgba(10,20,80,0.92)',
+            borderColor: 'rgba(255,255,255,0.2)', borderWidth: 1,
+            titleColor: '#f5a623', bodyColor: '#fff', padding: 10,
+            callbacks: { label: ctx => ` ${ctx.label}: \u20b1${ctx.parsed.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})}` }
+          }
+        }
+      }
+    });
+
+    // Pulse animation loop
+    (function animatePulse() {
+      if (pieChartInst) { pieChartInst.draw(); requestAnimationFrame(animatePulse); }
+    })();
+
+    new ResizeObserver(() => {
+      if (pieChartInst) pieChartInst.resize();
+      if (labelsVisible) updateLabelCards();
+    }).observe(pieWrap);
+
+    function applyDonutViewportSettings() {
+      if (!pieChartInst) return;
+      const donutExpanded = document.getElementById('donutPanel').classList.contains('chart-expanded');
+      if (donutExpanded) {
+        // Expanded view: keep your current satisfied callout layout.
+        pieChartInst.options.radius = '72%';
+        pieChartInst.options.cutout = '42%';
+        pieChartInst.options.layout.padding = { left: 170, right: 170, top: 16, bottom: 16 };
+      } else {
+        // Default view: larger donut and cleaner center like your first screenshot.
+        pieChartInst.options.radius = '84%';
+        pieChartInst.options.cutout = '32%';
+        pieChartInst.options.layout.padding = { left: 28, right: 28, top: 10, bottom: 10 };
+      }
+      pieChartInst.update('none');
+    }
+
+    // Show/hide labels based on expand state
+    window._refreshDonutLayout = function() {
+      applyDonutViewportSettings();
+      if (labelsVisible) updateLabelCards();
+    };
+    window._pieResetOnCollapse = function() {
+      hidePieLabels();
+      applyDonutViewportSettings();
+    };
+
+    // Click on donut panel: expand → show labels; click again → collapse
+    pieWrap.addEventListener('click', e => {
+      if (e.target.closest('button')) return;
+      const donutPanel = document.getElementById('donutPanel');
+      if (!donutPanel.classList.contains('chart-expanded')) {
+        expandChart('donut');
+        setTimeout(() => showPieLabels(), 450);
+      } else {
+        hidePieLabels();
+        setTimeout(() => collapseCharts(), 300);
+      }
+    });
+
+    applyDonutViewportSettings();
+    renderTables();
+  </script>
+</body>
+</html>

@@ -124,6 +124,10 @@ function initMissionPage(config) {
     headerBackBtn.textContent = 'BACK TO DETAIL VIEW';
   }
 
+  // Remove the smaller inline back button near "FILTER MONTHS".
+  // Mission pages should only show the header back button.
+  document.querySelectorAll('.overview-top-bar .btn-toggle-back').forEach(btn => btn.remove());
+
   // ── Main scrollable bar chart ──
   const canvas = document.getElementById(canvasId);
   const barWidth = canvas.parentElement.clientWidth / VISIBLE_MONTHS;
