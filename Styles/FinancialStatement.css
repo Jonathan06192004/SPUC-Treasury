@@ -816,6 +816,33 @@ main {
 }
 #tab-equity .spacer td { height: 10px; background: #f0f4ff !important; border: none !important; }
 
+/* ---- Financial Indicator — months highlight rows ---- */
+.fl-month-val {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 1.6rem;
+  font-weight: 900;
+  color: #ffe600;
+  text-shadow: 0 0 10px rgba(255,230,0,0.6);
+}
+
+.fl-month-label {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: rgba(255,230,0,0.85);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-left: 4px;
+}
+
+.fl-pct-val {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 1.6rem;
+  font-weight: 900;
+  color: #ffe600;
+  text-shadow: 0 0 10px rgba(255,230,0,0.6);
+}
+
 /* ---- Drilldown clickable rows ---- */
 .bs-drilldown-row {
   cursor: pointer;
@@ -1000,6 +1027,40 @@ main {
 .kpi-cards { display: flex; flex-direction: column; gap: 8px; flex-shrink: 0; }
 .kpi-cards.hidden { display: none; }
 
+/* Balance Sheet & Income — fixed height matching 4 cards */
+#kpiCardsBalance,
+#kpiCardsIncome {
+  flex-shrink: 0;
+}
+
+#kpiCardsBalance .kpi-card,
+#kpiCardsIncome .kpi-card {
+  min-height: 86px;
+}
+
+/* Equity — 2 cards each same total height as 4-card sets */
+#kpiCardsEquity {
+  flex-shrink: 0;
+}
+
+#kpiCardsEquity .kpi-card {
+  min-height: calc((86px * 2) + 8px);
+  padding: 24px 18px;
+}
+
+#kpiCardsEquity .kpi-label {
+  font-size: 0.68rem;
+  letter-spacing: 1.5px;
+  margin-bottom: 12px;
+}
+
+#kpiCardsEquity .kpi-value {
+  font-size: 2.6rem;
+  font-weight: 900;
+  letter-spacing: -1px;
+  text-shadow: 0 0 14px rgba(255,255,255,0.3), 0 1px 4px rgba(0,0,0,0.3);
+}
+
 .kpi-card {
   border-radius: 10px;
   padding: 12px 14px;
@@ -1073,12 +1134,13 @@ main {
 }
 
 .kpi-value {
-  font-size: 1.05rem;
-  font-weight: 800;
+  font-size: 1.85rem;
+  font-weight: 900;
   color: #fff;
   line-height: 1;
   text-shadow: 0 1px 4px rgba(0,0,0,0.3);
   animation: kpiValuePulse 3.8s ease-in-out infinite;
+  letter-spacing: -1px;
 }
 
 .kpi-sub {
@@ -1163,7 +1225,8 @@ main {
 
 /* Side Clock */
 .side-clock {
-  flex: 1;
+  flex: 0 0 auto;
+  height: 108px;
   background: linear-gradient(160deg, rgba(255,255,255,0.08) 0%, rgba(10,30,110,0.35) 100%);
   backdrop-filter: blur(6px);
   border: 1px solid rgba(255,255,255,0.15);
@@ -1172,14 +1235,13 @@ main {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  padding: 16px;
-  min-height: 0;
+  gap: 6px;
+  padding: 12px;
 }
 
-.side-clock-time { font-size: 2.2rem; font-weight: 800; color: #fff; letter-spacing: 3px; font-variant-numeric: tabular-nums; display: flex; align-items: flex-start; gap: 4px; }
-.side-clock-ampm { font-size: 1.1rem; font-weight: 700; color: rgba(255,255,255,0.85); margin-top: 4px; letter-spacing: 1px; }
-.side-clock-date { font-size: 0.7rem; font-weight: 600; color: rgba(255,255,255,0.7); text-align: center; line-height: 1.4; }
+.side-clock-time { font-size: 2rem; font-weight: 800; color: #fff; letter-spacing: 2px; font-variant-numeric: tabular-nums; display: flex; align-items: flex-start; gap: 4px; }
+.side-clock-ampm { font-size: 1rem; font-weight: 700; color: rgba(255,255,255,0.85); margin-top: 3px; letter-spacing: 1px; }
+.side-clock-date { font-size: 0.65rem; font-weight: 600; color: rgba(255,255,255,0.7); text-align: center; line-height: 1.4; }
 
 /* ---- Footer ---- */
 footer {
