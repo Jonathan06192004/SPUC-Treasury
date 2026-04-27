@@ -62,10 +62,16 @@
               </div>
             </div>
           </div>
+          <div class="is-col-header" id="isColHeader">
+            <span class="is-col-assets"></span>
+            <span class="is-col-label"><span class="bs-col-year">2026</span><span class="bs-col-total">TOTAL</span></span>
+            <span class="is-col-label"><span class="bs-col-year">2026</span><span class="bs-col-total">BUDGET</span></span>
+            <span class="is-col-label"><span class="bs-col-year">2025</span><span class="bs-col-total">TOTAL</span></span>
+          </div>
           <div class="bs-zoom-outer">
             <div class="fs-table-scroll" id="isTableScroll">
               <table class="fs-table" id="isTable">
-                <thead>
+                <thead class="is-thead-hidden">
                   <tr>
                     <th class="fs-th">OPERATING ACTIVITY</th>
                     <th class="fs-th center">TOTAL 2026</th>
@@ -108,17 +114,13 @@
               </div>
             </div>
           </div>
+          <div class="bs-col-header" id="bsColHeader">
+            <span class="year-2025"><span class="digit-2025">2025</span><span class="total-2025">TOTAL</span></span>
+            <span class="bs-col-label"><span class="bs-col-year">2026</span><span class="bs-col-total">TOTAL</span></span>
+          </div>
           <div class="bs-zoom-outer">
             <div class="fs-table-scroll" id="bsTableScroll">
               <table class="fs-table" id="bsTable">
-                <thead>
-                  <tr>
-                    <th class="fs-th">ASSETS</th>
-                    <th class="fs-th center">2025 TOTAL</th>
-                    <th class="fs-th center">2026 TOTAL</th>
-                    <th class="fs-th center" id="bsExtraHeader" style="display:none"></th>
-                  </tr>
-                </thead>
                 <tbody id="bsTableBody"></tbody>
               </table>
             </div>
@@ -178,10 +180,15 @@
               </div>
             </div>
           </div>
+          <div class="fl-col-header" id="flColHeader">
+            <span class="fl-col-assets"></span>
+            <span class="fl-col-label"><span class="bs-col-year">2026</span><span class="bs-col-total">CURRENT</span></span>
+            <span class="fl-col-label"><span class="bs-col-year">2025</span><span class="bs-col-total">PREVIOUS</span></span>
+          </div>
           <div class="bs-zoom-outer">
             <div class="fs-table-scroll" id="flTableScroll">
               <table class="fs-table" id="flTable">
-                <thead>
+                <thead class="fl-thead-hidden">
                   <tr>
                     <th class="fs-th"></th>
                     <th class="fs-th center">2026 CURRENT</th>
@@ -454,6 +461,13 @@
       } else {
         document.getElementById('kpiCardsIncome').classList.remove('hidden');
       }
+
+      // Re-measure headers only after the selected tab becomes visible.
+      requestAnimationFrame(() => {
+        if (id === 'balance') alignBsColHeader();
+        if (id === 'income') alignIsColHeader();
+        if (id === 'equity') alignFlColHeader();
+      });
     }
 
     updateSideClock();
@@ -627,13 +641,106 @@
       document.getElementById('kpiBsNetAssetsSub').textContent   = 'As of ' + mn + ' ' + lastDay + ', 2026';
       document.getElementById('kpiBsTotal').textContent          = fmtM(tlna26);
       document.getElementById('kpiBsTotalSub').textContent       = 'As of ' + mn + ' ' + lastDay + ', 2026';
+      alignBsColHeader();
     }
 
     // ---- Initialization ----
+    function alignBsColHeader() {
+      const table = document.getElementById('bsTable');
+      const header = document.getElementById('bsColHeader');
+      if (!table || !header) return;
+
+      const assetsLabel = header.querySelector('.bs-col-assets');
+      const yearLabels = header.querySelectorAll('.bs-col-label');
+      if (!assetsLabel || yearLabels.length < 2) return;
+
+      // Use the first real data row with 3 cells (skip section/subheader rows with colspan)
+      const probeCell = table.querySelector('tbody tr td:nth-child(3)');
+      if (!probeCell) return;
+
+      const row = probeCell.parentElement;
+      if (!row) return;
+      const cells = row.querySelectorAll('td');
+      if (cells.length !== 3) return;
+
+      const col1 = cells[0].getBoundingClientRect().width;
+      const col2 = cells[1].getBoundingClientRect().width;
+      const col3 = cells[2].getBoundingClientRect().width;
+
+      // Force the top year bar to use the exact same 3-column geometry as the table.
+      header.style.display = 'grid';
+      header.style.gridTemplateColumns = `${col1}px ${col2}px ${col3}px`;
+
+      assetsLabel.style.width = 'auto';
+      assetsLabel.style.flex = 'initial';
+      yearLabels[0].style.width = 'auto';
+      yearLabels[0].style.flex = 'initial';
+      yearLabels[1].style.width = 'auto';
+      yearLabels[1].style.flex = 'initial';
+    }
+
+    function alignIsColHeader() {
+      const table = document.getElementById('isTable');
+      const header = document.getElementById('isColHeader');
+      if (!table || !header) return;
+      const probeCell = table.querySelector('tbody tr td:nth-child(4)');
+      if (!probeCell) return;
+      const row = probeCell.parentElement;
+      if (!row) return;
+      const cells = row.querySelectorAll('td');
+      if (cells.length !== 4) return;
+      const w1 = cells[0].getBoundingClientRect().width;
+      const w2 = cells[1].getBoundingClientRect().width;
+      const w3 = cells[2].getBoundingClientRect().width;
+      const w4 = cells[3].getBoundingClientRect().width;
+      // If tab is hidden, widths become 0 and labels collapse/merge.
+      if (w1 <= 0 || w2 <= 0 || w3 <= 0 || w4 <= 0) return;
+      const assetsLabel = header.querySelector('.is-col-assets');
+      const yearLabels = header.querySelectorAll('.is-col-label');
+      if (!assetsLabel || yearLabels.length < 3) return;
+      assetsLabel.style.width = w1 + 'px';
+      assetsLabel.style.flex = '0 0 ' + w1 + 'px';
+      yearLabels[0].style.width = w2 + 'px';
+      yearLabels[0].style.flex = '0 0 ' + w2 + 'px';
+      yearLabels[1].style.width = w3 + 'px';
+      yearLabels[1].style.flex = '0 0 ' + w3 + 'px';
+      yearLabels[2].style.width = w4 + 'px';
+      yearLabels[2].style.flex = '0 0 ' + w4 + 'px';
+    }
+
+    function alignFlColHeader() {
+      const table = document.getElementById('flTable');
+      const header = document.getElementById('flColHeader');
+      if (!table || !header) return;
+      const probeCell = table.querySelector('tbody tr td:nth-child(3)');
+      if (!probeCell) return;
+      const row = probeCell.parentElement;
+      if (!row) return;
+      const cells = row.querySelectorAll('td');
+      if (cells.length !== 3) return;
+
+      const w1 = cells[0].getBoundingClientRect().width;
+      const w2 = cells[1].getBoundingClientRect().width;
+      const w3 = cells[2].getBoundingClientRect().width;
+      if (w1 <= 0 || w2 <= 0 || w3 <= 0) return;
+
+      const assetsLabel = header.querySelector('.fl-col-assets');
+      const yearLabels = header.querySelectorAll('.fl-col-label');
+      if (!assetsLabel || yearLabels.length < 2) return;
+
+      assetsLabel.style.width = w1 + 'px';
+      assetsLabel.style.flex = '0 0 ' + w1 + 'px';
+      yearLabels[0].style.width = w2 + 'px';
+      yearLabels[0].style.flex = '0 0 ' + w2 + 'px';
+      yearLabels[1].style.width = w3 + 'px';
+      yearLabels[1].style.flex = '0 0 ' + w3 + 'px';
+    }
+
     window.addEventListener('DOMContentLoaded', () => {
       const cur = new Date().getMonth();
       renderAll(cur);
     });
+    window.addEventListener('resize', () => { alignBsColHeader(); alignIsColHeader(); alignFlColHeader(); });
 
     let bsZoomLevel = 100;
     function bsZoom(dir) {
@@ -833,6 +940,7 @@
         totalRow('NET ASSETS, '+mn.toUpperCase()+' '+lastDay+', 2026',netEnd26OF,netEnd26PF,netEnd26,'',netEnd25);
 
       updateKPIs();
+      alignIsColHeader();
     }
 
     // ---- Income Statement zoom ----
@@ -1032,6 +1140,7 @@
           <tr><td class="fs-label indent">SURPLUS (SHORTFALL) IN RECOMMENDED MINIMUM</td><td class="fs-amount center ${laSurplus26 < 0 ? 'neg' : ''}">${laSurplus26 < 0 ? fmtFlNeg(laSurplus26) : fmtFl(laSurplus26)}</td><td class="fs-amount center ${laSurplus25 < 0 ? 'neg' : ''}">${laSurplus25 < 0 ? fmtFlNeg(laSurplus25) : fmtFl(laSurplus25)}</td></tr>
           <tr class="total-row highlight fl-months-row"><td class="fs-label">AVAILABLE LIQUID ASSETS IN MONTHS</td><td class="fs-amount center gold">${flShowPercentage ? '<span class="fl-pct-val">135.06%</span>' : '<span class="fl-month-val">10</span><span class="fl-month-label">months</span>'}</td><td class="fs-amount center gold">${flShowPercentage ? '<span class="fl-pct-val">133.02%</span>' : '<span class="fl-month-val">5</span><span class="fl-month-label">months</span>'}</td></tr>
         `;
+      alignFlColHeader();
     }
 
     let flZoomLevel = 100;
