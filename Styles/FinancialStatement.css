@@ -648,22 +648,7 @@ main {
   flex: 1;
 }
 
-.bs-col-label {
-  font-family: 'Montserrat', sans-serif;
-  font-weight: 700;
-  font-size: 0.68rem;
-  letter-spacing: 1.5px;
-  color: #f5a623;
-  padding: 6px 16px;
-  text-align: center;
-  text-transform: uppercase;
-  width: 588px;
-  flex-shrink: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  line-height: 1.2;
-}
+.bs-col-label,
 .year-2025 {
   font-family: 'Montserrat', sans-serif;
   font-weight: 700;
@@ -673,7 +658,6 @@ main {
   padding: 6px 16px;
   text-align: center;
   text-transform: uppercase;
-  width: 895px;
   flex-shrink: 0;
   display: flex;
   flex-direction: column;
@@ -681,39 +665,20 @@ main {
   line-height: 1.2;
 }
 
-.bs-col-year {
+.bs-col-year,
+.digit-2025 {
   font-size: 1.3rem;
   font-weight: 900;
   letter-spacing: 2px;
   line-height: 1;
 }
 
-.digit-2025 {
-  font-size: 1.3rem;
-  font-weight: 900;
-  letter-spacing: 2px;
-  line-height: 1;
-  margin-left: 981px;
-}
+.bs-col-total,
 .total-2025 {
   font-size: 0.6rem;
   font-weight: 700;
   letter-spacing: 2px;
   opacity: 0.85;
-  margin-left: 981px;
-}
-.bs-col-total {
-  font-size: 0.6rem;
-  font-weight: 700;
-  letter-spacing: 2px;
-  opacity: 0.85;
-  background: #0a1e6e;
-  color: #f5a623;
-  font-size: 0.68rem;
-  letter-spacing: 1.5px;
-  padding: 10px 16px;
-  border-bottom: 3px solid #f5a623;
-  text-transform: uppercase;
 }
 
 /* Yellow section headers (CURRENT ASSETS, FIXED ASSETS, etc.) */

@@ -6,40 +6,74 @@ const HEADERS = {
   'Authorization': `Bearer ${SUPABASE_KEY}`
 };
 
+// ─── IDEMPOTENCY ──────────────────────────────────────────────────────────────
+// Generates a unique key per logical operation (method + url + body hash).
+function generateIdempotencyKey(method, url, body) {
+  const raw = `${method}:${url}:${body ?? ''}`;
+  let hash = 0;
+  for (let i = 0; i < raw.length; i++) {
+    hash = (Math.imul(31, hash) + raw.charCodeAt(i)) | 0;
+  }
+  return `${Math.abs(hash).toString(16)}-${Date.now()}`;
+}
+
+// In-flight GET request cache — deduplicates concurrent identical fetches.
+const _inflight = new Map();
+
+// Central fetch wrapper. Attaches Idempotency-Key for writes; deduplicates GETs.
+async function supabaseRequest(url, options = {}) {
+  const method = (options.method || 'GET').toUpperCase();
+  const isWrite = method !== 'GET' && method !== 'HEAD';
+  const idempotencyKey = generateIdempotencyKey(method, url, options.body);
+
+  const headers = {
+    ...HEADERS,
+    'Content-Type': 'application/json',
+    ...(options.headers || {}),
+    ...(isWrite ? { 'Idempotency-Key': idempotencyKey } : {})
+  };
+
+  // For GET requests, reuse an in-flight promise for the same URL.
+  if (!isWrite) {
+    if (_inflight.has(url)) return _inflight.get(url);
+    const promise = fetch(url, { ...options, headers })
+      .then(r => r.json())
+      .finally(() => _inflight.delete(url));
+    _inflight.set(url, promise);
+    return promise;
+  }
+
+  // For writes, always send a fresh request with the idempotency key.
+  const res = await fetch(url, { ...options, headers });
+  return res.json();
+}
+
 // Fetch all tithes joined with mission name
 async function fetchTithes() {
-  const res = await fetch(
-    `${SUPABASE_URL}/rest/v1/tithes?select=*,missions(code,name)&order=mission_id.asc,year.asc,month.asc`,
-    { headers: HEADERS }
+  return supabaseRequest(
+    `${SUPABASE_URL}/rest/v1/tithes?select=*,missions(code,name)&order=mission_id.asc,year.asc,month.asc`
   );
-  return await res.json();
 }
 
 // Fetch all offerings joined with mission name
 async function fetchOfferings() {
-  const res = await fetch(
-    `${SUPABASE_URL}/rest/v1/offerings?select=*,missions(code,name)&order=mission_id.asc,year.asc,month.asc`,
-    { headers: HEADERS }
+  return supabaseRequest(
+    `${SUPABASE_URL}/rest/v1/offerings?select=*,missions(code,name)&order=mission_id.asc,year.asc,month.asc`
   );
-  return await res.json();
 }
 
 // Fetch tithes for a specific mission code and year
 async function fetchTithesByMission(missionCode, year) {
-  const res = await fetch(
-    `${SUPABASE_URL}/rest/v1/tithes?select=month,amount,budget,missions!inner(code)&missions.code=eq.${missionCode}&year=eq.${year}&order=month.asc`,
-    { headers: HEADERS }
+  return supabaseRequest(
+    `${SUPABASE_URL}/rest/v1/tithes?select=month,amount,budget,missions!inner(code)&missions.code=eq.${missionCode}&year=eq.${year}&order=month.asc`
   );
-  return await res.json();
 }
 
 // Fetch offerings for a specific mission code and year
 async function fetchOfferingsByMission(missionCode, year) {
-  const res = await fetch(
-    `${SUPABASE_URL}/rest/v1/offerings?select=month,amount,budget,missions!inner(code)&missions.code=eq.${missionCode}&year=eq.${year}&order=month.asc`,
-    { headers: HEADERS }
+  return supabaseRequest(
+    `${SUPABASE_URL}/rest/v1/offerings?select=month,amount,budget,missions!inner(code)&missions.code=eq.${missionCode}&year=eq.${year}&order=month.asc`
   );
-  return await res.json();
 }
 
 // Build a 12-element array from DB rows (null for missing months)
@@ -83,20 +117,16 @@ function buildSpucTotal(grouped, year) {
 
 // Fetch tithes for one mission by code, both years
 async function fetchTithesByCode(code) {
-  const res = await fetch(
-    `${SUPABASE_URL}/rest/v1/tithes?select=year,month,amount,budget,missions!inner(code)&missions.code=eq.${code}&order=year.asc,month.asc`,
-    { headers: HEADERS }
+  return supabaseRequest(
+    `${SUPABASE_URL}/rest/v1/tithes?select=year,month,amount,budget,missions!inner(code)&missions.code=eq.${code}&order=year.asc,month.asc`
   );
-  return await res.json();
 }
 
 // Fetch offerings for one mission by code, both years
 async function fetchOfferingsByCode(code) {
-  const res = await fetch(
-    `${SUPABASE_URL}/rest/v1/offerings?select=year,month,amount,budget,missions!inner(code)&missions.code=eq.${code}&order=year.asc,month.asc`,
-    { headers: HEADERS }
+  return supabaseRequest(
+    `${SUPABASE_URL}/rest/v1/offerings?select=year,month,amount,budget,missions!inner(code)&missions.code=eq.${code}&order=year.asc,month.asc`
   );
-  return await res.json();
 }
 
 // Split rows into {2025:[12], 2026:[12]} month arrays
