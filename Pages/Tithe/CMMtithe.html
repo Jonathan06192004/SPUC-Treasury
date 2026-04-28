@@ -7,6 +7,7 @@
   <link rel="stylesheet" href="../../Styles/Tithe/CMMtithe.css" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Montserrat:wght@700;800;900&display=swap" rel="stylesheet"/>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="../../Script/supabase.js"></script>
   <script src="../../Script/utils.js"></script>
 </head>
 <body>
@@ -116,13 +117,13 @@
   </footer>
 
   <script>
-    initMissionPage({
-      canvasId: 'cmmChart',
-      labelHeader: 'CMM TITHES',
-      data2025:   [4443619.05, 11007216.37, 18569355.76, 18946323.34, 17035848.15, 19364276.52, 15573564.14, 15496542.12, 23435771.52, 13356756.36, 19743514.55, 20649250.17],
-      data2026:   [913359.61, 20656218.25, 13500858.14, null, null, null, null, null, null, null, null, null],
-      dataTarget: [null, null, null, null, null, null, null, null, null, null, null, null]
-
+    fetchTithesByCode('CMM').then(rows => {
+      const { y2025, y2026, budget } = splitYears(rows);
+      onLayoutReady(() => initMissionPage({
+        canvasId: 'cmmChart',
+        labelHeader: 'CMM TITHES',
+        data2025: y2025, data2026: y2026, dataTarget: budget
+      }));
     });
   </script>
 </body>

@@ -7,6 +7,7 @@
   <link rel="stylesheet" href="../../Styles/Tithe/NCMCtithe.css" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Montserrat:wght@700;800;900&display=swap" rel="stylesheet"/>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="../../Script/supabase.js"></script>
   <script src="../../Script/utils.js"></script>
 </head>
 <body>
@@ -128,14 +129,14 @@
   </footer>
 
   <script>
-    initMissionPage({
-      canvasId: 'ncmcChart',
-      labelHeader: 'NCMC TITHES',
-      data2025:   [22621870.89, 18578687.78, 17162301.27, 20294803.38, 15619823.58, 18203978.14, 21189228.22, 18660639.55, 20985045.33, 15892071.06, 14178110.09, 23315279.12],
-      data2026:   [19905842.45, 20525257.24, 20751373.20, null, null, null, null, null, null, null, null, null],
-      dataTarget: [null, null, null, null, null, null, null, null, null, null, null, null]
+    fetchTithesByCode('NCMC').then(rows => {
+      const { y2025, y2026, budget } = splitYears(rows);
+      onLayoutReady(() => initMissionPage({
+        canvasId: 'ncmcChart',
+        labelHeader: 'NCMC TITHES',
+        data2025: y2025, data2026: y2026, dataTarget: budget
+      }));
     });
-
   </script>
 </body>
 </html>

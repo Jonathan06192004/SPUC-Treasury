@@ -7,6 +7,7 @@
   <link rel="stylesheet" href="../../Styles/Tithe/ZPMtithe.css" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Montserrat:wght@700;800;900&display=swap" rel="stylesheet"/>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="../../Script/supabase.js"></script>
   <script src="../../Script/utils.js"></script>
 </head>
 <body>
@@ -114,12 +115,13 @@
   </footer>
 
   <script>
-    initMissionPage({
-      canvasId: 'zpmChart',
-      labelHeader: 'ZPM TITHES',
-      data2025:   [12102432.80, 9804383.86, 7801789.09, 12969059.02, 10145172.90, 12802338.55, 10626935.12, 8019854.95, 11238472.36, 8770181.61, 8763006.87, 13040919.31],
-      data2026:   [10662601.65, 11671689.64, 8700225.47, null, null, null, null, null, null, null, null, null],
-      dataTarget: [null, null, null, null, null, null, null, null, null, null, null, null]
+    fetchTithesByCode('ZPM').then(rows => {
+      const { y2025, y2026, budget } = splitYears(rows);
+      onLayoutReady(() => initMissionPage({
+        canvasId: 'zpmChart',
+        labelHeader: 'ZPM TITHES',
+        data2025: y2025, data2026: y2026, dataTarget: budget
+      }));
     });
   </script>
 </body>

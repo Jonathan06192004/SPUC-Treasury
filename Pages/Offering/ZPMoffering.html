@@ -7,6 +7,7 @@
   <link rel="stylesheet" href="../../Styles/Offering/ZPMoffering.css" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Montserrat:wght@700;800;900&display=swap" rel="stylesheet"/>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="../../Script/supabase.js"></script>
   <script src="../../Script/utils.js"></script>
 </head>
 <body>
@@ -101,12 +102,13 @@
   </footer>
 
   <script>
-    initMissionPage({
-      canvasId: 'zpmOfferingChart',
-      labelHeader: 'ZPM OFFERINGS',
-      data2025:   [6339754.30, 3996998.33, 3486240.37, 5790837.13, 4194080.67, 5431951.90, 4566993.83, 3316249.03, 4455129.83, 3264997.33, 3396422.50, 4365371.97],
-      data2026:   [4228337.27, 4222259.23, 3510290.80, null, null, null, null, null, null, null, null, null],
-      dataTarget: [null, null, null, null, null, null, null, null, null, null, null, null]
+    fetchOfferingsByCode('ZPM').then(rows => {
+      const { y2025, y2026, budget } = splitYears(rows);
+      onLayoutReady(() => initMissionPage({
+        canvasId: 'zpmOfferingChart',
+        labelHeader: 'ZPM OFFERINGS',
+        data2025: y2025, data2026: y2026, dataTarget: budget
+      }));
     });
   </script>
 </body>

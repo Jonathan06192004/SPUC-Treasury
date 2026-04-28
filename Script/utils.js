@@ -130,10 +130,7 @@ function initMissionPage(config) {
 
   // ── Main scrollable bar chart ──
   const canvas = document.getElementById(canvasId);
-  const barWidth = canvas.parentElement.clientWidth / VISIBLE_MONTHS;
-  canvas.style.width = (barWidth * months.length) + 'px';
-  canvas.style.minWidth = (barWidth * months.length) + 'px';
-  canvas.style.height = canvas.parentElement.clientHeight + 'px';
+  const parent = canvas.parentElement;
 
   const datasets = [
     { label: '2025',   data: data2025,   backgroundColor: '#1a237e', borderRadius: 5 },
@@ -141,21 +138,39 @@ function initMissionPage(config) {
     { label: 'Budget', data: dataTarget, backgroundColor: '#6d43ea', borderRadius: 5 }
   ];
 
-  const chart = new Chart(canvas.getContext('2d'), {
-    type: 'bar',
-    data: { labels: months, datasets },
-    options: {
-      responsive: false, maintainAspectRatio: false,
-      plugins: {
-        legend: { display: false },
-        tooltip: { callbacks: { label: ctx => ` ${ctx.dataset.label}: ₱${ctx.parsed.y.toLocaleString('en-US', {minimumFractionDigits:2,maximumFractionDigits:2})}` } }
-      },
-      scales: {
-        y: { beginAtZero: true, ticks: { callback: v => v>=1000000?'₱'+(v/1000000).toFixed(1)+'M':v>=1000?'₱'+(v/1000).toFixed(1)+'K':'₱'+v, font:{weight:'600',size:11}, color:'#ffffff' }, grid:{color:'rgba(255,255,255,0.5)',lineWidth:2} },
-        x: { grid:{display:false}, ticks:{font:{weight:'600',size:11},color:'#ffffff'} }
+  function drawChart() {
+    const w = parent.clientWidth || parent.offsetWidth || 600;
+    const h = parent.clientHeight || parent.offsetHeight || 400;
+    const barWidth = w / VISIBLE_MONTHS;
+    canvas.style.width    = (barWidth * months.length) + 'px';
+    canvas.style.minWidth = (barWidth * months.length) + 'px';
+    canvas.style.height   = h + 'px';
+
+    if (canvas._chartInstance) { canvas._chartInstance.destroy(); }
+    canvas._chartInstance = new Chart(canvas.getContext('2d'), {
+      type: 'bar',
+      data: { labels: months, datasets },
+      options: {
+        responsive: false, maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: { callbacks: { label: ctx => ` ${ctx.dataset.label}: ₱${ctx.parsed.y.toLocaleString('en-US', {minimumFractionDigits:2,maximumFractionDigits:2})}` } }
+        },
+        scales: {
+          y: { beginAtZero: true, ticks: { callback: v => v>=1000000?'₱'+(v/1000000).toFixed(1)+'M':v>=1000?'₱'+(v/1000).toFixed(1)+'K':'₱'+v, font:{weight:'600',size:11}, color:'#ffffff' }, grid:{color:'rgba(255,255,255,0.5)',lineWidth:2} },
+          x: { grid:{display:false}, ticks:{font:{weight:'600',size:11},color:'#ffffff'} }
+        }
       }
-    }
+    });
+  }
+
+  // Use ResizeObserver so chart renders only when container has real dimensions
+  const ro = new ResizeObserver(entries => {
+    const h = entries[0].contentRect.height;
+    if (h > 10) { ro.disconnect(); drawChart(); }
   });
+  ro.observe(parent);
+
 
   // ── Legend ──
   const legendEl = document.getElementById('chartLegend');
@@ -164,10 +179,12 @@ function initMissionPage(config) {
     item.className = 'legend-item';
     item.innerHTML = `<span class="legend-paren">(</span><span class="legend-dot" style="background:${ds.backgroundColor}"></span><span class="legend-paren">)</span><span class="legend-label">${ds.label}</span>`;
     item.addEventListener('click', () => {
-      const meta = chart.getDatasetMeta(i);
+      const inst = canvas._chartInstance;
+      if (!inst) return;
+      const meta = inst.getDatasetMeta(i);
       meta.hidden = !meta.hidden;
       item.classList.toggle('legend-hidden');
-      chart.update();
+      inst.update();
     });
     legendEl.appendChild(item);
   });

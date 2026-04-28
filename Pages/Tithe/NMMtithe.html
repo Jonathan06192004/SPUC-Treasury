@@ -7,6 +7,7 @@
   <link rel="stylesheet" href="../../Styles/Tithe/NMMtithe.css" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Montserrat:wght@700;800;900&display=swap" rel="stylesheet"/>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="../../Script/supabase.js"></script>
   <script src="../../Script/utils.js"></script>
 </head>
 <body>
@@ -114,12 +115,13 @@
   </footer>
 
   <script>
-    initMissionPage({
-      canvasId: 'nmmChart',
-      labelHeader: 'NMM TITHES',
-      data2025:   [8979630.22, 6906975.54, 7603812.43, 8247275.91, 7698935.23, 10050505.87, 9562060.72, 7703403.70, 8311743.70, 8332417.55, 9272742.38, 10979424.34],
-      data2026:   [10033625.37, 8873338.08, 7768163.00, null, null, null, null, null, null, null, null, null],
-      dataTarget: [null, null, null, null, null, null, null, null, null, null, null, null]
+    fetchTithesByCode('NMM').then(rows => {
+      const { y2025, y2026, budget } = splitYears(rows);
+      onLayoutReady(() => initMissionPage({
+        canvasId: 'nmmChart',
+        labelHeader: 'NMM TITHES',
+        data2025: y2025, data2026: y2026, dataTarget: budget
+      }));
     });
   </script>
 </body>

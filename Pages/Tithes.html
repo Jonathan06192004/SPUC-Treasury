@@ -9,6 +9,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Cinzel:wght@700;900&family=Montserrat:wght@700;800;900&display=swap" rel="stylesheet"/>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+  <script src="../Script/supabase.js"></script>
   <script src="../Script/utils.js"></script>
   <script src="../Script/ViewAllMonths.js"></script>
 </head>
@@ -150,108 +151,6 @@
     </div>
   </footer>
 
-  <script>
-    const VISIBLE_MONTHS = 4;
-    const labels = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-
-    // SPUC totals = sum of all 5 missions per month (from screenshot)
-    const datasets = [
-      { label: '2025', data: [69617914.36, 61596239.55, 65948798.45, 79607269.42, 67373242.37, 81624204.69, 74988549.33, 64439238.42, 81572737.88, 63549232.84, 68980414.58, 90367744.52], backgroundColor: '#0a1e6e', borderRadius: 4 },
-      { label: '2026', data: [61301229.98, 82826503.21, 68784584.11, null, null, null, null, null, null, null, null, null], backgroundColor: '#f59e0b', borderRadius: 4 },
-      { label: 'Budget', data: [72000000, 72000000, 72000000, 72000000, 72000000, 72000000, 72000000, 72000000, 72000000, 72000000, 72000000, 72000000], backgroundColor: '#6d43ea', borderRadius: 4 }
-    ];
-
-    // Per-mission 2025 data (from screenshot)
-    const missionData = [
-      [22621870.89,18578687.78,17162301.27,20294803.38,15619823.58,18203978.14,21189228.22,18660639.55,20985045.33,15892071.06,14178110.09,23315279.12], // NCMC
-      [4443619.05,11007216.37,18569355.76,18946323.34,17035848.15,19364276.52,15573564.14,15496542.12,23435771.52,13356756.36,19743514.55,20649250.17],  // CMM
-      [8979630.22,6906975.54,7603812.43,8247275.91,7698935.23,10050505.87,9562060.72,7703403.70,8311743.70,8332417.55,9272742.38,10979424.34],           // NMM
-      [21470361.40,15298976.00,14811539.90,19149807.77,16873462.51,21203105.61,18036761.13,14558798.10,17601704.97,17197806.26,17023040.69,22382871.58], // WMC
-      [12102432.80,9804383.86,7801789.09,12969059.02,10145172.90,12802338.55,10626935.12,8019854.95,11238472.36,8770181.61,8763006.87,13040919.31]       // ZPM
-    ];
-
-    // Populate table
-    const fmt = v => v != null ? v.toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2}) : '-';
-    const fmtVariance = (v25, v26) => {
-      if (v25 == null || v26 == null) return '<td class="cell-variance">-</td>';
-      const diff = v26 - v25;
-      const pct = ((diff / v25) * 100).toFixed(1);
-      const cls = diff >= 0 ? 'variance-pos' : 'variance-neg';
-      const arrow = diff >= 0 ? '▲' : '▼';
-      return `<td class="cell-variance ${cls}">${arrow} ${fmt(Math.abs(diff))}<br><span class="variance-pct">${arrow} ${Math.abs(pct)}%</span></td>`;
-    };
-    const t25 = datasets[0].data.reduce((a,b)=>a+(b||0),0);
-    const t26 = datasets[1].data.reduce((a,b)=>a+(b||0),0);
-    const tBgt = datasets[2].data.reduce((a,b)=>a+(b||0),0);
-    const tDiff = t26 - t25;
-    const tPct = ((tDiff / t25) * 100).toFixed(1);
-    const tCls = tDiff >= 0 ? 'variance-pos' : 'variance-neg';
-    const tArrow = tDiff >= 0 ? '▲' : '▼';
-    document.getElementById('excelBody').innerHTML = labels.map((m,i) =>
-      `<tr><td class="month-cell">${m}</td><td class="cell-2025">${fmt(datasets[0].data[i])}</td><td class="cell-2026">${fmt(datasets[1].data[i])}</td><td class="cell-budget">${fmt(datasets[2].data[i])}</td>${fmtVariance(datasets[0].data[i], datasets[1].data[i])}</tr>`
-    ).join('') + `<tr class="total-row"><td class="month-cell">Total</td><td class="total-cell">${fmt(t25)}</td><td class="total-cell">${fmt(t26)}</td><td class="total-cell">${fmt(tBgt)}</td><td class="total-cell ${tCls}">${tArrow} ${fmt(Math.abs(tDiff))}<br><span class="variance-pct">${tArrow} ${Math.abs(tPct)}%</span></td></tr>`;
-
-    // Main bar chart
-    const canvas = document.getElementById('tithesChart');
-    const containerWidth = canvas.parentElement.clientWidth;
-    const containerHeight = canvas.parentElement.clientHeight;
-    const barWidth = containerWidth / VISIBLE_MONTHS;
-    canvas.style.width = (barWidth * labels.length) + 'px';
-    canvas.style.minWidth = (barWidth * labels.length) + 'px';
-    canvas.style.height = containerHeight + 'px';
-
-    const chart = new Chart(canvas.getContext('2d'), {
-      type: 'bar',
-      data: { labels, datasets },
-      options: {
-        responsive: false, maintainAspectRatio: false,
-        plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => ` ${ctx.dataset.label}: ₱${ctx.parsed.y.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})}` } } },
-        scales: {
-          y: { beginAtZero: true, ticks: { callback: v => v>=1000000?'₱'+(v/1000000).toFixed(1)+'M':v>=1000?'₱'+(v/1000).toFixed(1)+'K':'₱'+v, font:{weight:'700',size:11}, color:'#ffffff' }, grid:{color:'rgba(255,255,255,0.5)',lineWidth:2} },
-          x: { grid:{display:false}, ticks:{font:{weight:'700',size:11},color:'#ffffff'} }
-        }
-      }
-    });
-
-    const legendEl = document.getElementById('chartLegend');
-    datasets.forEach((ds, i) => {
-      const item = document.createElement('div');
-      item.className = 'legend-item';
-      item.innerHTML = `<span class="legend-paren">(</span><span class="legend-dot" style="background:${ds.backgroundColor}"></span><span class="legend-paren">)</span><span class="legend-label">${ds.label}</span>`;
-      item.addEventListener('click', () => { const meta = chart.getDatasetMeta(i); meta.hidden = !meta.hidden; item.classList.toggle('legend-hidden'); chart.update(); });
-      legendEl.appendChild(item);
-    });
-
-    // Per-mission 2026 data
-    const missionData2026 = [
-      [19905842.45, 20525257.24, 20751373.20, null, null, null, null, null, null, null, null, null], // NCMC
-      [913359.61,   20656218.25, 13500858.14, null, null, null, null, null, null, null, null, null], // CMM
-      [10033625.37,  8873338.08,  7768163.00, null, null, null, null, null, null, null, null, null], // NMM
-      [19785800.90, 21100000.20, 18063964.30, null, null, null, null, null, null, null, null, null], // WMC
-      [10662601.65, 11671689.64,  8700225.47, null, null, null, null, null, null, null, null, null]  // ZPM
-    ];
-
-    initViewAllMonths({ canvasId: 'tithesChart', datasets, missionData, missionData2026, labels, VISIBLE_MONTHS });
-
-    updateSideClock();
-    setInterval(updateSideClock, 1000);
-
-    function openTableModal() {
-      document.getElementById('modalTableBody').innerHTML = document.getElementById('excelBody').innerHTML;
-      document.getElementById('tableModalOverlay').classList.remove('hidden');
-      const modal = document.getElementById('tableModal');
-      modal.classList.remove('hidden');
-      modal.style.animation = 'tableModalIn 0.35s cubic-bezier(0.4,0,0.2,1) forwards';
-    }
-    function closeTableModal() {
-      const modal = document.getElementById('tableModal');
-      modal.style.animation = 'tableModalOut 0.25s ease forwards';
-      setTimeout(() => {
-        modal.classList.add('hidden');
-        document.getElementById('tableModalOverlay').classList.add('hidden');
-      }, 250);
-    }
-  </script>
   <!-- Table Modal -->
   <div class="table-modal-overlay hidden" id="tableModalOverlay" onclick="closeTableModal()"></div>
   <div class="table-modal hidden" id="tableModal">
@@ -269,5 +168,6 @@
     </div>
   </div>
 
+  <script src="../Script/Tithes.js"></script>
 </body>
 </html>

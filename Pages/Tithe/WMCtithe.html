@@ -7,6 +7,7 @@
   <link rel="stylesheet" href="../../Styles/Tithe/WMCtithe.css" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Montserrat:wght@700;800;900&display=swap" rel="stylesheet"/>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="../../Script/supabase.js"></script>
   <script src="../../Script/utils.js"></script>
 </head>
 <body>
@@ -114,12 +115,13 @@
   </footer>
 
   <script>
-    initMissionPage({
-      canvasId: 'wmcChart',
-      labelHeader: 'WMC TITHES',
-      data2025:   [21470361.40, 15298976.00, 14811539.90, 19149807.77, 16873462.51, 21203105.61, 18036761.13, 14558798.10, 17601704.97, 17197806.26, 17023040.69, 22382871.58],
-      data2026:   [19785800.90, 21100000.20, 18063964.30, null, null, null, null, null, null, null, null, null],
-      dataTarget: [null, null, null, null, null, null, null, null, null, null, null, null]
+    fetchTithesByCode('WMC').then(rows => {
+      const { y2025, y2026, budget } = splitYears(rows);
+      onLayoutReady(() => initMissionPage({
+        canvasId: 'wmcChart',
+        labelHeader: 'WMC TITHES',
+        data2025: y2025, data2026: y2026, dataTarget: budget
+      }));
     });
   </script>
 </body>

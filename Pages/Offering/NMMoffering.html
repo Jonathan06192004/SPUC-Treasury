@@ -7,6 +7,7 @@
   <link rel="stylesheet" href="../../Styles/Offering/NMMoffering.css" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Montserrat:wght@700;800;900&display=swap" rel="stylesheet"/>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="../../Script/supabase.js"></script>
   <script src="../../Script/utils.js"></script>
 </head>
 <body>
@@ -101,12 +102,13 @@
   </footer>
 
   <script>
-    initMissionPage({
-      canvasId: 'nmmOfferingChart',
-      labelHeader: 'NMM OFFERINGS',
-      data2025:   [5009467.27, 3264745.60, 3542691.70, 3879662.63, 3501869.67, 3499267.07, 4302372.97, 3423456.57, 3504767.43, 3497940.47, 3220721.53, 4051357.87],
-      data2026:   [4345799.53, null, 2226651.20, null, null, null, null, null, null, null, null, null],
-      dataTarget: [null, null, null, null, null, null, null, null, null, null, null, null]
+    fetchOfferingsByCode('NMM').then(rows => {
+      const { y2025, y2026, budget } = splitYears(rows);
+      onLayoutReady(() => initMissionPage({
+        canvasId: 'nmmOfferingChart',
+        labelHeader: 'NMM OFFERINGS',
+        data2025: y2025, data2026: y2026, dataTarget: budget
+      }));
     });
   </script>
 </body>

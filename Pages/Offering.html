@@ -9,6 +9,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Cinzel:wght@700;900&family=Montserrat:wght@700;800;900&display=swap" rel="stylesheet"/>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+  <script src="../Script/supabase.js"></script>
   <script src="../Script/utils.js"></script>
   <script src="../Script/ViewAllMonths.js"></script>
 </head>
@@ -154,100 +155,6 @@
     </div>
   </footer>
 
-  <script>
-    const VISIBLE_MONTHS = 4;
-    const labels = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-    const canvas = document.getElementById('offeringChart');
-    const barWidth = canvas.parentElement.clientWidth / VISIBLE_MONTHS;
-    canvas.style.width = (barWidth * labels.length) + 'px';
-    canvas.style.minWidth = (barWidth * labels.length) + 'px';
-    canvas.style.height = canvas.parentElement.clientHeight + 'px';
-
-    const datasets = [
-      { label: '2025',   data: [29938070.07, 25572581.73, 26943637.10, 34327859.77, 27915369.40, 33272114.27, 30302696.70, 25934152.67, 33973938.90, 24600448.63, 24742424.30, 33009367.40], backgroundColor: '#0a1e6e', borderRadius: 4 },
-      { label: '2026',   data: [23721985.60, 31140714.83, 26368161.33, null, null, null, null, null, null, null, null, null], backgroundColor: '#f59e0b', borderRadius: 4 },
-      { label: 'Budget', data: [31000000, 31000000, 31000000, 31000000, 31000000, 31000000, 31000000, 31000000, 31000000, 31000000, 31000000, 31000000], backgroundColor: '#6d43ea', borderRadius: 4 }
-    ];
-
-    const missionData = [
-      [8423978.37, 5890144.37, 6749753.63, 8640243.73, 5713093.73, 7387405.67, 7967638.30, 5647825.33, 10416009.03, 5008471.43, 4981968.80, 7654224.13], // NCMC
-      [2930234.20, 6108608.17, 7391777.43, 8704753.23, 8272590.83, 9679020.80, 6969523.87, 8017628.13, 8899305.50, 6555693.97, 7214962.67, 9541109.40], // CMM
-      [5009467.27, 3264745.60, 3542691.70, 3879662.63, 3501869.67, 3499267.07, 4302372.97, 3423456.57, 3504767.43, 3497940.47, 3220721.53, 4051357.87], // NMM
-      [7234635.93, 6312085.27, 5773173.97, 7312363.03, 6233734.50, 7274468.83, 6496167.73, 5528993.60, 6698727.10, 6273345.43, 5928348.80, 7397304.03], // WMC
-      [6339754.30, 3996998.33, 3486240.37, 5790837.13, 4194080.67, 5431951.90, 4566993.83, 3316249.03, 4455129.83, 3264997.33, 3396422.50, 4365371.97]  // ZPM
-    ];
-
-    const chart = new Chart(canvas.getContext('2d'), {
-      type: 'bar',
-      data: { labels, datasets },
-      options: {
-        responsive: false, maintainAspectRatio: false,
-        plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => ` ${ctx.dataset.label}: ₱${ctx.parsed.y.toLocaleString('en-US', {minimumFractionDigits:2,maximumFractionDigits:2})}` } } },
-        scales: {
-          y: { beginAtZero: true, ticks: { callback: v => v>=1000000?'₱'+(v/1000000).toFixed(1)+'M':v>=1000?'₱'+(v/1000).toFixed(1)+'K':'₱'+v, font:{weight:'700',size:11}, color:'#ffffff' }, grid:{color:'rgba(255,255,255,0.5)',lineWidth:2} },
-          x: { grid:{display:false}, ticks:{font:{weight:'700',size:11},color:'#ffffff'} }
-        }
-      }
-    });
-
-    const legendEl = document.getElementById('chartLegend');
-    datasets.forEach((ds, i) => {
-      const item = document.createElement('div');
-      item.className = 'legend-item';
-      item.innerHTML = `<span class="legend-paren">(</span><span class="legend-dot" style="background:${ds.backgroundColor}"></span><span class="legend-paren">)</span><span class="legend-label">${ds.label}</span>`;
-      item.addEventListener('click', () => { const meta = chart.getDatasetMeta(i); meta.hidden = !meta.hidden; item.classList.toggle('legend-hidden'); chart.update(); });
-      legendEl.appendChild(item);
-    });
-
-    // Excel table
-    const fmt = v => v != null ? v.toLocaleString('en-US', {minimumFractionDigits:2,maximumFractionDigits:2}) : '-';
-    const fmtVariance = (v25, v26) => {
-      if (v25 == null || v26 == null) return '<td class="cell-variance">-</td>';
-      const diff = v26 - v25;
-      const pct = ((diff / v25) * 100).toFixed(1);
-      const cls = diff >= 0 ? 'variance-pos' : 'variance-neg';
-      const arrow = diff >= 0 ? '▲' : '▼';
-      return `<td class="cell-variance ${cls}">${arrow} ${fmt(Math.abs(diff))}<span class="variance-pct">${arrow} ${Math.abs(pct)}%</span></td>`;
-    };
-    const d2025 = datasets[0].data, d2026 = datasets[1].data, dBudget = datasets[2].data;
-    const t2025 = d2025.reduce((a,b)=>a+(b||0),0);
-    const t2026 = d2026.reduce((a,b)=>a+(b||0),0);
-    const tBudget = dBudget.reduce((a,b)=>a+(b||0),0);
-    const tDiff = t2026 - t2025;
-    const tPct = ((tDiff / t2025) * 100).toFixed(1);
-    const tCls = tDiff >= 0 ? 'variance-pos' : 'variance-neg';
-    const tArrow = tDiff >= 0 ? '▲' : '▼';
-    document.getElementById('excelBody').innerHTML = labels.map((m,i) =>
-      `<tr><td class="month-cell">${m}</td><td class="cell-2025">${fmt(d2025[i])}</td><td class="cell-2026">${fmt(d2026[i])}</td><td class="cell-budget">${fmt(dBudget[i])}</td>${fmtVariance(d2025[i], d2026[i])}</tr>`
-    ).join('') + `<tr class="total-row"><td class="month-cell">Total</td><td class="total-cell">${fmt(t2025)}</td><td class="total-cell">${fmt(t2026)}</td><td class="total-cell">${fmt(tBudget)}</td><td class="total-cell ${tCls}">${tArrow} ${fmt(Math.abs(tDiff))}<span class="variance-pct">${tArrow} ${Math.abs(tPct)}%</span></td></tr>`;
-
-    function openTableModal() {
-      document.getElementById('modalTableBody').innerHTML = document.getElementById('excelBody').innerHTML;
-      document.getElementById('tableModalOverlay').classList.remove('hidden');
-      const modal = document.getElementById('tableModal');
-      modal.classList.remove('hidden');
-      modal.style.animation = 'tableModalIn 0.35s cubic-bezier(0.4,0,0.2,1) forwards';
-    }
-    function closeTableModal() {
-      const modal = document.getElementById('tableModal');
-      modal.style.animation = 'tableModalOut 0.25s ease forwards';
-      setTimeout(() => { modal.classList.add('hidden'); document.getElementById('tableModalOverlay').classList.add('hidden'); }, 250);
-    }
-
-    updateSideClock();
-    setInterval(updateSideClock, 1000);
-
-    const missionData2026 = [
-      [8006698.27, 7552696.33, 7695529.87, null, null, null, null, null, null, null, null, null], // NCMC
-      [ 187511.00,11376208.60, 6481870.30, null, null, null, null, null, null, null, null, null], // CMM
-      [4345799.53,       null, 2226651.20, null, null, null, null, null, null, null, null, null], // NMM
-      [6953639.53, 7989550.67, 6453819.17, null, null, null, null, null, null, null, null, null], // WMC
-      [4228337.27, 4222259.23, 3510290.80, null, null, null, null, null, null, null, null, null]  // ZPM
-    ];
-
-    initViewAllMonths({ canvasId: 'offeringChart', datasets, missionData, missionData2026, labels, VISIBLE_MONTHS });
-  </script>
-
   <!-- Table Modal -->
   <div class="table-modal-overlay hidden" id="tableModalOverlay" onclick="closeTableModal()"></div>
   <div class="table-modal hidden" id="tableModal">
@@ -264,5 +171,7 @@
       </table>
     </div>
   </div>
+
+  <script src="../Script/Offerings.js"></script>
 </body>
 </html>
