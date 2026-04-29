@@ -1,0 +1,168 @@
+// CLOCK
+function updateClock() {
+  const now = new Date();
+  const date = now.toLocaleDateString('en-US', {
+    weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+  });
+  let hours = now.getHours();
+  const ampm = hours >= 12 ? 'PM' : 'AM';
+  hours = hours % 12 || 12;
+  const hh = String(hours).padStart(2, '0');
+  const mm = String(now.getMinutes()).padStart(2, '0');
+  const ss = String(now.getSeconds()).padStart(2, '0');
+  document.getElementById('liveClock').innerHTML =
+    `<div class="clock-segments">
+      <div class="clock-seg"><span class="seg-num">${hh}</span><span class="seg-label">hr</span></div>
+      <span class="clock-colon">:</span>
+      <div class="clock-seg"><span class="seg-num">${mm}</span><span class="seg-label">min</span></div>
+      <span class="clock-colon">:</span>
+      <div class="clock-seg"><span class="seg-num">${ss}</span><span class="seg-label">sec</span></div>
+      <span class="clock-ampm">${ampm}</span>
+    </div>
+     <span class="clock-date">${date}</span>`;
+}
+updateClock();
+setInterval(updateClock, 1000);
+
+// CURRENCY
+const CURRENCIES = [
+  { code: 'USD', name: 'US Dollar',            flag: 'us' },
+  { code: 'PHP', name: 'Philippine Peso',       flag: 'ph' },
+  { code: 'EUR', name: 'Euro',                  flag: 'eu' },
+  { code: 'GBP', name: 'British Pound',         flag: 'gb' },
+  { code: 'JPY', name: 'Japanese Yen',          flag: 'jp' },
+  { code: 'CNY', name: 'Chinese Yuan',          flag: 'cn' },
+  { code: 'KRW', name: 'South Korean Won',      flag: 'kr' },
+  { code: 'AUD', name: 'Australian Dollar',     flag: 'au' },
+  { code: 'CAD', name: 'Canadian Dollar',       flag: 'ca' },
+  { code: 'CHF', name: 'Swiss Franc',           flag: 'ch' },
+  { code: 'HKD', name: 'Hong Kong Dollar',      flag: 'hk' },
+  { code: 'SGD', name: 'Singapore Dollar',      flag: 'sg' },
+  { code: 'MYR', name: 'Malaysian Ringgit',     flag: 'my' },
+  { code: 'IDR', name: 'Indonesian Rupiah',     flag: 'id' },
+  { code: 'THB', name: 'Thai Baht',             flag: 'th' },
+  { code: 'VND', name: 'Vietnamese Dong',       flag: 'vn' },
+  { code: 'INR', name: 'Indian Rupee',          flag: 'in' },
+  { code: 'SAR', name: 'Saudi Riyal',           flag: 'sa' },
+  { code: 'AED', name: 'UAE Dirham',            flag: 'ae' },
+  { code: 'QAR', name: 'Qatari Riyal',          flag: 'qa' },
+  { code: 'KWD', name: 'Kuwaiti Dinar',         flag: 'kw' },
+  { code: 'BHD', name: 'Bahraini Dinar',        flag: 'bh' },
+  { code: 'NZD', name: 'New Zealand Dollar',    flag: 'nz' },
+  { code: 'ZAR', name: 'South African Rand',    flag: 'za' },
+  { code: 'BRL', name: 'Brazilian Real',        flag: 'br' },
+  { code: 'MXN', name: 'Mexican Peso',          flag: 'mx' },
+  { code: 'ARS', name: 'Argentine Peso',        flag: 'ar' },
+  { code: 'CLP', name: 'Chilean Peso',          flag: 'cl' },
+  { code: 'COP', name: 'Colombian Peso',        flag: 'co' },
+  { code: 'PEN', name: 'Peruvian Sol',          flag: 'pe' },
+  { code: 'NOK', name: 'Norwegian Krone',       flag: 'no' },
+  { code: 'SEK', name: 'Swedish Krona',         flag: 'se' },
+  { code: 'DKK', name: 'Danish Krone',          flag: 'dk' },
+  { code: 'PLN', name: 'Polish Zloty',          flag: 'pl' },
+  { code: 'CZK', name: 'Czech Koruna',          flag: 'cz' },
+  { code: 'HUF', name: 'Hungarian Forint',      flag: 'hu' },
+  { code: 'RON', name: 'Romanian Leu',          flag: 'ro' },
+  { code: 'TRY', name: 'Turkish Lira',          flag: 'tr' },
+  { code: 'RUB', name: 'Russian Ruble',         flag: 'ru' },
+  { code: 'UAH', name: 'Ukrainian Hryvnia',     flag: 'ua' },
+  { code: 'EGP', name: 'Egyptian Pound',        flag: 'eg' },
+  { code: 'NGN', name: 'Nigerian Naira',        flag: 'ng' },
+  { code: 'KES', name: 'Kenyan Shilling',       flag: 'ke' },
+  { code: 'GHS', name: 'Ghanaian Cedi',         flag: 'gh' },
+  { code: 'PKR', name: 'Pakistani Rupee',       flag: 'pk' },
+  { code: 'BDT', name: 'Bangladeshi Taka',      flag: 'bd' },
+  { code: 'LKR', name: 'Sri Lankan Rupee',      flag: 'lk' },
+  { code: 'MMK', name: 'Myanmar Kyat',          flag: 'mm' },
+  { code: 'TWD', name: 'Taiwan Dollar',         flag: 'tw' },
+  { code: 'ILS', name: 'Israeli Shekel',        flag: 'il' },
+];
+
+let activeTarget = null;
+let fromCurrency = CURRENCIES.find(c => c.code === 'USD');
+let toCurrency   = CURRENCIES.find(c => c.code === 'PHP');
+
+function renderDropdown(filter = '') {
+  const list = document.getElementById('currencyList');
+  const filtered = CURRENCIES.filter(c =>
+    c.code.toLowerCase().includes(filter.toLowerCase()) ||
+    c.name.toLowerCase().includes(filter.toLowerCase())
+  );
+  list.innerHTML = filtered.map(c => `
+    <li onclick="selectCurrency('${c.code}')">
+      <img src="https://flagcdn.com/w20/${c.flag}.png"/>
+      <span>${c.code}</span>
+      <small>${c.name}</small>
+    </li>
+  `).join('');
+}
+
+function openDropdown(target) {
+  const dd = document.getElementById('currencyDropdown');
+  if (activeTarget === target && !dd.classList.contains('hidden')) {
+    dd.classList.add('hidden');
+    activeTarget = null;
+    return;
+  }
+  activeTarget = target;
+  dd.classList.remove('hidden');
+  document.getElementById('currencySearch').value = '';
+  renderDropdown();
+  document.getElementById('currencySearch').focus();
+}
+
+function selectCurrency(code) {
+  const cur = CURRENCIES.find(c => c.code === code);
+  if (activeTarget === 'from') {
+    fromCurrency = cur;
+    document.getElementById('fromFlag').src = `https://flagcdn.com/w20/${cur.flag}.png`;
+    document.getElementById('fromCode').textContent = cur.code;
+  } else {
+    toCurrency = cur;
+    document.getElementById('toFlag').src = `https://flagcdn.com/w20/${cur.flag}.png`;
+    document.getElementById('toCode').textContent = cur.code;
+  }
+  document.getElementById('currencyDropdown').classList.add('hidden');
+  activeTarget = null;
+  fetchRate();
+}
+
+function swapCurrencies() {
+  [fromCurrency, toCurrency] = [toCurrency, fromCurrency];
+  document.getElementById('fromFlag').src = `https://flagcdn.com/w20/${fromCurrency.flag}.png`;
+  document.getElementById('fromCode').textContent = fromCurrency.code;
+  document.getElementById('toFlag').src = `https://flagcdn.com/w20/${toCurrency.flag}.png`;
+  document.getElementById('toCode').textContent = toCurrency.code;
+  fetchRate();
+}
+
+function fetchRate() {
+  const rateText = document.getElementById('rateText');
+  const amount = parseFloat(document.getElementById('amountInput').value) || 1;
+  rateText.innerHTML = '<strong>Loading...</strong>';
+  fetch(`https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/${fromCurrency.code.toLowerCase()}.json`)
+    .then(r => r.json())
+    .then(data => {
+      const rate = data[fromCurrency.code.toLowerCase()]?.[toCurrency.code.toLowerCase()];
+      if (rate === undefined) {
+        rateText.innerHTML = '<strong>Rate unavailable</strong>';
+      } else {
+        const converted = parseFloat((rate * amount).toPrecision(8));
+        rateText.innerHTML = `<strong>${amount} ${fromCurrency.code} = ${converted} ${toCurrency.code}</strong>`;
+      }
+    })
+    .catch(() => { rateText.innerHTML = '<strong>Rate unavailable</strong>'; });
+}
+
+document.getElementById('currencySearch').addEventListener('input', e => renderDropdown(e.target.value));
+document.getElementById('amountInput').addEventListener('input', fetchRate);
+
+document.addEventListener('click', e => {
+  const widget = document.querySelector('.currency-widget');
+  if (!widget.contains(e.target)) {
+    document.getElementById('currencyDropdown').classList.add('hidden');
+    activeTarget = null;
+  }
+});
+
+fetchRate();

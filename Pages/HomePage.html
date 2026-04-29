@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Treasury Department | SPUC</title>
+  <link rel="icon" type="image/png" href="../Assets/logo.png"/>
+  <link rel="stylesheet" href="../Styles/HomePage.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;800&family=Cinzel:wght@700;900&family=Montserrat:wght@700;800;900&display=swap" rel="stylesheet"/>
+</head>
+
+<body>
+
+<header>
+  <div class="logo-area">
+    <img src="../Assets/logo.png" class="logo-img"/>
+    <div class="org-name">
+      <strong>Southwestern Philippines</strong> Union Conference
+    </div>
+  </div>
+</header>
+
+<main>
+
+  <!-- LEFT -->
+  <div class="left-panel">
+    <img src="../Assets/Treasury Dep.png" class="title-img"/>
+    <div class="bottom-widgets">
+      <div class="live-clock" id="liveClock"></div>
+
+      <div class="currency-widget">
+
+        <div class="currency-top">
+          <div class="currency-select" id="fromBox" onclick="openDropdown('from')">
+            <img id="fromFlag" src="https://flagcdn.com/w20/us.png"/>
+            <span id="fromCode">USD</span>
+          </div>
+
+          <div class="currency-swap" onclick="swapCurrencies()">⇄</div>
+
+          <div class="currency-select" id="toBox" onclick="openDropdown('to')">
+            <img id="toFlag" src="https://flagcdn.com/w20/ph.png"/>
+            <span id="toCode">PHP</span>
+          </div>
+        </div>
+
+        <!-- Dropdown -->
+        <div class="currency-dropdown hidden" id="currencyDropdown">
+          <input class="currency-search" id="currencySearch" type="text" placeholder="Search currency..."/>
+          <ul id="currencyList"></ul>
+        </div>
+
+        <div class="rate-info">
+          <input class="amount-input" id="amountInput" type="number" value="1" min="0" placeholder="Amount"/>
+          <p class="rate-text" id="rateText"><strong>Loading...</strong></p>
+          <p class="rate-sub">Mid-market exchange rate</p>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT -->
+  <div class="right-panel">
+  </div>
+</main>
+
+<footer>
+  <a href="https://spucadventist.org" class="footer-link">spucadventist.org</a>
+
+  <div class="footer-buttons">
+    <button class="btn-nav" onclick="location.href='Tithes.html'">TITHES</button>
+    <button class="btn-nav" onclick="location.href='Offering.html'">OFFERINGS</button>
+    <button class="btn-nav" onclick="location.href='Comparative.html'">COMPARATIVE</button>
+    <button class="btn-nav" onclick="location.href='FinancialStatement.html'">FINANCIAL STATEMENT</button>
+    <button class="btn-nav" onclick="location.href='MonthlyReport.html'">MONTHLY REPORT</button>
+  </div>
+</footer>
+
+<script src="../Script/HomePage.js"></script>
+
+</body>
+</html>
