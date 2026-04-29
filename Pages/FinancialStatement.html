@@ -333,26 +333,7 @@
     <div class="note-modal-body">
       <table class="note-table">
         <thead><tr><th class="nt-label">DESCRIPTION</th><th class="nt-col">CURRENT</th></tr></thead>
-        <tbody>
-          <tr><td class="nt-label nt-indent">CENTRAL MINDANAO MISSION</td><td class="nt-val">11,466,655.95</td></tr>
-          <tr><td class="nt-label nt-indent">DAVAO MISSION</td><td class="nt-val">-</td></tr>
-          <tr><td class="nt-label nt-indent">NORTHEASTERN MINDANAO MISSION</td><td class="nt-val">10,456,996.53</td></tr>
-          <tr><td class="nt-label nt-indent">NORTHERN DAVAO MISSION</td><td class="nt-val">-</td></tr>
-          <tr><td class="nt-label nt-indent">SOUTH PHILIPPINES ADV. COLLEGE</td><td class="nt-val">-</td></tr>
-          <tr><td class="nt-label nt-indent">SOUTHERN MINDANAO MISSION</td><td class="nt-val">-</td></tr>
-          <tr><td class="nt-label nt-indent">WESTERN MINDANAO CONFERENCE</td><td class="nt-val">5,109,982.74</td></tr>
-          <tr><td class="nt-label nt-indent">ZAMBOANGA PENINSULA MISSION</td><td class="nt-val">28,279,385.43</td></tr>
-          <tr><td class="nt-label nt-indent">ADVENTIST INTERNATIONAL HEALTH SYSTEM PHILIPPINES</td><td class="nt-val">74,259.51</td></tr>
-          <tr><td class="nt-label nt-indent">ADVENTIST MEDICAL CENTER - DAVAO</td><td class="nt-val">-</td></tr>
-          <tr><td class="nt-label nt-indent">ADVENTIST MEDICAL CENTER - ILIGAN</td><td class="nt-val">17,290,537.97</td></tr>
-          <tr><td class="nt-label nt-indent">ADVENTIST MEDICAL CENTER - VALENCIA</td><td class="nt-val">21,867,193.02</td></tr>
-          <tr><td class="nt-label nt-indent">GINGOOG SANITARIUM &amp; HOSPITAL</td><td class="nt-val">28,505,834.88</td></tr>
-          <tr><td class="nt-label nt-indent">ADVENTIST MEDICAL CENTER COLLEGE</td><td class="nt-val">3,372,038.35</td></tr>
-          <tr><td class="nt-label nt-indent">COLLEGE OF MEDICAL ARTS FOUNDATION</td><td class="nt-val">-</td></tr>
-          <tr><td class="nt-label nt-indent">MOUNTAIN VIEW COLLEGE</td><td class="nt-val">14,441,784.85</td></tr>
-          <tr><td class="nt-label nt-indent">GATEWAY (HOPE CHANNEL)</td><td class="nt-val">13,877,629.89</td></tr>
-          <tr class="nt-subtotal"><td class="nt-label">TOTAL</td><td class="nt-val">154,742,299.12</td></tr>
-        </tbody>
+        <tbody id="sdaTableBody"></tbody>
       </table>
     </div>
   </div>
@@ -375,18 +356,7 @@
             <th class="nt-col">CURRENT</th>
           </tr>
         </thead>
-        <tbody>
-          <tr><td class="nt-label nt-indent">ADVENTIST MEDICAL CENTER - DAVAO</td><td class="nt-val">-</td><td class="nt-val">-</td></tr>
-          <tr><td class="nt-label nt-indent">COLLEGE OF MEDICAL ARTS FOUNDATION</td><td class="nt-val">-</td><td class="nt-val">-</td></tr>
-          <tr><td class="nt-label nt-indent">DAVAO MISSION</td><td class="nt-val">-</td><td class="nt-val">-</td></tr>
-          <tr><td class="nt-label nt-indent">LITERATURE MNSTRY SEMINAR</td><td class="nt-val nt-neg-val">(4,571,662.61)</td><td class="nt-val">4,571,662.61</td></tr>
-          <tr><td class="nt-label nt-indent">NORTH CENTRAL MINDANAO CONFERENCE</td><td class="nt-val nt-neg-val">(21,600,246.33)</td><td class="nt-val">21,600,246.33</td></tr>
-          <tr><td class="nt-label nt-indent">NORTHERN DAVAO MISSION</td><td class="nt-val">-</td><td class="nt-val">-</td></tr>
-          <tr><td class="nt-label nt-indent">SOUTH PHILIPPINES ADVENTIST COLLEGE</td><td class="nt-val">-</td><td class="nt-val">-</td></tr>
-          <tr><td class="nt-label nt-indent">SOUTHERN MINDANAO MISSION</td><td class="nt-val">-</td><td class="nt-val">-</td></tr>
-          <tr><td class="nt-label nt-indent">SULADS</td><td class="nt-val nt-neg-val">(308,782.99)</td><td class="nt-val">308,782.99</td></tr>
-          <tr class="nt-subtotal"><td class="nt-label">TOTAL</td><td class="nt-val nt-neg-val">(26,480,691.93)</td><td class="nt-val">26,480,691.93</td></tr>
-        </tbody>
+        <tbody id="sdaApTableBody"></tbody>
       </table>
     </div>
   </div>
@@ -426,6 +396,7 @@
     </div>
   </footer>
 
+  <script src="../Script/supabase.js"></script>
   <script src="../Script/FinancialStatement.js"></script>
 </body>
 </html>

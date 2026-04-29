@@ -1,9 +1,9 @@
-    let _rendering = false;
-    function renderAll(mi) {
+﻿    let _rendering = false;
+    async function renderAll(mi) {
       if (_rendering) return;
       _rendering = true;
       syncAllMonths(mi);
-      renderBalanceSheet();
+      await renderBalanceSheet();
       renderIncomeStatement();
       renderCashFlow();
       renderFinancialLiquidity();
@@ -47,46 +47,136 @@
     // ---- Balance Sheet monthly data ----
     const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
 
-    const bsData = [
-      // Jan
-      { cash25:256948827, cash26:179775708, inv25:36714415, inv26:36714415, ar25:89037911, ar26:104055542, agency25:11982029, agency26:24184415, loans25:24637318, loans26:24637316, supplies25:1055786, supplies26:650385, fixed25:72307736, fixed26:68190722, other25:32488938, other26:25543041, ap25:164005719, ap26:82806540, offa25:11982029, offa26:24184415, otherliab25:16542057, otherliab26:3356959, una_t25:177195252, una_t26:168221361, una_nt25:24943063, una_nt26:50271960, alloc25:58197104, alloc26:66719589, plant25:72307737, plant26:68190724 },
-      // Feb
-      { cash25:241382500, cash26:165430200, inv25:36714415, inv26:36714415, ar25:91240300, ar26:108320100, agency25:12450000, agency26:25100000, loans25:24637318, loans26:24637316, supplies25:980450, supplies26:612000, fixed25:71850000, fixed26:67800000, other25:31900000, other26:24800000, ap25:158320000, ap26:79450000, offa25:12450000, offa26:25100000, otherliab25:15800000, otherliab26:3100000, una_t25:174320000, una_t26:165800000, una_nt25:25100000, una_nt26:51200000, alloc25:57800000, alloc26:65900000, plant25:71850000, plant26:67800000 },
-      // Mar ΓÇö exact figures from screenshot
-      { cash25:254610162, cash26:185348301, inv25:36099254, inv26:35838949, ar25:75032115, ar26:120203077, agency25:15210806, agency26:19911231, loans25:24637318, loans26:17283416, supplies25:1051580, supplies26:1106369,
-        fixedPlant25:71166896, fixedPlant26:67161149,
-        loansNonCurrent25:31228965, loansNonCurrent26:22164983, otherNonCurrent25:180184, otherNonCurrent26:180184,
-        ap25:162549640, ap26:86945155, offa25:15210806, offa26:19911231, interFundAp25:0, interFundAp26:0,
-        loansPayable25:16285801, loansPayable26:3356959,
-        una_t25:166046804, una_t26:168274294, una_nt25:25740872, una_nt26:51896359, alloc25:52216461, alloc26:71652512,
-        unexpendedPlant25:0, unexpendedPlant26:0,
-        investedPlant25:71166896, investedPlant26:67161149 },
-      // Apr
-      { cash25:275300000, cash26:188900000, inv25:36714415, inv26:36714415, ar25:93400000, ar26:110800000, agency25:14100000, agency26:27800000, loans25:24637318, loans26:24637316, supplies25:1230000, supplies26:720000, fixed25:72800000, fixed26:68900000, other25:34100000, other26:27200000, ap25:172500000, ap26:88200000, offa25:14100000, offa26:27800000, otherliab25:17800000, otherliab26:3900000, una_t25:181200000, una_t26:172300000, una_nt25:25800000, una_nt26:52100000, alloc25:60100000, alloc26:68800000, plant25:72800000, plant26:68900000 },
-      // May
-      { cash25:262100000, cash26:175600000, inv25:36714415, inv26:36714415, ar25:85900000, ar26:99700000, agency25:12800000, agency26:25600000, loans25:24637318, loans26:24637316, supplies25:990000, supplies26:630000, fixed25:71600000, fixed26:67500000, other25:31200000, other26:24200000, ap25:161800000, ap26:81300000, offa25:12800000, offa26:25600000, otherliab25:16200000, otherliab26:3200000, una_t25:175600000, una_t26:166900000, una_nt25:24100000, una_nt26:49200000, alloc25:57200000, alloc26:65100000, plant25:71600000, plant26:67500000 },
-      // Jun
-      { cash25:280500000, cash26:193200000, inv25:36714415, inv26:36714415, ar25:95800000, ar26:113400000, agency25:14800000, agency26:28900000, loans25:24637318, loans26:24637316, supplies25:1310000, supplies26:760000, fixed25:73500000, fixed26:69600000, other25:34800000, other26:27900000, ap25:175800000, ap26:90100000, offa25:14800000, offa26:28900000, otherliab25:18200000, otherliab26:4100000, una_t25:183500000, una_t26:174800000, una_nt25:26200000, una_nt26:53000000, alloc25:61000000, alloc26:69700000, plant25:73500000, plant26:69600000 },
-      // Jul
-      { cash25:258900000, cash26:172100000, inv25:36714415, inv26:36714415, ar25:84200000, ar26:97800000, agency25:12300000, agency26:24800000, loans25:24637318, loans26:24637316, supplies25:960000, supplies26:600000, fixed25:71200000, fixed26:67100000, other25:30800000, other26:23800000, ap25:159200000, ap26:79800000, offa25:12300000, offa26:24800000, otherliab25:15900000, otherliab26:3050000, una_t25:173800000, una_t26:165200000, una_nt25:23800000, una_nt26:48600000, alloc25:56800000, alloc26:64700000, plant25:71200000, plant26:67100000 },
-      // Aug
-      { cash25:271600000, cash26:184500000, inv25:36714415, inv26:36714415, ar25:90100000, ar26:106700000, agency25:13600000, agency26:27100000, loans25:24637318, loans26:24637316, supplies25:1080000, supplies26:660000, fixed25:72400000, fixed26:68300000, other25:32600000, other26:25700000, ap25:166900000, ap26:84200000, offa25:13600000, offa26:27100000, otherliab25:16800000, otherliab26:3400000, una_t25:178100000, una_t26:169400000, una_nt25:25400000, una_nt26:51600000, alloc25:58900000, alloc26:67200000, plant25:72400000, plant26:68300000 },
-      // Sep
-      { cash25:284200000, cash26:197800000, inv25:36714415, inv26:36714415, ar25:97300000, ar26:115900000, agency25:15200000, agency26:29600000, loans25:24637318, loans26:24637316, supplies25:1380000, supplies26:800000, fixed25:74100000, fixed26:70200000, other25:35500000, other26:28600000, ap25:178200000, ap26:92400000, offa25:15200000, offa26:29600000, otherliab25:18600000, otherliab26:4300000, una_t25:185800000, una_t26:177100000, una_nt25:26600000, una_nt26:53800000, alloc25:61800000, alloc26:70500000, plant25:74100000, plant26:70200000 },
-      // Oct
-      { cash25:249800000, cash26:163400000, inv25:36714415, inv26:36714415, ar25:82500000, ar26:95600000, agency25:11900000, agency26:23900000, loans25:24637318, loans26:24637316, supplies25:920000, supplies26:570000, fixed25:70800000, fixed26:66700000, other25:30200000, other26:23200000, ap25:156800000, ap26:78200000, offa25:11900000, offa26:23900000, otherliab25:15500000, otherliab26:2900000, una_t25:171900000, una_t26:163500000, una_nt25:23400000, una_nt26:48000000, alloc25:56300000, alloc26:64200000, plant25:70800000, plant26:66700000 },
-      // Nov
-      { cash25:265400000, cash26:178900000, inv25:36714415, inv26:36714415, ar25:88300000, ar26:103100000, agency25:13000000, agency26:26200000, loans25:24637318, loans26:24637316, supplies25:1020000, supplies26:645000, fixed25:72000000, fixed26:67900000, other25:31600000, other26:24500000, ap25:163400000, ap26:82100000, offa25:13000000, offa26:26200000, otherliab25:16500000, otherliab26:3250000, una_t25:176400000, una_t26:167700000, una_nt25:24700000, una_nt26:50600000, alloc25:57600000, alloc26:65500000, plant25:72000000, plant26:67900000 },
-      // Dec
-      { cash25:291500000, cash26:204100000, inv25:36714415, inv26:36714415, ar25:99800000, ar26:118600000, agency25:15800000, agency26:30400000, loans25:24637318, loans26:24637316, supplies25:1450000, supplies26:840000, fixed25:74800000, fixed26:70900000, other25:36200000, other26:29300000, ap25:181500000, ap26:95200000, offa25:15800000, offa26:30400000, otherliab25:19100000, otherliab26:4600000, una_t25:188200000, una_t26:179500000, una_nt25:27100000, una_nt26:54700000, alloc25:62600000, alloc26:71400000, plant25:74800000, plant26:70900000 }
-    ];
+    const bsDataByYear = {
+      2025: new Array(12).fill(null),
+      2026: new Array(12).fill(null)
+    };
+    const bsNoteState = {};
+
+    function toNum(v) {
+      const n = Number(v);
+      return Number.isFinite(n) ? n : 0;
+    }
+
+    function toBsShape(row) {
+      if (!row) {
+        return {
+          cash: 0, inv: 0, ar: 0, agency: 0, loans: 0, supplies: 0, fixedPlant: 0, loansNC: 0, otherNC: 0,
+          ap: 0, offa: 0, interFundAp: 0, loansP: 0, una_t: 0, una_nt: 0, alloc: 0, unexpP: 0, investP: 0
+        };
+      }
+      return {
+        cash: toNum(row.cash),
+        inv: toNum(row.investments),
+        ar: toNum(row.accounts_receivable),
+        agency: toNum(row.cash_held_agency),
+        loans: toNum(row.loans_receivable),
+        supplies: toNum(row.supplies),
+        fixedPlant: toNum(row.fixed_assets),
+        loansNC: toNum(row.loans_nc),
+        otherNC: toNum(row.other_assets_nc),
+        ap: toNum(row.accounts_payable),
+        offa: toNum(row.offerings_agency),
+        interFundAp: toNum(row.interfund_ap),
+        loansP: toNum(row.loans_payable),
+        una_t: toNum(row.una_tithe),
+        una_nt: toNum(row.una_non_tithe),
+        alloc: toNum(row.allocated_na),
+        unexpP: toNum(row.unexpended_plant),
+        investP: toNum(row.invested_plant)
+      };
+    }
+
+    function fmtNoteValue(v) {
+      if (v == null || v === '') return '';
+      const n = Number(v);
+      if (!Number.isFinite(n)) return String(v);
+      const abs = Math.abs(n).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 2 });
+      return n < 0 ? '(' + abs + ')' : abs;
+    }
+
+    function mapNoteRows(rows, noteKey) {
+      return (rows || []).map(r => {
+        const rt = String(r.row_type || '').toLowerCase();
+        const label = r.label || '';
+        let drillKey = r.drill_key || '';
+        // Fallback: make SDA rows drillable even if drill_key is not set in DB.
+        if (!drillKey && /sda entities within spuc/i.test(label)) {
+          if (noteKey === 'ar') drillKey = 'sda';
+          if (noteKey === 'ap') drillKey = 'sdaAp';
+        }
+        return {
+          label,
+          curr: fmtNoteValue(r.current_amount),
+          prev: fmtNoteValue(r.previous_amount),
+          sub: rt.includes('subtotal') || rt.includes('total'),
+          group: rt.includes('group') || rt.includes('header') || rt.includes('section'),
+          indent: !!r.is_indent,
+          drill: drillKey,
+          neg: toNum(r.current_amount) < 0 || toNum(r.previous_amount) < 0 || rt.includes('neg')
+        };
+      });
+    }
+
+    function renderSdaEntitiesRows(rows) {
+      const tbody = document.getElementById('sdaTableBody');
+      if (!tbody) return;
+      tbody.innerHTML = (rows || []).map(r => {
+        const name = r.entity_name || r.label || '';
+        const amount = Number(r.amount);
+        const cls = /total/i.test(name) ? 'nt-subtotal' : '';
+        return `<tr class="${cls}"><td class="nt-label nt-indent">${name}</td><td class="nt-val">${Number.isFinite(amount) ? amount.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 2 }) : '-'}</td></tr>`;
+      }).join('');
+    }
+
+    function renderSdaApEntitiesRows(rows) {
+      const tbody = document.getElementById('sdaApTableBody');
+      if (!tbody) return;
+      tbody.innerHTML = (rows || []).map(r => {
+        const name = r.entity_name || r.label || '';
+        const baseAmount = Number(r.base_amount);
+        const currAmount = Number(r.current_amount);
+        const cls = /total/i.test(name) ? 'nt-subtotal' : '';
+        const baseText = Number.isFinite(baseAmount) ? fmtNoteValue(baseAmount) : '-';
+        const currText = Number.isFinite(currAmount) ? fmtNoteValue(currAmount) : '-';
+        const baseCls = baseAmount < 0 ? ' nt-neg-val' : '';
+        return `<tr class="${cls}"><td class="nt-label nt-indent">${name}</td><td class="nt-val${baseCls}">${baseText}</td><td class="nt-val">${currText}</td></tr>`;
+      }).join('');
+    }
+
+    async function loadBalanceSheetMonth(mi) {
+      if (bsDataByYear[2025][mi] && bsDataByYear[2026][mi] && bsNoteState[mi]
+          && (bsNoteState[mi].sda.length > 0 || bsNoteState[mi].sdaAp.length > 0)) return;
+      const month = mi + 1;
+      const [
+        bs2025Rows, bs2026Rows, cashRows, arRows, apRows, arEntityRows, apEntityRows
+      ] = await Promise.all([
+        fetchBalanceSheet(2025, month),
+        fetchBalanceSheet(2026, month),
+        fetchBalanceSheetNoteCash(2026, month),
+        fetchBalanceSheetNoteAr(2026, month),
+        fetchBalanceSheetNoteAp(2026, month),
+        fetchBalanceSheetNoteArEntities(2026, month),
+        fetchBalanceSheetNoteApEntities(2026, month)
+      ]);
+
+      bsDataByYear[2025][mi] = toBsShape((bs2025Rows || [])[0]);
+      bsDataByYear[2026][mi] = toBsShape((bs2026Rows || [])[0]);
+      bsNoteState[mi] = {
+        cash: { title: 'NOTE 3 - CASH AND CASH EQUIVALENTS', rows: mapNoteRows(cashRows, 'cash') },
+        ar: { title: 'NOTE 5 - ACCOUNTS RECEIVABLE', rows: mapNoteRows(arRows, 'ar') },
+        ap: { title: 'NOTE 10 - ACCOUNTS PAYABLE', rows: mapNoteRows(apRows, 'ap') },
+        sda: arEntityRows || [],
+        sdaAp: apEntityRows || []
+      };
+    }
 
     function fmt(n) { return n.toLocaleString('en-US'); }
 
     function fmtM(n) {
-      if (n >= 1e9) return 'Γé▒' + (n/1e9).toFixed(2) + 'B';
-      if (n >= 1e6) return 'Γé▒' + (n/1e6).toFixed(2) + 'M';
-      return 'Γé▒' + n.toLocaleString('en-US');
+      if (n >= 1e9) return '\u20B1' + (n/1e9).toFixed(2) + 'B';
+      if (n >= 1e6) return '\u20B1' + (n/1e6).toFixed(2) + 'M';
+      return '\u20B1' + n.toLocaleString('en-US');
     }
 
     function updateKPIs() {
@@ -116,59 +206,64 @@
       document.getElementById('kpiNetAssetsSub').textContent = mn + ' ' + lastDay + ', 2026';
     }
 
-    function renderBalanceSheet() {
+    async function renderBalanceSheet() {
       const mi = parseInt(document.getElementById('bsMonthSelect').value);
       syncAllMonths(mi);
-      const d = bsData[mi];
+      try {
+        await loadBalanceSheetMonth(mi);
+      } catch (err) {
+        console.error('Failed loading balance sheet data:', err);
+      }
+      const d25 = bsDataByYear[2025][mi];
+      const d26 = bsDataByYear[2026][mi];
+      const d = d26;
       const mn = MONTHS[mi];
       const lastDay = new Date(2026, mi + 1, 0).getDate();
       document.getElementById('bsPeriodLabel').textContent = mn.toUpperCase() + ' 2026';
 
-      const tca25 = d.cash25+d.inv25+d.ar25+d.agency25+d.loans25+d.supplies25;
-      const tca26 = d.cash26+d.inv26+d.ar26+d.agency26+d.loans26+d.supplies26;
-
-      const fixedPlant25 = d.fixedPlant25 ?? d.fixed25 ?? 0;
-      const fixedPlant26 = d.fixedPlant26 ?? d.fixed26 ?? 0;
+      const tca25 = d25.cash + d25.inv + d25.ar + d25.agency + d25.loans + d25.supplies;
+      const tca26 = d26.cash + d26.inv + d26.ar + d26.agency + d26.loans + d26.supplies;
+      const fixedPlant25 = d25.fixedPlant;
+      const fixedPlant26 = d26.fixedPlant;
       const tfa25 = fixedPlant25;
       const tfa26 = fixedPlant26;
-
-      const loansNC25 = d.loansNonCurrent25 ?? 0;
-      const loansNC26 = d.loansNonCurrent26 ?? 0;
-      const otherNC25 = d.otherNonCurrent25 ?? (d.other25 ?? 0);
-      const otherNC26 = d.otherNonCurrent26 ?? (d.other26 ?? 0);
+      const loansNC25 = d25.loansNC;
+      const loansNC26 = d26.loansNC;
+      const otherNC25 = d25.otherNC;
+      const otherNC26 = d26.otherNC;
       const toa25 = loansNC25 + otherNC25;
       const toa26 = loansNC26 + otherNC26;
 
       const ta25 = tca25 + tfa25 + toa25;
       const ta26 = tca26 + tfa26 + toa26;
 
-      const tcl25 = d.ap25 + d.offa25 + (d.interFundAp25 ?? 0);
-      const tcl26 = d.ap26 + d.offa26 + (d.interFundAp26 ?? 0);
-      const loansP25 = d.loansPayable25 ?? d.otherliab25 ?? 0;
-      const loansP26 = d.loansPayable26 ?? d.otherliab26 ?? 0;
+      const tcl25 = d25.ap + d25.offa + d25.interFundAp;
+      const tcl26 = d26.ap + d26.offa + d26.interFundAp;
+      const loansP25 = d25.loansP;
+      const loansP26 = d26.loansP;
       const tol25 = loansP25;
       const tol26 = loansP26;
       const tl25 = tcl25 + tol25;
       const tl26 = tcl26 + tol26;
 
-      const unexpP25 = d.unexpendedPlant25 ?? 0;
-      const unexpP26 = d.unexpendedPlant26 ?? 0;
-      const investP25 = d.investedPlant25 ?? d.plant25 ?? 0;
-      const investP26 = d.investedPlant26 ?? d.plant26 ?? 0;
-      const tna25 = d.una_t25 + d.una_nt25 + d.alloc25 + unexpP25 + investP25;
-      const tna26 = d.una_t26 + d.una_nt26 + d.alloc26 + unexpP26 + investP26;
+      const unexpP25 = d25.unexpP;
+      const unexpP26 = d26.unexpP;
+      const investP25 = d25.investP;
+      const investP26 = d26.investP;
+      const tna25 = d25.una_t + d25.una_nt + d25.alloc + unexpP25 + investP25;
+      const tna26 = d26.una_t + d26.una_nt + d26.alloc + unexpP26 + investP26;
       const tlna25 = tl25 + tna25;
       const tlna26 = tl26 + tna26;
 
       document.getElementById('bsTableBody').innerHTML = `
         <tr class="section-header"><td colspan="3">ASSETS</td></tr>
         <tr class="section-header"><td colspan="3" style="padding-left:20px;font-size:0.65rem;">Current Assets</td></tr>
-        <tr class="bs-drilldown-row" onclick="openNote('cash')"><td class="fs-label indent">CASH AND CASH EQUIVALENTS (NOTE 3) <span class="drill-icon">Γû╢</span></td><td class="fs-amount center">${fmt(d.cash25)}</td><td class="fs-amount center">${fmt(d.cash26)}</td></tr>
-        <tr><td class="fs-label indent">INVESTMENTS (NOTE 4)</td><td class="fs-amount center">${fmt(d.inv25)}</td><td class="fs-amount center">${fmt(d.inv26)}</td></tr>
-        <tr class="bs-drilldown-row" onclick="openNote('ar')"><td class="fs-label indent">ACCOUNTS RECEIVABLE - NET (NOTE 5) <span class="drill-icon">Γû╢</span></td><td class="fs-amount center">${fmt(d.ar25)}</td><td class="fs-amount center">${fmt(d.ar26)}</td></tr>
-        <tr><td class="fs-label indent">CASH HELD FOR AGENCY (NOTE 3)</td><td class="fs-amount center">${fmt(d.agency25)}</td><td class="fs-amount center">${fmt(d.agency26)}</td></tr>
-        <tr><td class="fs-label indent">LOANS RECEIVABLE (NOTE 6)</td><td class="fs-amount center">${fmt(d.loans25)}</td><td class="fs-amount center">${fmt(d.loans26)}</td></tr>
-        <tr><td class="fs-label indent">SUPPLIES AND PREPAID EXPENSES (NOTE 7)</td><td class="fs-amount center">${fmt(d.supplies25)}</td><td class="fs-amount center">${fmt(d.supplies26)}</td></tr>
+        <tr class="bs-drilldown-row" onclick="openNote('cash')"><td class="fs-label indent">CASH AND CASH EQUIVALENTS (NOTE 3) <span class="drill-icon">&#9654;</span></td><td class="fs-amount center">${fmt(d25.cash)}</td><td class="fs-amount center">${fmt(d26.cash)}</td></tr>
+        <tr><td class="fs-label indent">INVESTMENTS (NOTE 4)</td><td class="fs-amount center">${fmt(d25.inv)}</td><td class="fs-amount center">${fmt(d26.inv)}</td></tr>
+        <tr class="bs-drilldown-row" onclick="openNote('ar')"><td class="fs-label indent">ACCOUNTS RECEIVABLE - NET (NOTE 5) <span class="drill-icon">&#9654;</span></td><td class="fs-amount center">${fmt(d25.ar)}</td><td class="fs-amount center">${fmt(d26.ar)}</td></tr>
+        <tr><td class="fs-label indent">CASH HELD FOR AGENCY (NOTE 3)</td><td class="fs-amount center">${fmt(d25.agency)}</td><td class="fs-amount center">${fmt(d26.agency)}</td></tr>
+        <tr><td class="fs-label indent">LOANS RECEIVABLE (NOTE 6)</td><td class="fs-amount center">${fmt(d25.loans)}</td><td class="fs-amount center">${fmt(d26.loans)}</td></tr>
+        <tr><td class="fs-label indent">SUPPLIES AND PREPAID EXPENSES (NOTE 7)</td><td class="fs-amount center">${fmt(d25.supplies)}</td><td class="fs-amount center">${fmt(d26.supplies)}</td></tr>
         <tr class="subtotal-row"><td class="fs-label indent-sub">TOTAL CURRENT ASSETS</td><td class="fs-amount center">${fmt(tca25)}</td><td class="fs-amount center">${fmt(tca26)}</td></tr>
         <tr class="spacer"><td colspan="3"></td></tr>
         <tr class="section-header"><td colspan="3" style="padding-left:20px;font-size:0.65rem;">Fixed Assets - Net (Note 8)</td></tr>
@@ -183,9 +278,9 @@
         <tr class="spacer"><td colspan="3"></td></tr>
         <tr><th class="fs-th" colspan="3">LIABILITIES</th></tr>
         <tr class="section-header"><td colspan="3" style="padding-left:20px;font-size:0.65rem;">Current Liabilities</td></tr>
-        <tr class="bs-drilldown-row" onclick="openNote('ap')"><td class="fs-label indent">ACCOUNTS PAYABLE (NOTE 10) <span class="drill-icon">Γû╢</span></td><td class="fs-amount center">${fmt(d.ap25)}</td><td class="fs-amount center">${fmt(d.ap26)}</td></tr>
-        <tr><td class="fs-label indent">OFFERINGS AND AGENCY (NOTE 11)</td><td class="fs-amount center">${fmt(d.offa25)}</td><td class="fs-amount center">${fmt(d.offa26)}</td></tr>
-        <tr><td class="fs-label indent">INTER-FUND ACCOUNTS PAYABLE - CURRENT (NOTE 12)</td><td class="fs-amount center">${fmt(d.interFundAp25??0)}</td><td class="fs-amount center">${fmt(d.interFundAp26??0)}</td></tr>
+        <tr class="bs-drilldown-row" onclick="openNote('ap')"><td class="fs-label indent">ACCOUNTS PAYABLE (NOTE 10) <span class="drill-icon">&#9654;</span></td><td class="fs-amount center">${fmt(d25.ap)}</td><td class="fs-amount center">${fmt(d26.ap)}</td></tr>
+        <tr><td class="fs-label indent">OFFERINGS AND AGENCY (NOTE 11)</td><td class="fs-amount center">${fmt(d25.offa)}</td><td class="fs-amount center">${fmt(d26.offa)}</td></tr>
+        <tr><td class="fs-label indent">INTER-FUND ACCOUNTS PAYABLE - CURRENT (NOTE 12)</td><td class="fs-amount center">${fmt(d25.interFundAp)}</td><td class="fs-amount center">${fmt(d26.interFundAp)}</td></tr>
         <tr class="subtotal-row"><td class="fs-label indent-sub">TOTAL CURRENT LIABILITIES</td><td class="fs-amount center">${fmt(tcl25)}</td><td class="fs-amount center">${fmt(tcl26)}</td></tr>
         <tr class="spacer"><td colspan="3"></td></tr>
         <tr class="section-header"><td colspan="3" style="padding-left:20px;font-size:0.65rem;">Other Liabilities</td></tr>
@@ -195,9 +290,9 @@
         <tr class="subtotal-row"><td class="fs-label">TOTAL LIABILITIES</td><td class="fs-amount center">${fmt(tl25)}</td><td class="fs-amount center">${fmt(tl26)}</td></tr>
         <tr class="spacer"><td colspan="3"></td></tr>
         <tr><th class="fs-th" colspan="3">NET ASSETS</th></tr>
-        <tr><td class="fs-label indent">UNALLOCATED NET ASSETS - TITHE</td><td class="fs-amount center">${fmt(d.una_t25)}</td><td class="fs-amount center">${fmt(d.una_t26)}</td></tr>
-        <tr><td class="fs-label indent">UNALLOCATED NET ASSETS - NON-TITHE</td><td class="fs-amount center">${fmt(d.una_nt25)}</td><td class="fs-amount center">${fmt(d.una_nt26)}</td></tr>
-        <tr><td class="fs-label indent">ALLOCATED NET ASSETS</td><td class="fs-amount center">${fmt(d.alloc25)}</td><td class="fs-amount center">${fmt(d.alloc26)}</td></tr>
+        <tr><td class="fs-label indent">UNALLOCATED NET ASSETS - TITHE</td><td class="fs-amount center">${fmt(d25.una_t)}</td><td class="fs-amount center">${fmt(d26.una_t)}</td></tr>
+        <tr><td class="fs-label indent">UNALLOCATED NET ASSETS - NON-TITHE</td><td class="fs-amount center">${fmt(d25.una_nt)}</td><td class="fs-amount center">${fmt(d26.una_nt)}</td></tr>
+        <tr><td class="fs-label indent">ALLOCATED NET ASSETS</td><td class="fs-amount center">${fmt(d25.alloc)}</td><td class="fs-amount center">${fmt(d26.alloc)}</td></tr>
         <tr><td class="fs-label indent">UNEXPENDED PLANT</td><td class="fs-amount center">${fmt(unexpP25)}</td><td class="fs-amount center">${fmt(unexpP26)}</td></tr>
         <tr><td class="fs-label indent">INVESTED IN PLANT</td><td class="fs-amount center">${fmt(investP25)}</td><td class="fs-amount center">${fmt(investP26)}</td></tr>
         <tr class="subtotal-row"><td class="fs-label indent-sub">TOTAL NET ASSETS</td><td class="fs-amount center">${fmt(tna25)}</td><td class="fs-amount center">${fmt(tna26)}</td></tr>
@@ -308,9 +403,9 @@
       yearLabels[1].style.flex = '0 0 ' + w3 + 'px';
     }
 
-    window.addEventListener('DOMContentLoaded', () => {
+    window.addEventListener('DOMContentLoaded', async () => {
       const cur = new Date().getMonth();
-      renderAll(cur);
+      await renderAll(cur);
     });
     window.addEventListener('resize', () => { alignBsColHeader(); alignIsColHeader(); alignFlColHeader(); });
 
@@ -333,7 +428,7 @@
     const isData = [
       { tithe25:12380337,tithe26:10224173,offer25:1168882,offer26:1438331,inv25:9650,inv26:7711,other25:501917,other26:463182,budgetInc26:13717319,emp25:2548906,emp26:2565212,prog25:2261240,prog26:3214341,admin25:847047,admin26:751343,office25:125432,office26:66196,gen25:271014,gen26:38794,plant25:921917,plant26:867154,budgetExp26:7464603,netAssetsBeg:348889046 },
       { tithe25:11850200,tithe26:9980450,offer25:1090300,offer26:1320180,inv25:8420,inv26:7100,other25:478300,other26:441200,budgetInc26:13200000,emp25:2410500,emp26:2490300,prog25:2180600,prog26:3050200,admin25:810200,admin26:720100,office25:118300,office26:61400,gen25:258700,gen26:35200,plant25:890400,plant26:840200,budgetExp26:7200000,netAssetsBeg:353403633 },
-      // Mar ΓÇö exact figures from screenshot
+      // Mar - exact figures from screenshot
       { tithe25:35005774,tithe26:37495773,offer25:3131676,offer26:3461072,inv25:28948,inv26:23856,other25:22804157,other26:4712385,
         budgetInc26:54869275,
         emp25:7645418,emp26:7685282,prog25:52845511,prog26:7241960,admin25:4230583,admin26:5021515,office25:359374,office26:411354,gen25:287511,gen26:309970,plant25:3622892,plant26:3360333,
@@ -382,7 +477,7 @@
       const lastDay = new Date(2026, mi + 1, 0).getDate();
       document.getElementById('isPeriodLabel').textContent = mn.toUpperCase() + ' 2026';
 
-      // helpers ΓÇö OF = Operating Fund, PF = Plan tFund
+      // helpers - OF = Operating Fund, PF = Plan tFund
       const g = (v) => v ?? 0;
       const fi = (n) => n ? n.toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2}) : '';
       const fn = (n) => n ? '(' + Math.abs(n).toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2}) + ')' : '';
@@ -546,8 +641,8 @@
       { tithes:68820400.00, offerings:26658800.00, ops:51200000, remit:17100000, equip:2900000, disposal:580000, loan:0, cashBeg:266314030.00 }
     ];
 
-    function fmtCf(n) { return 'Γé▒ ' + Math.abs(n).toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2}); }
-    function fmtCfNeg(n) { return '( Γé▒ ' + n.toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2}) + ' )'; }
+    function fmtCf(n) { return '\u20B1 ' + Math.abs(n).toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2}); }
+    function fmtCfNeg(n) { return '( \u20B1 ' + n.toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2}) + ' )'; }
 
     function renderCashFlow() {
       const mi = parseInt(document.getElementById('cfMonthSelect').value);
@@ -579,8 +674,8 @@
         <tr class="subtotal-row"><td class="fs-label">NET CASH FROM FINANCING</td><td class="fs-amount">${fmtCf(0)}</td></tr>
         <tr class="spacer"><td colspan="2"></td></tr>
         <tr class="total-row highlight"><td class="fs-label">NET INCREASE IN CASH</td><td class="fs-amount gold">${fmtCf(netIncrease)}</td></tr>
-        <tr><td class="fs-label indent">CASH ΓÇö BEGINNING OF PERIOD</td><td class="fs-amount">${fmtCf(d.cashBeg)}</td></tr>
-        <tr class="total-row highlight"><td class="fs-label">CASH ΓÇö END OF PERIOD (${mn.toUpperCase()} ${lastDay}, 2026)</td><td class="fs-amount gold">${fmtCf(cashEnd)}</td></tr>
+        <tr><td class="fs-label indent">CASH - BEGINNING OF PERIOD</td><td class="fs-amount">${fmtCf(d.cashBeg)}</td></tr>
+        <tr class="total-row highlight"><td class="fs-label">CASH - END OF PERIOD (${mn.toUpperCase()} ${lastDay}, 2026)</td><td class="fs-amount gold">${fmtCf(cashEnd)}</td></tr>
       `;
     }
 
@@ -625,7 +720,7 @@
 
     function toggleFlMode() {
       flShowPercentage = !flShowPercentage;
-      document.getElementById('flPctBtn').textContent = flShowPercentage ? 'Γå⌐ VIEW MONTHS' : '% SEE PERCENTAGE';
+      document.getElementById('flPctBtn').textContent = flShowPercentage ? 'VIEW MONTHS' : '% SEE PERCENTAGE';
       renderFinancialLiquidity();
       updateFlKpis();
     }
@@ -729,84 +824,52 @@
     }
 
     // ---- Note drilldown modals ----
-    const noteData = {
-      cash: {
-        title: 'NOTE 3 ΓÇö CASH AND CASH EQUIVALENTS',
-        rows: [
-          { label: 'PETTY CASH',                          prev: '60,000',         curr: '60,000' },
-          { label: 'BANK CHECKING AND SAVINGS',           prev: '264,871,133',    curr: '200,225,521' },
-          { label: 'TIME DEPOSITS, DUE IN 3 MONTHS OR LESS', prev: '4,889,834', curr: '4,974,011' },
-          { label: 'MONEY MARKET FUNDS',                  prev: '',               curr: '' },
-          { label: 'GOVERNMENT BILLS AND BONDS',          prev: '',               curr: '' },
-          { label: 'COMMERCIAL PAPER',                    prev: '',               curr: '' },
-          { label: 'ALLOWANCE FOR BLOCKED CURRENCY',      prev: '',               curr: '' },
-          { label: 'CASH AND CASH EQUIVALENTS',           prev: '',               curr: '' },
-          { label: 'LESS: CASH HELD FOR AGENCY',          prev: '-15,210,806',    curr: '-19,911,231',  neg: true },
-          { label: 'TOTAL CASH AND CASH EQUIVALENTS',     prev: '254,610,162',    curr: '185,348,301',  sub: true }
-        ]
-      },
-      ar: {
-        title: 'NOTE 5 ΓÇö ACCOUNTS RECEIVABLE',
-        rows: [
-          { label: 'Organizations Receivable',                        prev: '',               curr: '',               group: true },
-          { label: 'SOUTHERN ASIA-PACIFIC DIVISION',                  prev: '',               curr: '',               indent: true },
-          { label: 'SDA ENTITIES WITHIN SPUC',                        prev: '104,721,659',    curr: '151,813,525',    indent: true, drill: 'sda' },
-          { label: 'OTHER DENOMINATIONAL ENTITIES',                   prev: '5,822,889',      curr: '8,930,550',      indent: true },
-          { label: 'TOTAL ORGANIZATIONAL RECEIVABLES',                prev: '110,544,548',    curr: '160,744,075',    sub: true },
-          { label: 'Employees Receivable',                            prev: '',               curr: '',               group: true },
-          { label: 'ADMINISTRATIVE EMPLOYEES (AS DEFINED IN NOTE 19)',prev: '',               curr: '',               indent: true },
-          { label: 'TOTAL EMPLOYEE RECEIVABLES',                      prev: '6,133,632',      curr: '4,896,944',      indent: true },
-          { label: 'TOTAL EMPLOYEE RECEIVABLES',                      prev: '6,133,632',      curr: '4,896,944',      sub: true },
-          { label: 'NON-ADMINISTRATIVE EMPLOYEES',                    prev: '6,133,632',      curr: '4,896,944',      sub: true },
-          { label: 'Retirees Receivable',                             prev: '',               curr: '',               group: true },
-          { label: 'TOTAL RETIREES RECEIVABLE',                       prev: '1,564,704',      curr: '1,910,078',      sub: true },
-          { label: 'Students Receivable',                             prev: '',               curr: '',               group: true },
-          { label: 'TOTAL STUDENTS RECEIVABLE',                       prev: '',               curr: '',               sub: true },
-          { label: 'General Accounts Receivable',                     prev: '',               curr: '',               group: true },
-          { label: 'TOTAL GENERAL ACCOUNTS RECEIVABLE',               prev: '6,195,775',      curr: '6,425,456',      sub: true },
-          { label: 'TOTAL ACCOUNTS RECEIVABLE',                       prev: '124,438,660',    curr: '173,976,553',    sub: true },
-          { label: 'ALLOWANCE FOR UNCOLLECTIBLE ACCOUNTS',            prev: '-49,406,545',    curr: '-53,773,477',    neg: true },
-          { label: 'NET ACCOUNTS RECEIVABLE',                         prev: '75,032,115',     curr: '120,203,077',    sub: true }
-        ]
-      },
-      ap: {
-        title: 'NOTE 10 ΓÇö ACCOUNTS PAYABLE',
-        rows: [
-          { label: 'Commercial Accounts',             prev: '',               curr: '',               group: true },
-          { label: 'TOTAL COMMERCIAL PAYABLE',        prev: '538,743',        curr: '235,801',        sub: true },
-          { label: 'Organizations Payable',           prev: '',               curr: '',               group: true },
-          { label: 'SOUTHERN ASIA-PACIFIC DIVISION',  prev: '13,874,591',     curr: '39,153,358',     indent: true },
-          { label: 'SDA ENTITIES WITHIN SPUC',        prev: '41,994,783',     curr: '26,671,092',     indent: true, drill: 'sdaAp' },
-          { label: 'OTHER DENOMINATIONAL ENTITIES',   prev: '94,307,401',     curr: '14,002,952',     indent: true },
-          { label: 'TOTAL ORGANIZATIONAL PAYABLES',   prev: '150,176,775',    curr: '79,827,401',     sub: true },
-          { label: 'Employees Payable',               prev: '',               curr: '',               group: true },
-          { label: 'TOTAL EMPLOYEES PAYABLE',         prev: '294,778',        curr: '40,377',         sub: true },
-          { label: 'Retirees Payable',                prev: '',               curr: '',               group: true },
-          { label: 'TOTAL RETIREES PAYABLE',          prev: '8,760,139',      curr: '5,143,885',      sub: true },
-          { label: 'Students Payable',                prev: '',               curr: '',               group: true },
-          { label: 'TOTAL STUDENTS PAYABLE',          prev: '',               curr: '',               sub: true },
-          { label: 'Other Accounts Payable',          prev: '',               curr: '',               group: true },
-          { label: 'TOTAL OTHER ACCOUNTS PAYABLE',    prev: '2,779,205',      curr: '1,697,691',      sub: true },
-          { label: 'NET ACCOUNTS PAYABLE',            prev: '162,549,640',    curr: '86,945,155',     sub: true }
-        ]
-      }
-    };
+    function getCurrentBsNoteState() {
+      const mi = parseInt(document.getElementById('bsMonthSelect').value);
+      return bsNoteState[mi] || {
+        cash: { title: 'NOTE 3 - CASH AND CASH EQUIVALENTS', rows: [] },
+        ar: { title: 'NOTE 5 - ACCOUNTS RECEIVABLE', rows: [] },
+        ap: { title: 'NOTE 10 - ACCOUNTS PAYABLE', rows: [] },
+        sda: [],
+        sdaAp: []
+      };
+    }
 
     function openNote(key) {
-      const data = noteData[key];
+      const state = getCurrentBsNoteState();
+      const data = state[key];
+      if (!data) return;
       document.getElementById('noteModalTitle').textContent = data.title;
       const tbody = document.getElementById('noteTableBody');
+
+      // Determine which SDA drill key applies to this note
+      const sdaDrillKey = key === 'ar' ? 'sda' : key === 'ap' ? 'sdaAp' : null;
+      const hasSdaData = sdaDrillKey && (state[sdaDrillKey] || []).length > 0;
+
       tbody.innerHTML = data.rows.map(r => {
+        // Prefer DB drill_key; fallback: auto-attach SDA drill to rows whose label mentions SDA entities
+        const drill = r.drill || (sdaDrillKey && /sda entities within/i.test(r.label) ? sdaDrillKey : '');
         const cls = r.sub ? 'nt-subtotal' : r.group ? 'nt-group' : r.neg ? 'nt-neg' : '';
         const indentCls = r.indent ? ' nt-indent' : '';
-        const drillAttr = r.drill ? `onclick="openDrill('${r.drill}')" style="cursor:pointer;"` : '';
-        const drillIcon = r.drill ? ` <span class="drill-icon" style="color:#f5a623;">&#9654;</span>` : '';
+        const drillAttr = drill ? `onclick="openDrill('${drill}')" style="cursor:pointer;"` : '';
+        const drillIcon = drill ? ` <span class="drill-icon" style="color:#f5a623;">&#9654;</span>` : '';
         return `<tr class="${cls}" ${drillAttr}>
           <td class="nt-label${indentCls}">${r.label}${drillIcon}</td>
           <td class="nt-val${r.neg ? ' nt-neg-val' : ''}">${r.curr}</td>
           <td class="nt-val${r.neg ? ' nt-neg-val' : ''}">${r.prev}</td>
         </tr>`;
       }).join('');
+
+      // Always append a dedicated SDA ENTITIES row at the bottom if data exists
+      if (hasSdaData) {
+        const drillLabel = key === 'ar' ? 'SDA ENTITIES WITHIN SPUC' : 'SDA ENTITIES WITHIN SPUC';
+        tbody.innerHTML += `<tr class="nt-subtotal" onclick="openDrill('${sdaDrillKey}')" style="cursor:pointer;">
+          <td class="nt-label nt-indent">${drillLabel} <span class="drill-icon" style="color:#f5a623;">&#9654;</span></td>
+          <td class="nt-val"></td>
+          <td class="nt-val"></td>
+        </tr>`;
+      }
+
       document.getElementById('noteOverlay').classList.remove('hidden');
       const modal = document.getElementById('noteModal');
       modal.classList.remove('hidden');
@@ -830,6 +893,8 @@
     }
 
     function openSda() {
+      const state = getCurrentBsNoteState();
+      renderSdaEntitiesRows(state.sda);
       const modal = document.getElementById('sdaModal');
       modal.classList.remove('hidden');
       modal.style.animation = 'noteModalIn 0.25s cubic-bezier(0.4,0,0.2,1) forwards';
@@ -844,6 +909,8 @@
     }
 
     function openSdaAp() {
+      const state = getCurrentBsNoteState();
+      renderSdaApEntitiesRows(state.sdaAp);
       const modal = document.getElementById('sdaApModal');
       modal.classList.remove('hidden');
       modal.style.animation = 'noteModalIn 0.25s cubic-bezier(0.4,0,0.2,1) forwards';

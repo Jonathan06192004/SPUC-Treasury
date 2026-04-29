@@ -172,7 +172,7 @@ async function fetchBalanceSheetNoteAr(year, month) {
 
 async function fetchBalanceSheetNoteArEntities(year, month) {
   return supabaseRequest(
-    `${SUPABASE_URL}/rest/v1/balance_sheet_note_ar_entities?year=eq.${year}&month=eq.${month}&order=sort_order.asc`
+    `${SUPABASE_URL}/rest/v1/balance_sheet_note_ar_sda?year=eq.${year}&month=eq.${month}&order=sort_order.asc`
   );
 }
 
@@ -184,6 +184,6 @@ async function fetchBalanceSheetNoteAp(year, month) {
 
 async function fetchBalanceSheetNoteApEntities(year, month) {
   return supabaseRequest(
-    `${SUPABASE_URL}/rest/v1/balance_sheet_note_ap_entities?year=eq.${year}&month=eq.${month}&order=sort_order.asc`
+    `${SUPABASE_URL}/rest/v1/balance_sheet_note_ap_sda?year=eq.${year}&month=eq.${month}&order=sort_order.asc`
   );
 }
