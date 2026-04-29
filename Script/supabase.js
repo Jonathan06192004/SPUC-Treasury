@@ -150,3 +150,40 @@ function onLayoutReady(cb) {
     window.addEventListener('load', () => requestAnimationFrame(() => requestAnimationFrame(cb)));
   }
 }
+
+// ─── BALANCE SHEET ────────────────────────────────────────────────────────────
+async function fetchBalanceSheet(year, month) {
+  return supabaseRequest(
+    `${SUPABASE_URL}/rest/v1/balance_sheet?year=eq.${year}&month=eq.${month}&limit=1`
+  );
+}
+
+async function fetchBalanceSheetNoteCash(year, month) {
+  return supabaseRequest(
+    `${SUPABASE_URL}/rest/v1/balance_sheet_note_cash?year=eq.${year}&month=eq.${month}&order=sort_order.asc`
+  );
+}
+
+async function fetchBalanceSheetNoteAr(year, month) {
+  return supabaseRequest(
+    `${SUPABASE_URL}/rest/v1/balance_sheet_note_ar?year=eq.${year}&month=eq.${month}&order=sort_order.asc`
+  );
+}
+
+async function fetchBalanceSheetNoteArEntities(year, month) {
+  return supabaseRequest(
+    `${SUPABASE_URL}/rest/v1/balance_sheet_note_ar_entities?year=eq.${year}&month=eq.${month}&order=sort_order.asc`
+  );
+}
+
+async function fetchBalanceSheetNoteAp(year, month) {
+  return supabaseRequest(
+    `${SUPABASE_URL}/rest/v1/balance_sheet_note_ap?year=eq.${year}&month=eq.${month}&order=sort_order.asc`
+  );
+}
+
+async function fetchBalanceSheetNoteApEntities(year, month) {
+  return supabaseRequest(
+    `${SUPABASE_URL}/rest/v1/balance_sheet_note_ap_entities?year=eq.${year}&month=eq.${month}&order=sort_order.asc`
+  );
+}
