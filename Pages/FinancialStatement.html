@@ -64,9 +64,9 @@
           </div>
           <div class="is-col-header" id="isColHeader">
             <span class="is-col-assets"></span>
-            <span class="is-col-label"><span class="bs-col-year">2026</span><span class="bs-col-total">TOTAL</span></span>
-            <span class="is-col-label"><span class="bs-col-year">2026</span><span class="bs-col-total">BUDGET</span></span>
-            <span class="is-col-label"><span class="bs-col-year">2025</span><span class="bs-col-total">TOTAL</span></span>
+            <span class="is-col-label"><span class="bs-col-year" id="isColYear1">2026</span><span class="bs-col-total">TOTAL</span></span>
+            <span class="is-col-label"><span class="bs-col-year" id="isColYear2">2026</span><span class="bs-col-total">BUDGET</span></span>
+            <span class="is-col-label"><span class="bs-col-year" id="isColYear3">2025</span><span class="bs-col-total">TOTAL</span></span>
           </div>
           <div class="bs-zoom-outer">
             <div class="fs-table-scroll" id="isTableScroll">
@@ -74,9 +74,9 @@
                 <thead class="is-thead-hidden">
                   <tr>
                     <th class="fs-th">OPERATING ACTIVITY</th>
-                    <th class="fs-th center">TOTAL 2026</th>
-                    <th class="fs-th center">BUDGET 2026</th>
-                    <th class="fs-th center">TOTAL 2025</th>
+                    <th class="fs-th center" id="isThYear1">TOTAL 2026</th>
+                    <th class="fs-th center" id="isThYear2">BUDGET 2026</th>
+                    <th class="fs-th center" id="isThYear3">TOTAL 2025</th>
                   </tr>
                 </thead>
                 <tbody id="isTableBody"></tbody>
@@ -116,8 +116,8 @@
           </div>
           <div class="bs-col-header" id="bsColHeader">
             <span class="bs-col-assets"></span>
-            <span class="bs-col-label"><span class="bs-col-year">2025</span><span class="bs-col-total">TOTAL</span></span>
-            <span class="bs-col-label"><span class="bs-col-year">2026</span><span class="bs-col-total">TOTAL</span></span>
+            <span class="bs-col-label"><span class="bs-col-year" id="bsColYear1">2025</span><span class="bs-col-total">TOTAL</span></span>
+            <span class="bs-col-label"><span class="bs-col-year" id="bsColYear2">2026</span><span class="bs-col-total">TOTAL</span></span>
           </div>
           <div class="bs-zoom-outer">
             <div class="fs-table-scroll" id="bsTableScroll">
@@ -183,8 +183,8 @@
           </div>
           <div class="fl-col-header" id="flColHeader">
             <span class="fl-col-assets"></span>
-            <span class="fl-col-label"><span class="bs-col-year">2026</span><span class="bs-col-total">CURRENT</span></span>
-            <span class="fl-col-label"><span class="bs-col-year">2025</span><span class="bs-col-total">PREVIOUS</span></span>
+            <span class="fl-col-label"><span class="bs-col-year" id="flColYear1">2026</span><span class="bs-col-total">CURRENT</span></span>
+            <span class="fl-col-label"><span class="bs-col-year" id="flColYear2">2025</span><span class="bs-col-total">PREVIOUS</span></span>
           </div>
           <div class="bs-zoom-outer">
             <div class="fs-table-scroll" id="flTableScroll">
@@ -265,32 +265,8 @@
         </div>
 
         <div class="fs-conference-wrap">
-          <p class="fs-conf-title">CONFERENCE CONTRIBUTIONS — JAN 2025</p>
-          <div class="conf-row">
-            <span class="conf-name">NCMC</span>
-            <div class="conf-bar-wrap"><div class="conf-bar" style="width:100%"></div></div>
-            <span class="conf-amt">₱22.62M</span>
-          </div>
-          <div class="conf-row">
-            <span class="conf-name">CMM</span>
-            <div class="conf-bar-wrap"><div class="conf-bar" style="width:72%"></div></div>
-            <span class="conf-amt">₱16.30M</span>
-          </div>
-          <div class="conf-row">
-            <span class="conf-name">NMM</span>
-            <div class="conf-bar-wrap"><div class="conf-bar" style="width:58%"></div></div>
-            <span class="conf-amt">₱13.12M</span>
-          </div>
-          <div class="conf-row">
-            <span class="conf-name">WMC</span>
-            <div class="conf-bar-wrap"><div class="conf-bar" style="width:44%"></div></div>
-            <span class="conf-amt">₱9.95M</span>
-          </div>
-          <div class="conf-row">
-            <span class="conf-name">ZPM</span>
-            <div class="conf-bar-wrap"><div class="conf-bar" style="width:38%"></div></div>
-            <span class="conf-amt">₱8.60M</span>
-          </div>
+          <p class="fs-conf-title" id="confCardTitle">CONFERENCE CONTRIBUTIONS</p>
+          <div id="confCardRows"></div>
         </div>
 
         <div class="side-clock" id="sideClock"></div>

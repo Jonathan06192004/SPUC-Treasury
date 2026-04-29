@@ -187,3 +187,23 @@ async function fetchBalanceSheetNoteApEntities(year, month) {
     `${SUPABASE_URL}/rest/v1/balance_sheet_note_ap_sda?year=eq.${year}&month=eq.${month}&order=sort_order.asc`
   );
 }
+
+// ─── INCOME STATEMENT ─────────────────────────────────────────────────────────
+async function fetchIncomeStatementLines(reportYear, reportMonth) {
+  return supabaseRequest(
+    `${SUPABASE_URL}/rest/v1/income_statement_lines?report_year=eq.${reportYear}&report_month=eq.${reportMonth}&order=sort_order.asc`
+  );
+}
+
+async function fetchIncomeStatementBudgets(reportYear, reportMonth) {
+  return supabaseRequest(
+    `${SUPABASE_URL}/rest/v1/income_statement_budgets?select=budget_year,budget_amount,income_statement_lines!inner(line_key,report_year,report_month)&income_statement_lines.report_year=eq.${reportYear}&income_statement_lines.report_month=eq.${reportMonth}`
+  );
+}
+
+// ─── FINANCIAL INDICATOR ─────────────────────────────────────────────────────
+async function fetchFinancialIndicator(reportYear, reportMonth) {
+  return supabaseRequest(
+    `${SUPABASE_URL}/rest/v1/financial_indicator?report_year=eq.${reportYear}&report_month=eq.${reportMonth}&limit=1`
+  );
+}

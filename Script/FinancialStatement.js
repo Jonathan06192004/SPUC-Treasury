@@ -1,13 +1,13 @@
-﻿    let _rendering = false;
+    let _rendering = false;
     async function renderAll(mi) {
       if (_rendering) return;
       _rendering = true;
       syncAllMonths(mi);
       await renderBalanceSheet();
-      renderIncomeStatement();
+      await renderIncomeStatement();
       renderCashFlow();
-      renderFinancialLiquidity();
-      updateFlKpis();
+      await renderFinancialLiquidity();
+      await renderConferenceCard(mi);
       _rendering = false;
     }
 
@@ -46,10 +46,21 @@
     setInterval(updateSideClock, 1000);
     // ---- Balance Sheet monthly data ----
     const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+    const CURRENT_YEAR = new Date().getFullYear();
+    const PREV_YEAR = CURRENT_YEAR - 1;
+
+    // Set dynamic year labels in column headers
+    (() => {
+      const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+      set('bsColYear1', PREV_YEAR);  set('bsColYear2', CURRENT_YEAR);
+      set('isColYear1', CURRENT_YEAR); set('isColYear2', CURRENT_YEAR); set('isColYear3', PREV_YEAR);
+      set('isThYear1', 'TOTAL ' + CURRENT_YEAR); set('isThYear2', 'BUDGET ' + CURRENT_YEAR); set('isThYear3', 'TOTAL ' + PREV_YEAR);
+      set('flColYear1', CURRENT_YEAR); set('flColYear2', PREV_YEAR);
+    })();
 
     const bsDataByYear = {
-      2025: new Array(12).fill(null),
-      2026: new Array(12).fill(null)
+      [PREV_YEAR]: new Array(12).fill(null),
+      [CURRENT_YEAR]: new Array(12).fill(null)
     };
     const bsNoteState = {};
 
@@ -145,23 +156,23 @@
     }
 
     async function loadBalanceSheetMonth(mi) {
-      if (bsDataByYear[2025][mi] && bsDataByYear[2026][mi] && bsNoteState[mi]
+      if (bsDataByYear[PREV_YEAR][mi] && bsDataByYear[CURRENT_YEAR][mi] && bsNoteState[mi]
           && (bsNoteState[mi].sda.length > 0 || bsNoteState[mi].sdaAp.length > 0)) return;
       const month = mi + 1;
       const [
-        bs2025Rows, bs2026Rows, cashRows, arRows, apRows, arEntityRows, apEntityRows
+        bsPrevRows, bsCurrRows, cashRows, arRows, apRows, arEntityRows, apEntityRows
       ] = await Promise.all([
-        fetchBalanceSheet(2025, month),
-        fetchBalanceSheet(2026, month),
-        fetchBalanceSheetNoteCash(2026, month),
-        fetchBalanceSheetNoteAr(2026, month),
-        fetchBalanceSheetNoteAp(2026, month),
-        fetchBalanceSheetNoteArEntities(2026, month),
-        fetchBalanceSheetNoteApEntities(2026, month)
+        fetchBalanceSheet(PREV_YEAR, month),
+        fetchBalanceSheet(CURRENT_YEAR, month),
+        fetchBalanceSheetNoteCash(CURRENT_YEAR, month),
+        fetchBalanceSheetNoteAr(CURRENT_YEAR, month),
+        fetchBalanceSheetNoteAp(CURRENT_YEAR, month),
+        fetchBalanceSheetNoteArEntities(CURRENT_YEAR, month),
+        fetchBalanceSheetNoteApEntities(CURRENT_YEAR, month)
       ]);
 
-      bsDataByYear[2025][mi] = toBsShape((bs2025Rows || [])[0]);
-      bsDataByYear[2026][mi] = toBsShape((bs2026Rows || [])[0]);
+      bsDataByYear[PREV_YEAR][mi] = toBsShape((bsPrevRows || [])[0]);
+      bsDataByYear[CURRENT_YEAR][mi] = toBsShape((bsCurrRows || [])[0]);
       bsNoteState[mi] = {
         cash: { title: 'NOTE 3 - CASH AND CASH EQUIVALENTS', rows: mapNoteRows(cashRows, 'cash') },
         ar: { title: 'NOTE 5 - ACCOUNTS RECEIVABLE', rows: mapNoteRows(arRows, 'ar') },
@@ -179,11 +190,11 @@
       return '\u20B1' + n.toLocaleString('en-US');
     }
 
-    function updateKPIs() {
+    function updateKPIs(incomeData = null) {
       const isMi = parseInt(document.getElementById('isMonthSelect').value);
-      const d = isData[isMi];
+      const d = incomeData || isDataByMonth[isMi] || {};
       const mn = MONTHS[isMi];
-      const lastDay = new Date(2026, isMi + 1, 0).getDate();
+      const lastDay = new Date(CURRENT_YEAR, isMi + 1, 0).getDate();
 
       const totalInc26 = d.tithe26+d.offer26+d.inv26+d.other26;
       const totalExp26 = d.emp26+d.prog26+d.admin26+d.office26+d.gen26+d.plant26;
@@ -197,13 +208,13 @@
       const netEnd26 = d.netAssetsEnd26 ?? 0;
 
       document.getElementById('kpiRevenue').textContent     = fmtM(totalInc26);
-      document.getElementById('kpiRevenueSub').textContent   = mn + ' 2026';
+      document.getElementById('kpiRevenueSub').textContent   = mn + ' ' + CURRENT_YEAR;
       document.getElementById('kpiExpenses').textContent    = fmtM(totalExp26);
-      document.getElementById('kpiExpensesSub').textContent  = mn + ' 2026';
+      document.getElementById('kpiExpensesSub').textContent  = mn + ' ' + CURRENT_YEAR;
       document.getElementById('kpiCapital').textContent     = fmtM(incBeforeTransfers26);
-      document.getElementById('kpiCapitalSub').textContent   = mn + ' 2026';
+      document.getElementById('kpiCapitalSub').textContent   = mn + ' ' + CURRENT_YEAR;
       document.getElementById('kpiNetAssets').textContent   = fmtM(netEnd26);
-      document.getElementById('kpiNetAssetsSub').textContent = mn + ' ' + lastDay + ', 2026';
+      document.getElementById('kpiNetAssetsSub').textContent = mn + ' ' + lastDay + ', ' + CURRENT_YEAR;
     }
 
     async function renderBalanceSheet() {
@@ -214,12 +225,12 @@
       } catch (err) {
         console.error('Failed loading balance sheet data:', err);
       }
-      const d25 = bsDataByYear[2025][mi];
-      const d26 = bsDataByYear[2026][mi];
+      const d25 = bsDataByYear[PREV_YEAR][mi];
+      const d26 = bsDataByYear[CURRENT_YEAR][mi];
       const d = d26;
       const mn = MONTHS[mi];
-      const lastDay = new Date(2026, mi + 1, 0).getDate();
-      document.getElementById('bsPeriodLabel').textContent = mn.toUpperCase() + ' 2026';
+      const lastDay = new Date(CURRENT_YEAR, mi + 1, 0).getDate();
+      document.getElementById('bsPeriodLabel').textContent = mn.toUpperCase() + ' ' + CURRENT_YEAR;
 
       const tca25 = d25.cash + d25.inv + d25.ar + d25.agency + d25.loans + d25.supplies;
       const tca26 = d26.cash + d26.inv + d26.ar + d26.agency + d26.loans + d26.supplies;
@@ -301,13 +312,13 @@
       `;
       updateKPIs();
       document.getElementById('kpiBsAssets').textContent        = fmtM(ta26);
-      document.getElementById('kpiBsAssetsSub').textContent      = 'As of ' + mn + ' ' + lastDay + ', 2026';
+      document.getElementById('kpiBsAssetsSub').textContent      = 'As of ' + mn + ' ' + lastDay + ', ' + CURRENT_YEAR;
       document.getElementById('kpiBsLiabilities').textContent    = fmtM(tl26);
-      document.getElementById('kpiBsLiabilitiesSub').textContent = 'As of ' + mn + ' ' + lastDay + ', 2026';
+      document.getElementById('kpiBsLiabilitiesSub').textContent = 'As of ' + mn + ' ' + lastDay + ', ' + CURRENT_YEAR;
       document.getElementById('kpiBsNetAssets').textContent      = fmtM(tna26);
-      document.getElementById('kpiBsNetAssetsSub').textContent   = 'As of ' + mn + ' ' + lastDay + ', 2026';
+      document.getElementById('kpiBsNetAssetsSub').textContent   = 'As of ' + mn + ' ' + lastDay + ', ' + CURRENT_YEAR;
       document.getElementById('kpiBsTotal').textContent          = fmtM(tlna26);
-      document.getElementById('kpiBsTotalSub').textContent       = 'As of ' + mn + ' ' + lastDay + ', 2026';
+      document.getElementById('kpiBsTotalSub').textContent       = 'As of ' + mn + ' ' + lastDay + ', ' + CURRENT_YEAR;
       alignBsColHeader();
     }
 
@@ -424,58 +435,123 @@
       document.getElementById('bsZoomLabel').textContent = bsZoomLevel + '%';
     }
 
-    // ---- Income Statement monthly data ----
-    const isData = [
-      { tithe25:12380337,tithe26:10224173,offer25:1168882,offer26:1438331,inv25:9650,inv26:7711,other25:501917,other26:463182,budgetInc26:13717319,emp25:2548906,emp26:2565212,prog25:2261240,prog26:3214341,admin25:847047,admin26:751343,office25:125432,office26:66196,gen25:271014,gen26:38794,plant25:921917,plant26:867154,budgetExp26:7464603,netAssetsBeg:348889046 },
-      { tithe25:11850200,tithe26:9980450,offer25:1090300,offer26:1320180,inv25:8420,inv26:7100,other25:478300,other26:441200,budgetInc26:13200000,emp25:2410500,emp26:2490300,prog25:2180600,prog26:3050200,admin25:810200,admin26:720100,office25:118300,office26:61400,gen25:258700,gen26:35200,plant25:890400,plant26:840200,budgetExp26:7200000,netAssetsBeg:353403633 },
-      // Mar - exact figures from screenshot
-      { tithe25:35005774,tithe26:37495773,offer25:3131676,offer26:3461072,inv25:28948,inv26:23856,other25:22804157,other26:4712385,
-        budgetInc26:54869275,
-        emp25:7645418,emp26:7685282,prog25:52845511,prog26:7241960,admin25:4230583,admin26:5021515,office25:359374,office26:411354,gen25:287511,gen26:309970,plant25:3622892,plant26:3360333,
-        budgetExp26:29858414,
-        // Operating Fund vs Plan tFund splits
-        titheOF:37495773, tithePF:0,
-        offerOF:3461072,  offerPF:0,
-        invOF:23856,      invPF:0,
-        otherOF:4712385,  otherPF:0,
-        empOF:7685282,    empPF:0,
-        progOF:7241960,   progPF:0,
-        adminOF:5021515,  adminPF:0,
-        officeOF:411354,  officePF:0,
-        genOF:309970,     genPF:0,
-        plantOF:1707233,  plantPF:1653100,
-        appRec26:0,appRec25:851355,appDisb26:-1730000,appDisb25:-19627170,
-        appDisb26OF:-1730000, appDisb26PF:0,
-        nonTitheRec26:59000,nonTitheRec25:0,nonTitheDisb26:0,nonTitheDisb25:-408333,
-        nonTitheRec26OF:59000, nonTitheRec26PF:0,
-        capitalActivity26:0,capitalActivity25:0,
-        transferBetweenFunc26:-72493,transferBetweenFunc25:-4745076,
-        transferBetweenFunc26OF:-72493, transferBetweenFunc26PF:72493,
-        transferBetweenFunds26:0,transferBetweenFunds25:-1933333,
-        netAssetsBeg26:338992649,netAssetsBeg25:324883755,
-        netAssetsBeg26OF:270250888, netAssetsBeg26PF:68741756,
-        netAssetsEnd26:358984314,netAssetsEnd25:315171033,
-        netAssetsEnd26OF:291823166, netAssetsEnd26PF:67161149 },
-      { tithe25:12950800,tithe26:10680200,offer25:1210400,offer26:1490300,inv25:9900,inv26:8050,other25:515200,other26:475800,budgetInc26:13850000,emp25:2620100,emp26:2650800,prog25:2310500,prog26:3280100,admin25:865400,admin26:762300,office25:128700,office26:67800,gen25:278300,gen26:39500,plant25:935600,plant26:872400,budgetExp26:7520000,netAssetsBeg:362204283 },
-      { tithe25:11680400,tithe26:9620100,offer25:1050200,offer26:1280500,inv25:8100,inv26:6850,other25:462100,other26:428300,budgetInc26:12900000,emp25:2320400,emp26:2410200,prog25:2090300,prog26:2980400,admin25:782100,admin26:698500,office25:112400,office26:58200,gen25:248900,gen26:33800,plant25:862100,plant26:815300,budgetExp26:6980000,netAssetsBeg:366824783 },
-      { tithe25:13580200,tithe26:11240500,offer25:1290800,offer26:1580200,inv25:10800,inv26:8900,other25:542600,other26:502100,budgetInc26:14500000,emp25:2750800,emp26:2790300,prog25:2450200,prog26:3410600,admin25:912500,admin26:801400,office25:136800,office26:72900,gen25:293100,gen26:43100,plant25:968400,plant26:912600,budgetExp26:7890000,netAssetsBeg:370404983 },
-      { tithe25:11420600,tithe26:9410300,offer25:1028400,offer26:1250800,inv25:7850,inv26:6620,other25:451200,other26:418600,budgetInc26:12600000,emp25:2280100,emp26:2370500,prog25:2050800,prog26:2920100,admin25:768400,admin26:685200,office25:109800,office26:56800,gen25:243200,gen26:32900,plant25:845600,plant26:798400,budgetExp26:6820000,netAssetsBeg:375585283 },
-      { tithe25:12680300,tithe26:10480200,offer25:1148600,offer26:1408300,inv25:9200,inv26:7500,other25:498300,other26:461200,budgetInc26:13500000,emp25:2510200,emp26:2540800,prog25:2230400,prog26:3150200,admin25:838600,admin26:742100,office25:124200,office26:64800,gen25:268400,gen26:37600,plant25:912300,plant26:858200,budgetExp26:7380000,netAssetsBeg:379005383 },
-      { tithe25:13820400,tithe26:11420600,offer25:1312500,offer26:1608400,inv25:11100,inv26:9100,other25:551800,other26:510400,budgetInc26:14800000,emp25:2790500,emp26:2830100,prog25:2490600,prog26:3460800,admin25:928400,admin26:815600,office25:139200,office26:74500,gen25:298400,gen26:44200,plant25:982100,plant26:926800,budgetExp26:8020000,netAssetsBeg:383285883 },
-      { tithe25:11180200,tithe26:9210400,offer25:1008200,offer26:1228600,inv25:7600,inv26:6400,other25:441800,other26:409200,budgetInc26:12300000,emp25:2240800,emp26:2330200,prog25:2010400,prog26:2860500,admin25:754200,admin26:672400,office25:107200,office26:55400,gen25:237800,gen26:32100,plant25:829800,plant26:782100,budgetExp26:6680000,netAssetsBeg:388666083 },
-      { tithe25:12420500,tithe26:10280300,offer25:1128400,offer26:1380600,inv25:8950,inv26:7300,other25:488600,other26:452400,budgetInc26:13300000,emp25:2470600,emp26:2510400,prog25:2190800,prog26:3100500,admin25:824800,admin26:730600,office25:121600,office26:63200,gen25:263100,gen26:36800,plant25:898600,plant26:845800,budgetExp26:7260000,netAssetsBeg:391946483 },
-      { tithe25:14280600,tithe26:11820400,offer25:1358200,offer26:1658800,inv25:11500,inv26:9400,other25:568400,other26:526200,budgetInc26:15200000,emp25:2850200,emp26:2890600,prog25:2550800,prog26:3520400,admin25:948600,admin26:832800,office25:142800,office26:76400,gen25:305200,gen26:45600,plant25:998600,plant26:942400,budgetExp26:8180000,netAssetsBeg:396126683 }
-    ];
+    // ---- Income Statement monthly data (DB-backed) ----
+    const isDataByMonth = new Array(12).fill(null);
+
+    function getLineVal(map, key, field) {
+      const row = map[key];
+      if (!row) return 0;
+      const n = Number(row[field]);
+      return Number.isFinite(n) ? n : 0;
+    }
+
+    async function loadIncomeStatementMonth(mi) {
+      if (isDataByMonth[mi]) return;
+      const month = mi + 1;
+      const [lineRows, budgetRows] = await Promise.all([
+        fetchIncomeStatementLines(CURRENT_YEAR, month),
+        fetchIncomeStatementBudgets(CURRENT_YEAR, month)
+      ]);
+
+      const lineMap = {};
+      (lineRows || []).forEach(r => { lineMap[r.line_key] = r; });
+      const budgetByKey = {};
+      (budgetRows || []).forEach(r => {
+        const key = r.line_key || r.income_statement_lines?.line_key;
+        if (!key) return;
+        const yr = Number(r.budget_year);
+        if (!budgetByKey[key] || yr > budgetByKey[key].budget_year) {
+          budgetByKey[key] = { budget_year: yr, amount: Number(r.budget_amount) || 0 };
+        }
+      });
+      const b = (key) => budgetByKey[key]?.amount ?? 0;
+
+      isDataByMonth[mi] = {
+        tithe25: getLineVal(lineMap, 'TITHE_INCOME', 'total_2025'),
+        tithe26: getLineVal(lineMap, 'TITHE_INCOME', 'total_2026'),
+        offer25: getLineVal(lineMap, 'OFFERING_INCOME', 'total_2025'),
+        offer26: getLineVal(lineMap, 'OFFERING_INCOME', 'total_2026'),
+        inv25: getLineVal(lineMap, 'INVESTMENT_INCOME', 'total_2025'),
+        inv26: getLineVal(lineMap, 'INVESTMENT_INCOME', 'total_2026'),
+        other25: getLineVal(lineMap, 'OTHER_OPERATING_INCOME', 'total_2025'),
+        other26: getLineVal(lineMap, 'OTHER_OPERATING_INCOME', 'total_2026'),
+        budgetInc26: b('TOTAL_EARNED_OPERATING_INCOME'),
+        budgetTithe26: b('TITHE_INCOME'),
+        budgetOffer26: b('OFFERING_INCOME'),
+        budgetInv26: b('INVESTMENT_INCOME'),
+        budgetOther26: b('OTHER_OPERATING_INCOME'),
+        emp25: getLineVal(lineMap, 'EMPLOYEE_RELATED_EXPENSES', 'total_2025'),
+        emp26: getLineVal(lineMap, 'EMPLOYEE_RELATED_EXPENSES', 'total_2026'),
+        prog25: getLineVal(lineMap, 'PROGRAM_SPECIFIC_EXPENSES', 'total_2025'),
+        prog26: getLineVal(lineMap, 'PROGRAM_SPECIFIC_EXPENSES', 'total_2026'),
+        admin25: getLineVal(lineMap, 'ADMINISTRATIVE_EXPENSES', 'total_2025'),
+        admin26: getLineVal(lineMap, 'ADMINISTRATIVE_EXPENSES', 'total_2026'),
+        office25: getLineVal(lineMap, 'OFFICE_EXPENSES', 'total_2025'),
+        office26: getLineVal(lineMap, 'OFFICE_EXPENSES', 'total_2026'),
+        gen25: getLineVal(lineMap, 'GENERAL_EXPENSES', 'total_2025'),
+        gen26: getLineVal(lineMap, 'GENERAL_EXPENSES', 'total_2026'),
+        plant25: getLineVal(lineMap, 'PLANT_OPERATION_EXPENSES', 'total_2025'),
+        plant26: getLineVal(lineMap, 'PLANT_OPERATION_EXPENSES', 'total_2026'),
+        budgetExp26: b('TOTAL_OPERATING_EXPENSES'),
+        budgetEmp26: b('EMPLOYEE_RELATED_EXPENSES'),
+        budgetProg26: b('PROGRAM_SPECIFIC_EXPENSES'),
+        budgetAdmin26: b('ADMINISTRATIVE_EXPENSES'),
+        budgetOffice26: b('OFFICE_EXPENSES'),
+        budgetGen26: b('GENERAL_EXPENSES'),
+        budgetPlant26: b('PLANT_OPERATION_EXPENSES'),
+        appRec25: getLineVal(lineMap, 'TITHE_APPROP_RECEIVED', 'total_2025'),
+        appRec26: getLineVal(lineMap, 'TITHE_APPROP_RECEIVED', 'total_2026'),
+        appDisb25: getLineVal(lineMap, 'TITHE_APPROP_DISBURSED', 'total_2025'),
+        appDisb26: getLineVal(lineMap, 'TITHE_APPROP_DISBURSED', 'total_2026'),
+        budgetAppRec26: b('TITHE_APPROP_RECEIVED'),
+        budgetAppDisb26: b('TITHE_APPROP_DISBURSED'),
+        budgetNtRec26: b('NON_TITHE_APPROP_RECEIVED'),
+        budgetNtDisb26: b('NON_TITHE_APPROP_DISBURSED'),
+        budgetNetApp26: b('NET_APPROP_RETAINED'),
+        budgetIncOps26: b('INCREASE_FROM_OPERATIONS'),
+        nonTitheRec25: getLineVal(lineMap, 'NON_TITHE_APPROP_RECEIVED', 'total_2025'),
+        nonTitheRec26: getLineVal(lineMap, 'NON_TITHE_APPROP_RECEIVED', 'total_2026'),
+        nonTitheDisb25: getLineVal(lineMap, 'NON_TITHE_APPROP_DISBURSED', 'total_2025'),
+        nonTitheDisb26: getLineVal(lineMap, 'NON_TITHE_APPROP_DISBURSED', 'total_2026'),
+        capitalActivity25: getLineVal(lineMap, 'NET_CAPITAL_INCREASE', 'total_2025'),
+        capitalActivity26: getLineVal(lineMap, 'NET_CAPITAL_INCREASE', 'total_2026'),
+        budgetCap26: b('NET_CAPITAL_INCREASE'),
+        budgetIncBefTr26: b('INCREASE_BEFORE_TRANSFERS'),
+        transferBetweenFunc25: getLineVal(lineMap, 'TRANSFERS_BETWEEN_FUNCTIONS', 'total_2025'),
+        transferBetweenFunc26: getLineVal(lineMap, 'TRANSFERS_BETWEEN_FUNCTIONS', 'total_2026'),
+        transferBetweenFunds25: getLineVal(lineMap, 'TRANSFERS_BETWEEN_FUNDS', 'total_2025'),
+        transferBetweenFunds26: getLineVal(lineMap, 'TRANSFERS_BETWEEN_FUNDS', 'total_2026'),
+        budgetTfFunc26: b('TRANSFERS_BETWEEN_FUNCTIONS'),
+        budgetTfFunds26: b('TRANSFERS_BETWEEN_FUNDS'),
+        budgetNetInc26: b('NET_ASSETS_INCREASE_YEAR'),
+        netAssetsBeg25: getLineVal(lineMap, 'NET_ASSETS_BEGIN', 'total_2025'),
+        netAssetsBeg26: getLineVal(lineMap, 'NET_ASSETS_BEGIN', 'total_2026'),
+        netAssetsEnd25: getLineVal(lineMap, 'NET_ASSETS_END', 'total_2025'),
+        netAssetsEnd26: getLineVal(lineMap, 'NET_ASSETS_END', 'total_2026'),
+        // keep existing OF/PF logic compatible
+        titheOF: getLineVal(lineMap, 'TITHE_INCOME', 'total_2026'), tithePF: 0,
+        offerOF: getLineVal(lineMap, 'OFFERING_INCOME', 'total_2026'), offerPF: 0,
+        invOF: getLineVal(lineMap, 'INVESTMENT_INCOME', 'total_2026'), invPF: 0,
+        otherOF: getLineVal(lineMap, 'OTHER_OPERATING_INCOME', 'total_2026'), otherPF: 0,
+        empOF: getLineVal(lineMap, 'EMPLOYEE_RELATED_EXPENSES', 'total_2026'), empPF: 0,
+        progOF: getLineVal(lineMap, 'PROGRAM_SPECIFIC_EXPENSES', 'total_2026'), progPF: 0,
+        adminOF: getLineVal(lineMap, 'ADMINISTRATIVE_EXPENSES', 'total_2026'), adminPF: 0,
+        officeOF: getLineVal(lineMap, 'OFFICE_EXPENSES', 'total_2026'), officePF: 0,
+        genOF: getLineVal(lineMap, 'GENERAL_EXPENSES', 'total_2026'), genPF: 0,
+        plantOF: getLineVal(lineMap, 'PLANT_OPERATION_EXPENSES', 'total_2026'), plantPF: 0
+      };
+    }
 
     function fmtIs(n) { return n ? n.toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2}) : ''; }
 
-    function renderIncomeStatement() {
+    async function renderIncomeStatement() {
       const mi = parseInt(document.getElementById('isMonthSelect').value);
       syncAllMonths(mi);
-      const d = isData[mi];
+      await loadIncomeStatementMonth(mi);
+      const d = isDataByMonth[mi] || {};
       const mn = MONTHS[mi];
-      const lastDay = new Date(2026, mi + 1, 0).getDate();
-      document.getElementById('isPeriodLabel').textContent = mn.toUpperCase() + ' 2026';
+      const lastDay = new Date(CURRENT_YEAR, mi + 1, 0).getDate();
+      document.getElementById('isPeriodLabel').textContent = mn.toUpperCase() + ' ' + CURRENT_YEAR;
 
       // helpers - OF = Operating Fund, PF = Plan tFund
       const g = (v) => v ?? 0;
@@ -569,44 +645,44 @@
       document.getElementById('isTableBody').innerHTML =
         secHdr('OPERATING ACTIVITY') +
         subSecHdr('Operating Income') +
-        row('TITHE INCOME, NET (NOTE 14)',titheOF,tithePF,d.tithe26,48277235,d.tithe25) +
-        row('OFFERING INCOME &amp; SPECIFIC DONATIONS',offerOF,offerPF,d.offer26,5753325,d.offer25) +
-        row('INVESTMENT INCOME (NOTE 4)',invOF,invPF,d.inv26,200000,d.inv25) +
-        row('OTHER OPERATING INCOME',otherOF,otherPF,d.other26,638715,d.other25) +
+        row('TITHE INCOME, NET (NOTE 14)',titheOF,tithePF,d.tithe26,d.budgetTithe26,d.tithe25) +
+        row('OFFERING INCOME &amp; SPECIFIC DONATIONS',offerOF,offerPF,d.offer26,d.budgetOffer26,d.offer25) +
+        row('INVESTMENT INCOME (NOTE 4)',invOF,invPF,d.inv26,d.budgetInv26,d.inv25) +
+        row('OTHER OPERATING INCOME',otherOF,otherPF,d.other26,d.budgetOther26,d.other25) +
         subtotalRow('TOTAL EARNED OPERATING INCOME',totalIncOF,totalIncPF,totalInc26,d.budgetInc26,totalInc25) +
         spacer() +
         subSecHdr('Operating Expenses') +
-        row('EMPLOYEE RELATED EXPENSES (NOTE 19)',empOF,empPF,d.emp26,11676469,d.emp25) +
-        row('PROGRAM SPECIFIC EXPENSES (NOTE 21)',progOF,progPF,d.prog26,6554466,d.prog25) +
-        row('ADMINISTRATIVE EXPENSES (NOTE 19)',adminOF,adminPF,d.admin26,7186771,d.admin25) +
-        row('OFFICE EXPENSES (NOTE 20a)',officeOF,officePF,d.office26,867867,d.office25) +
-        row('GENERAL EXPENSES (NOTE 20b)',genOF,genPF,d.gen26,793736,d.gen25) +
-        row('PLANT OPERATION EXPENSES (NOTE 21)',plantOF,plantPF,d.plant26,2779075,d.plant25) +
+        row('EMPLOYEE RELATED EXPENSES (NOTE 19)',empOF,empPF,d.emp26,d.budgetEmp26,d.emp25) +
+        row('PROGRAM SPECIFIC EXPENSES (NOTE 21)',progOF,progPF,d.prog26,d.budgetProg26,d.prog25) +
+        row('ADMINISTRATIVE EXPENSES (NOTE 19)',adminOF,adminPF,d.admin26,d.budgetAdmin26,d.admin25) +
+        row('OFFICE EXPENSES (NOTE 20a)',officeOF,officePF,d.office26,d.budgetOffice26,d.office25) +
+        row('GENERAL EXPENSES (NOTE 20b)',genOF,genPF,d.gen26,d.budgetGen26,d.gen25) +
+        row('PLANT OPERATION EXPENSES (NOTE 21)',plantOF,plantPF,d.plant26,d.budgetPlant26,d.plant25) +
         subtotalRow('TOTAL OPERATING EXPENSES',totalExpOF,totalExpPF,totalExp26,d.budgetExp26,totalExp25) +
-        budgetRow('BUDGETED OP EXPENSES '+mn.toUpperCase()+' 2026', d.budgetExp26) +
+        budgetRow('BUDGETED OP EXPENSES '+mn.toUpperCase()+' '+CURRENT_YEAR, d.budgetExp26) +
         highlightRow('INCREASE (DECREASE) BEFORE APPROP',incBefAppOF,incBefAppPF,incBefApp26,'',incBefApp25) +
         spacer() +
         subSecHdr('Operating Appropriations') +
-        row('TITHE APPROPRIATION RECEIVED (S-22)',0,0,appRec26,851355,appRec25) +
-        row('TITHE APPROPRIATION DISBURSED (S-23)',appDisb26OF,appDisb26PF,appDisb26,-19627170,appDisb25,"",true) +
-        row('NON-TITHE APPROPRIATION RECEIVED (S-24)',ntRec26OF,ntRec26PF,ntRec26,851696,ntRec25) +
-        row('NON-TITHE APPROPRIATION DISBURSED (S-25)',0,0,ntDisb26,-408333,ntDisb25,"",true) +
-        subtotalRow('NET APPROPRIATION RETAINED',netAppOF,netAppPF,netApp26,-18332452,netApp25) +
-        highlightRow('INCREASE (DECREASE) FROM OPERATIONS',incOpsOF,incOpsPF,incOps26,6678409,incOps25) +
+        row('TITHE APPROPRIATION RECEIVED (S-22)',0,0,appRec26,d.budgetAppRec26,appRec25) +
+        row('TITHE APPROPRIATION DISBURSED (S-23)',appDisb26OF,appDisb26PF,appDisb26,d.budgetAppDisb26,appDisb25,"",true) +
+        row('NON-TITHE APPROPRIATION RECEIVED (S-24)',ntRec26OF,ntRec26PF,ntRec26,d.budgetNtRec26,ntRec25) +
+        row('NON-TITHE APPROPRIATION DISBURSED (S-25)',0,0,ntDisb26,d.budgetNtDisb26,ntDisb25,"",true) +
+        subtotalRow('NET APPROPRIATION RETAINED',netAppOF,netAppPF,netApp26,d.budgetNetApp26,netApp25) +
+        highlightRow('INCREASE (DECREASE) FROM OPERATIONS',incOpsOF,incOpsPF,incOps26,d.budgetIncOps26,incOps25) +
         spacer() +
         secHdr('CAPITAL ACTIVITY') +
-        row('NET CAPITAL INCREASE (DECREASE)',0,0,cap26,0,cap25) +
-        highlightRow('INCREASE (DECREASE) BEFORE TRANSFERS',incBefTrOF,incBefTrPF,incBefTr26,6678409,incBefTr25) +
+        row('NET CAPITAL INCREASE (DECREASE)',0,0,cap26,d.budgetCap26,cap25) +
+        highlightRow('INCREASE (DECREASE) BEFORE TRANSFERS',incBefTrOF,incBefTrPF,incBefTr26,d.budgetIncBefTr26,incBefTr25) +
         spacer() +
         secHdr('TRANSFERS') +
-        row('TRANSFERS BETWEEN FUNCTIONS/RESOURCES',tfFuncOF,tfFuncPF,tfFunc26,-4745076,tfFunc25) +
-        row('TRANSFERS BETWEEN FUNDS',0,0,tfFunds26,-1933333,tfFunds25) +
+        row('TRANSFERS BETWEEN FUNCTIONS/RESOURCES',tfFuncOF,tfFuncPF,tfFunc26,d.budgetTfFunc26,tfFunc25) +
+        row('TRANSFERS BETWEEN FUNDS',0,0,tfFunds26,d.budgetTfFunds26,tfFunds25) +
         spacer() +
-        subtotalRow('NET ASSETS INCREASE (DECREASE) FOR THE YEAR',netIncOF,netIncPF,netInc26,-0,netInc25) +
-        row('NET ASSETS, JANUARY 1, 2026',netBeg26OF,netBeg26PF,netBeg26,'',netBeg25) +
-        totalRow('NET ASSETS, '+mn.toUpperCase()+' '+lastDay+', 2026',netEnd26OF,netEnd26PF,netEnd26,'',netEnd25);
+        subtotalRow('NET ASSETS INCREASE (DECREASE) FOR THE YEAR',netIncOF,netIncPF,netInc26,d.budgetNetInc26,netInc25) +
+        row('NET ASSETS, JANUARY 1, '+CURRENT_YEAR,netBeg26OF,netBeg26PF,netBeg26,'',netBeg25) +
+        totalRow('NET ASSETS, '+mn.toUpperCase()+' '+lastDay+', '+CURRENT_YEAR,netEnd26OF,netEnd26PF,netEnd26,'',netEnd25);
 
-      updateKPIs();
+      updateKPIs(d);
       alignIsColHeader();
     }
 
@@ -693,24 +769,62 @@
     }
 
     // ---- Financial Indicator (Note 20) ----
-    const flData = [
-      {
-        coreOperating26: 136697749, coreOperating25: 84546205,
-        coreRemittance26: 63058071, coreRemittance25: 152153779,
-        currentAssets26: 379691345, currentAssets25: 406661295,
-        currentLiab26: 106805367, currentLiab25: 177780486,
-        donorRestriction26: 17189257, donorRestriction25: 5216467,
-        cash26: 205269532, cash25: 269820967,
-        heldForAgency26: 19791231, heldForAgency25: 15210862,
-        investments26: 35838949, investments25: 36009254,
-        workingMonths26: 16, workingMonths25: 6,
-        liquidMonths26: 10, liquidMonths25: 5,
-        recommendedMonthsWc26: 9, recommendedMonthsWc25: 18,
-        requiredMonthsWc: 6,
-        recommendedMonthsLa26: 6, recommendedMonthsLa25: 12,
-        requiredMonthsLa: 3
-      }
-    ];
+    const flDataByMonth = new Array(12).fill(null);
+    const flDefaultData = {
+      coreOperating26: 0, coreOperating25: 0,
+      coreRemittance26: 0, coreRemittance25: 0,
+      currentAssets26: 0, currentAssets25: 0,
+      currentLiab26: 0, currentLiab25: 0,
+      donorRestriction26: 0, donorRestriction25: 0,
+      cash26: 0, cash25: 0,
+      heldForAgency26: 0, heldForAgency25: 0,
+      investments26: 0, investments25: 0,
+      workingMonths26: 0, workingMonths25: 0,
+      liquidMonths26: 0, liquidMonths25: 0,
+      recommendedMonthsWc26: 0, recommendedMonthsWc25: 0,
+      requiredMonthsWc: 0,
+      recommendedMonthsLa26: 0, recommendedMonthsLa25: 0,
+      requiredMonthsLa: 0
+    };
+
+    function toFinite(v) {
+      const n = Number(v);
+      return Number.isFinite(n) ? n : 0;
+    }
+
+    async function loadFinancialIndicatorMonth(mi) {
+      if (flDataByMonth[mi]) return;
+      const rows = await fetchFinancialIndicator(CURRENT_YEAR, mi + 1);
+      const r = (rows || [])[0] || {};
+      flDataByMonth[mi] = {
+        coreOperating26: toFinite(r.core_operating_2026),
+        coreOperating25: toFinite(r.core_operating_2025),
+        coreRemittance26: toFinite(r.core_remittance_2026),
+        coreRemittance25: toFinite(r.core_remittance_2025),
+        currentAssets26: toFinite(r.current_assets_2026),
+        currentAssets25: toFinite(r.current_assets_2025),
+        currentLiab26: toFinite(r.current_liabilities_2026),
+        currentLiab25: toFinite(r.current_liabilities_2025),
+        donorRestriction26: toFinite(r.donor_restriction_2026),
+        donorRestriction25: toFinite(r.donor_restriction_2025),
+        cash26: toFinite(r.cash_2026),
+        cash25: toFinite(r.cash_2025),
+        heldForAgency26: toFinite(r.held_for_agency_2026),
+        heldForAgency25: toFinite(r.held_for_agency_2025),
+        investments26: toFinite(r.investments_2026),
+        investments25: toFinite(r.investments_2025),
+        workingMonths26: toFinite(r.working_months_2026),
+        workingMonths25: toFinite(r.working_months_2025),
+        liquidMonths26: toFinite(r.liquid_months_2026),
+        liquidMonths25: toFinite(r.liquid_months_2025),
+        recommendedMonthsWc26: toFinite(r.recommended_months_wc_2026),
+        recommendedMonthsWc25: toFinite(r.recommended_months_wc_2025),
+        requiredMonthsWc: toFinite(r.required_months_wc),
+        recommendedMonthsLa26: toFinite(r.recommended_months_la_2026),
+        recommendedMonthsLa25: toFinite(r.recommended_months_la_2025),
+        requiredMonthsLa: toFinite(r.required_months_la)
+      };
+    }
 
     let flShowPercentage = false;
 
@@ -722,26 +836,29 @@
       flShowPercentage = !flShowPercentage;
       document.getElementById('flPctBtn').textContent = flShowPercentage ? 'VIEW MONTHS' : '% SEE PERCENTAGE';
       renderFinancialLiquidity();
-      updateFlKpis();
     }
 
-    function updateFlKpis() {
-      const d = flData[0];
+    function updateFlKpis(d, wcCoverage, liquidCoverage) {
       if (flShowPercentage) {
-        document.getElementById('kpiWcMonths').textContent = '273.95%';
-        document.getElementById('kpiLaMonths').textContent = '135.06%';
+        document.getElementById('kpiWcMonths').textContent = wcCoverage.toFixed(2) + '%';
+        document.getElementById('kpiLaMonths').textContent = liquidCoverage.toFixed(2) + '%';
       } else {
         document.getElementById('kpiWcMonths').textContent = d.workingMonths26 + ' months';
         document.getElementById('kpiLaMonths').textContent = d.liquidMonths26 + ' months';
       }
     }
 
-    function renderFinancialLiquidity() {
-      const d = flData[0];
+    async function renderFinancialLiquidity() {
       const mi = parseInt(document.getElementById('flMonthSelect').value);
       syncAllMonths(mi);
+      try {
+        await loadFinancialIndicatorMonth(mi);
+      } catch (err) {
+        console.error('Failed loading financial indicator data:', err);
+      }
+      const d = flDataByMonth[mi] || flDefaultData;
       const mn = MONTHS[mi];
-      document.getElementById('flPeriodLabel').textContent = mn.toUpperCase() + ' 2026';
+      document.getElementById('flPeriodLabel').textContent = mn.toUpperCase() + ' ' + CURRENT_YEAR;
 
       const coreTotal26 = d.coreOperating26 + d.coreRemittance26;
       const coreTotal25 = d.coreOperating25 + d.coreRemittance25;
@@ -793,7 +910,7 @@
           <tr class="subtotal-row"><td class="fs-label indent-sub">AVAILABLE WORKING CAPITAL</td><td class="fs-amount center">${fmtFl(availableWorkingCapital26)}</td><td class="fs-amount center">${fmtFl(availableWorkingCapital25)}</td></tr>
           <tr><td class="fs-label indent">RECOMMENDED WORKING CAPITAL MINIMUM</td><td class="fs-amount center">${fmtFl(Math.round(recWcMin26))}</td><td class="fs-amount center">${fmtFl(Math.round(recWcMin25))}</td></tr>
           <tr><td class="fs-label indent">SURPLUS (SHORTFALL) IN RECOMMENDED MINIMUM</td><td class="fs-amount center ${wcSurplus26 < 0 ? 'neg' : ''}">${wcSurplus26 < 0 ? fmtFlNeg(wcSurplus26) : fmtFl(wcSurplus26)}</td><td class="fs-amount center ${wcSurplus25 < 0 ? 'neg' : ''}">${wcSurplus25 < 0 ? fmtFlNeg(wcSurplus25) : fmtFl(wcSurplus25)}</td></tr>
-          <tr class="total-row highlight fl-months-row"><td class="fs-label">AVAILABLE WORKING CAPITAL IN MONTHS</td><td class="fs-amount center gold">${flShowPercentage ? '<span class="fl-pct-val">273.95%</span>' : '<span class="fl-month-val">16</span><span class="fl-month-label">months</span>'}</td><td class="fs-amount center gold">${flShowPercentage ? '<span class="fl-pct-val">256.81%</span>' : '<span class="fl-month-val">6</span><span class="fl-month-label">months</span>'}</td></tr>
+          <tr class="total-row highlight fl-months-row"><td class="fs-label">AVAILABLE WORKING CAPITAL IN MONTHS</td><td class="fs-amount center gold">${flShowPercentage ? '<span class="fl-pct-val">'+wcCoverage26.toFixed(2)+'%</span>' : '<span class="fl-month-val">'+wcMonthsDisplay26+'</span><span class="fl-month-label">months</span>'}</td><td class="fs-amount center gold">${flShowPercentage ? '<span class="fl-pct-val">'+wcCoverage25.toFixed(2)+'%</span>' : '<span class="fl-month-val">'+wcMonthsDisplay25+'</span><span class="fl-month-label">months</span>'}</td></tr>
           <tr class="spacer"><td colspan="3"></td></tr>
 
           <tr class="section-header"><td colspan="3">AVAILABLE LIQUID ASSETS</td></tr>
@@ -805,8 +922,9 @@
           <tr class="subtotal-row"><td class="fs-label indent-sub">AVAILABLE LIQUID ASSETS</td><td class="fs-amount center">${fmtFl(availableLiquidAssets26)}</td><td class="fs-amount center">${fmtFl(availableLiquidAssets25)}</td></tr>
           <tr><td class="fs-label indent">RECOMMENDED MINIMUM AVAILABLE LIQUID ASSETS</td><td class="fs-amount center">${fmtFl(Math.round(recLaMin26))}</td><td class="fs-amount center">${fmtFl(Math.round(recLaMin25))}</td></tr>
           <tr><td class="fs-label indent">SURPLUS (SHORTFALL) IN RECOMMENDED MINIMUM</td><td class="fs-amount center ${laSurplus26 < 0 ? 'neg' : ''}">${laSurplus26 < 0 ? fmtFlNeg(laSurplus26) : fmtFl(laSurplus26)}</td><td class="fs-amount center ${laSurplus25 < 0 ? 'neg' : ''}">${laSurplus25 < 0 ? fmtFlNeg(laSurplus25) : fmtFl(laSurplus25)}</td></tr>
-          <tr class="total-row highlight fl-months-row"><td class="fs-label">AVAILABLE LIQUID ASSETS IN MONTHS</td><td class="fs-amount center gold">${flShowPercentage ? '<span class="fl-pct-val">135.06%</span>' : '<span class="fl-month-val">10</span><span class="fl-month-label">months</span>'}</td><td class="fs-amount center gold">${flShowPercentage ? '<span class="fl-pct-val">133.02%</span>' : '<span class="fl-month-val">5</span><span class="fl-month-label">months</span>'}</td></tr>
+          <tr class="total-row highlight fl-months-row"><td class="fs-label">AVAILABLE LIQUID ASSETS IN MONTHS</td><td class="fs-amount center gold">${flShowPercentage ? '<span class="fl-pct-val">'+liquidCoverage26.toFixed(2)+'%</span>' : '<span class="fl-month-val">'+laMonthsDisplay26+'</span><span class="fl-month-label">months</span>'}</td><td class="fs-amount center gold">${flShowPercentage ? '<span class="fl-pct-val">'+liquidCoverage25.toFixed(2)+'%</span>' : '<span class="fl-month-val">'+laMonthsDisplay25+'</span><span class="fl-month-label">months</span>'}</td></tr>
         `;
+      updateFlKpis(d, wcCoverage26, liquidCoverage26);
       alignFlColHeader();
     }
 
@@ -821,6 +939,46 @@
       inner.style.height = 'auto';
       inner.parentElement.style.height = (inner.scrollHeight * scale) + 'px';
       document.getElementById('flZoomLabel').textContent = flZoomLevel + '%';
+    }
+
+    // ---- Conference Contributions Card ----
+    async function renderConferenceCard(mi) {
+      const month = mi + 1;
+      const year = CURRENT_YEAR;
+      const mn = MONTHS[mi];
+      const [titheRows, offerRows] = await Promise.all([
+        supabaseRequest(`${SUPABASE_URL}/rest/v1/tithes?select=amount,missions(code,name)&year=eq.${year}&month=eq.${month}&order=mission_id.asc`),
+        supabaseRequest(`${SUPABASE_URL}/rest/v1/offerings?select=amount,missions(code,name)&year=eq.${year}&month=eq.${month}&order=mission_id.asc`)
+      ]);
+
+      const totals = {};
+      (titheRows || []).forEach(r => {
+        const code = r.missions.code;
+        totals[code] = { code, name: r.missions.name, amt: (totals[code]?.amt || 0) + (Number(r.amount) || 0) };
+      });
+      (offerRows || []).forEach(r => {
+        const code = r.missions.code;
+        if (!totals[code]) totals[code] = { code, name: r.missions.name, amt: 0 };
+        totals[code].amt += (Number(r.amount) || 0);
+      });
+
+      const sorted = Object.values(totals).sort((a, b) => b.amt - a.amt);
+      const max = sorted[0]?.amt || 1;
+
+      document.getElementById('confCardTitle').textContent =
+        `CONFERENCE CONTRIBUTIONS — ${mn.toUpperCase().slice(0,3)} ${year}`;
+
+      document.getElementById('confCardRows').innerHTML = sorted.map(m => {
+        const pct = Math.round((m.amt / max) * 100);
+        const label = m.amt >= 1e6
+          ? '\u20B1' + (m.amt / 1e6).toFixed(2) + 'M'
+          : '\u20B1' + m.amt.toLocaleString('en-US');
+        return `<div class="conf-row">
+          <span class="conf-name">${m.code}</span>
+          <div class="conf-bar-wrap"><div class="conf-bar" style="width:${pct}%"></div></div>
+          <span class="conf-amt">${label}</span>
+        </div>`;
+      }).join('');
     }
 
     // ---- Note drilldown modals ----

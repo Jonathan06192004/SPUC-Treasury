@@ -193,17 +193,19 @@ function initViewAllMonths(config) {
     let explodeProgress = 0;
     let pieIsExploded   = false;
     let rafId           = null;
-    let pieYear         = 2025;
+    const _curYear  = new Date().getFullYear();
+    const _prevYear = _curYear - 1;
+    let pieYear = _prevYear;
 
     // ── Year toggle button ───────────────────────────────────────────────────
     const yearToggle = document.createElement('div');
     yearToggle.id = 'pieYearToggle';
     yearToggle.style.cssText = 'position:absolute;top:8px;left:8px;z-index:10;display:flex;gap:4px;';
-    ['2025','2026'].forEach(yr => {
+    [_prevYear, _curYear].forEach(yr => {
       const btn = document.createElement('button');
       btn.textContent = yr;
       btn.dataset.yr = yr;
-      btn.style.cssText = `padding:3px 9px;border-radius:5px;border:1px solid rgba(255,255,255,0.35);font-family:Montserrat,sans-serif;font-weight:700;font-size:0.62rem;letter-spacing:1px;cursor:pointer;transition:background 0.2s,color 0.2s;background:${yr==='2025'?'rgba(79,124,255,0.75)':'rgba(255,255,255,0.1)'};color:#fff;`;
+      btn.style.cssText = `padding:3px 9px;border-radius:5px;border:1px solid rgba(255,255,255,0.35);font-family:Montserrat,sans-serif;font-weight:700;font-size:0.62rem;letter-spacing:1px;cursor:pointer;transition:background 0.2s,color 0.2s;background:${yr===_prevYear?'rgba(79,124,255,0.75)':'rgba(255,255,255,0.1)'};color:#fff;`;
       btn.addEventListener('click', e => {
         e.stopPropagation();
         if (parseInt(yr) === pieYear) return;
@@ -219,7 +221,7 @@ function initViewAllMonths(config) {
     wrap.appendChild(yearToggle);
 
     function _getPieMissionData() {
-      const src = pieYear === 2026 && missionData2026 ? missionData2026 : missionData;
+      const src = pieYear === _curYear && missionData2026 ? missionData2026 : missionData;
       return src.map(m => m.slice(activeFrom, activeTo + 1).reduce((a, b) => a + (b || 0), 0));
     }
 

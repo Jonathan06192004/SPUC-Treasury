@@ -44,7 +44,7 @@
           <div class="excel-table-wrap" onclick="openTableModal()" title="Click to expand">
             <table class="excel-table">
               <thead>
-                <tr><th class="th-tithes">TITHES</th><th class="th-2025">2025</th><th class="th-2026">2026</th><th class="th-budget">BUDGET</th><th class="th-variance">VARIANCE</th></tr>
+                <tr><th class="th-tithes">TITHES</th><th class="th-2025" id="thPrevYear">2025</th><th class="th-2026" id="thCurrYear">2026</th><th class="th-budget">BUDGET</th><th class="th-variance">VARIANCE</th></tr>
               </thead>
               <tbody id="excelBody"></tbody>
             </table>
@@ -161,7 +161,7 @@
     <div class="table-modal-body">
       <table class="excel-table table-modal-table">
         <thead>
-          <tr><th class="th-tithes">TITHES</th><th class="th-2025">2025</th><th class="th-2026">2026</th><th class="th-budget">BUDGET</th><th class="th-variance">VARIANCE</th></tr>
+          <tr><th class="th-tithes">TITHES</th><th class="th-2025" id="modalThPrevYear">2025</th><th class="th-2026" id="modalThCurrYear">2026</th><th class="th-budget">BUDGET</th><th class="th-variance">VARIANCE</th></tr>
         </thead>
         <tbody id="modalTableBody"></tbody>
       </table>

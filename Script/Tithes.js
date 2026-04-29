@@ -1,7 +1,16 @@
 const VISIBLE_MONTHS = 4;
 const labels = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 const MISSION_ORDER = ['NCMC','CMM','NMM','WMC','ZPM'];
+const CURR_YEAR = new Date().getFullYear();
+const PREV_YEAR = CURR_YEAR - 1;
 const fmt = v => v != null ? v.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}) : '-';
+
+// Set dynamic year headers
+document.addEventListener('DOMContentLoaded', () => {
+  const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+  set('thPrevYear', PREV_YEAR); set('thCurrYear', CURR_YEAR);
+  set('modalThPrevYear', PREV_YEAR); set('modalThCurrYear', CURR_YEAR);
+});
 
 function fmtVariance(v25, v26) {
   if (v25 == null || v26 == null) return '<td class="cell-variance">-</td>';

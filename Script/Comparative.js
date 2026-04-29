@@ -5,7 +5,15 @@ let dataOfferings2025 = new Array(12).fill(null);
 let dataTithes2026   = new Array(12).fill(null);
 let dataOfferings2026 = new Array(12).fill(null);
 
-let currentYear = 2025;
+let currentYear = new Date().getFullYear() - 1;
+const _CY = new Date().getFullYear();
+const _PY = _CY - 1;
+
+document.addEventListener('DOMContentLoaded', () => {
+  const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+  set('thTithes', 'TITHES ' + _PY);   set('thOfferings', 'OFFERINGS ' + _PY);
+  set('modalThTithes', 'TITHES ' + _PY); set('modalThOfferings', 'OFFERINGS ' + _PY);
+});
 let dataTithes = dataTithes2025;
 let dataOfferings = dataOfferings2025;
 
@@ -89,33 +97,33 @@ function renderTable(tithes, offerings) {
 
 function toggleYear() {
   const btn = document.getElementById('yearToggleBtn');
-  if (currentYear === 2025) {
-    currentYear = 2026;
+  if (currentYear === _PY) {
+    currentYear = _CY;
     chart.data.datasets[0].data = dataTithes2026;
-    chart.data.datasets[0].label = 'Tithes 2026';
+    chart.data.datasets[0].label = 'Tithes ' + _CY;
     chart.data.datasets[1].data = dataOfferings2026;
-    chart.data.datasets[1].label = 'Offerings 2026';
+    chart.data.datasets[1].label = 'Offerings ' + _CY;
     chart.update();
-    document.getElementById('thTithes').textContent = 'TITHES 2026';
-    document.getElementById('thOfferings').textContent = 'OFFERINGS 2026';
-    document.getElementById('modalThTithes').textContent = 'TITHES 2026';
-    document.getElementById('modalThOfferings').textContent = 'OFFERINGS 2026';
+    document.getElementById('thTithes').textContent = 'TITHES ' + _CY;
+    document.getElementById('thOfferings').textContent = 'OFFERINGS ' + _CY;
+    document.getElementById('modalThTithes').textContent = 'TITHES ' + _CY;
+    document.getElementById('modalThOfferings').textContent = 'OFFERINGS ' + _CY;
     renderTable(dataTithes2026, dataOfferings2026);
-    btn.innerHTML = 'VIEW 2025 &#8592;';
+    btn.innerHTML = 'VIEW ' + _PY + ' &#8592;';
     btn.classList.add('active');
   } else {
-    currentYear = 2025;
+    currentYear = _PY;
     chart.data.datasets[0].data = dataTithes2025;
-    chart.data.datasets[0].label = 'Tithes 2025';
+    chart.data.datasets[0].label = 'Tithes ' + _PY;
     chart.data.datasets[1].data = dataOfferings2025;
-    chart.data.datasets[1].label = 'Offerings 2025';
+    chart.data.datasets[1].label = 'Offerings ' + _PY;
     chart.update();
-    document.getElementById('thTithes').textContent = 'TITHES 2025';
-    document.getElementById('thOfferings').textContent = 'OFFERINGS 2025';
-    document.getElementById('modalThTithes').textContent = 'TITHES 2025';
-    document.getElementById('modalThOfferings').textContent = 'OFFERINGS 2025';
+    document.getElementById('thTithes').textContent = 'TITHES ' + _PY;
+    document.getElementById('thOfferings').textContent = 'OFFERINGS ' + _PY;
+    document.getElementById('modalThTithes').textContent = 'TITHES ' + _PY;
+    document.getElementById('modalThOfferings').textContent = 'OFFERINGS ' + _PY;
     renderTable(dataTithes2025, dataOfferings2025);
-    btn.innerHTML = 'VIEW 2026 &#8594;';
+    btn.innerHTML = 'VIEW ' + _CY + ' &#8594;';
     btn.classList.remove('active');
   }
   const overviewCard = document.getElementById('overviewCard');
