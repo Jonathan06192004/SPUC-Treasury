@@ -72,7 +72,7 @@ fetchTithes().then(rows => {
   const grouped       = groupByMission(rows);
   const data2025      = buildSpucTotal(grouped, 2025);
   const data2026      = buildSpucTotal(grouped, 2026);
-  const budgetData    = new Array(12).fill(72000000);
+  const budgetData    = buildSpucTotal(grouped, 2026, 'budget');
   const missionData   = MISSION_ORDER.map(c => buildMonthArray((grouped[c]&&grouped[c][2025])||[]));
   const missionData2026 = MISSION_ORDER.map(c => buildMonthArray((grouped[c]&&grouped[c][2026])||[]));
 

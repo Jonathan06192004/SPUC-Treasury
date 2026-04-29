@@ -103,13 +103,13 @@ function groupByMission(rows) {
 }
 
 // Build SPUC total array by summing all 5 missions per month
-function buildSpucTotal(grouped, year) {
+function buildSpucTotal(grouped, year, field = 'amount') {
   const total = new Array(12).fill(null);
   Object.values(grouped).forEach(missionYears => {
     const rows = missionYears[year] || [];
     rows.forEach(r => {
       const i = r.month - 1;
-      if (r.amount != null) total[i] = (total[i] || 0) + r.amount;
+      if (r[field] != null) total[i] = (total[i] || 0) + r[field];
     });
   });
   return total;
