@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Settings | Treasury SPUC</title>
+  <link rel="icon" type="image/png" href="../Assets/logo.png"/>
+  <link rel="stylesheet" href="../Styles/Settings.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Cinzel:wght@700;900&family=Montserrat:wght@700;800;900&display=swap" rel="stylesheet"/>
+</head>
+<body>
+
+<header>
+  <div class="logo-area" onclick="location.href='HomePage.html'" style="cursor:pointer;">
+    <img src="../Assets/logo.png" class="logo-img"/>
+    <div class="org-name">
+      <strong>Southwestern Philippines</strong> Union Conference
+    </div>
+  </div>
+  <button class="btn-back" onclick="location.href='HomePage.html'">&#8592; Back</button>
+</header>
+
+<main>
+  <div class="settings-title-row">
+    <h1 class="settings-heading">⚙ SETTINGS</h1>
+    <p class="settings-sub">Manage your account and preferences</p>
+  </div>
+
+  <div class="settings-grid">
+
+    <!-- Account Info -->
+    <div class="settings-card" id="cardAccount">
+      <div class="card-header">
+        <span class="card-icon">👤</span>
+        <span class="card-title">ACCOUNT</span>
+      </div>
+      <div class="card-body">
+        <div class="info-row">
+          <span class="info-label">USERNAME</span>
+          <span class="info-value" id="displayUsername">admin</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">ROLE</span>
+          <span class="info-value">Treasury Administrator</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">ORGANIZATION</span>
+          <span class="info-value">SPUC Treasury</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Change Username -->
+    <div class="settings-card" id="cardUsername">
+      <div class="card-header">
+        <span class="card-icon">✏️</span>
+        <span class="card-title">CHANGE USERNAME</span>
+      </div>
+      <div class="card-body">
+        <div class="form-group">
+          <label class="form-label">CURRENT USERNAME</label>
+          <input type="text" class="form-input" id="currentUsernameInput" placeholder="Enter current username"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">NEW USERNAME</label>
+          <input type="text" class="form-input" id="newUsernameInput" placeholder="Enter new username"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">CONFIRM PASSWORD</label>
+          <div class="pw-wrap">
+            <input type="password" class="form-input" id="usernameConfirmPw" placeholder="Enter password to confirm"/>
+            <button class="pw-toggle" onclick="toggleVis('usernameConfirmPw', this)">👁</button>
+          </div>
+        </div>
+        <p class="form-msg hidden" id="usernameMsg"></p>
+        <button class="btn-save" onclick="changeUsername()">SAVE USERNAME</button>
+      </div>
+    </div>
+
+    <!-- Change Password -->
+    <div class="settings-card" id="cardPassword">
+      <div class="card-header">
+        <span class="card-icon">🔒</span>
+        <span class="card-title">CHANGE PASSWORD</span>
+      </div>
+      <div class="card-body">
+        <div class="form-group">
+          <label class="form-label">CURRENT PASSWORD</label>
+          <div class="pw-wrap">
+            <input type="password" class="form-input" id="currentPwInput" placeholder="Enter current password"/>
+            <button class="pw-toggle" onclick="toggleVis('currentPwInput', this)">👁</button>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">NEW PASSWORD</label>
+          <div class="pw-wrap">
+            <input type="password" class="form-input" id="newPwInput" placeholder="Enter new password"/>
+            <button class="pw-toggle" onclick="toggleVis('newPwInput', this)">👁</button>
+          </div>
+          <div class="pw-strength-bar"><div class="pw-strength-fill" id="pwStrengthFill"></div></div>
+          <span class="pw-strength-label" id="pwStrengthLabel"></span>
+        </div>
+        <div class="form-group">
+          <label class="form-label">CONFIRM NEW PASSWORD</label>
+          <div class="pw-wrap">
+            <input type="password" class="form-input" id="confirmPwInput" placeholder="Confirm new password"/>
+            <button class="pw-toggle" onclick="toggleVis('confirmPwInput', this)">👁</button>
+          </div>
+        </div>
+        <p class="form-msg hidden" id="passwordMsg"></p>
+        <button class="btn-save" onclick="changePassword()">SAVE PASSWORD</button>
+      </div>
+    </div>
+
+    <!-- Display Preferences -->
+    <div class="settings-card" id="cardDisplay">
+      <div class="card-header">
+        <span class="card-icon">🎨</span>
+        <span class="card-title">DISPLAY PREFERENCES</span>
+      </div>
+      <div class="card-body">
+        <div class="toggle-row">
+          <div class="toggle-info">
+            <span class="toggle-label">SHOW CLOCK ON PAGES</span>
+            <span class="toggle-desc">Display live clock on all report pages</span>
+          </div>
+          <label class="toggle-switch">
+            <input type="checkbox" id="prefClock" checked onchange="savePref('showClock', this.checked)"/>
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+        <div class="toggle-row">
+          <div class="toggle-info">
+            <span class="toggle-label">ANIMATIONS</span>
+            <span class="toggle-desc">Enable chart and page animations</span>
+          </div>
+          <label class="toggle-switch">
+            <input type="checkbox" id="prefAnimations" checked onchange="savePref('animations', this.checked)"/>
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+        <div class="toggle-row">
+          <div class="toggle-info">
+            <span class="toggle-label">COMPACT TABLE VIEW</span>
+            <span class="toggle-desc">Reduce row height in data tables</span>
+          </div>
+          <label class="toggle-switch">
+            <input type="checkbox" id="prefCompact" onchange="savePref('compactTable', this.checked)"/>
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+        <div class="form-group" style="margin-top:16px;">
+          <label class="form-label">DEFAULT CURRENCY DISPLAY</label>
+          <select class="form-input form-select" id="prefCurrency" onchange="savePref('currency', this.value)">
+            <option value="PHP">Philippine Peso (₱)</option>
+            <option value="USD">US Dollar ($)</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Session -->
+    <div class="settings-card" id="cardSession">
+      <div class="card-header">
+        <span class="card-icon">🕐</span>
+        <span class="card-title">SESSION</span>
+      </div>
+      <div class="card-body">
+        <div class="info-row">
+          <span class="info-label">LOGGED IN AS</span>
+          <span class="info-value" id="sessionUsername">admin</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">SESSION STARTED</span>
+          <span class="info-value" id="sessionTime">—</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">LAST ACTIVITY</span>
+          <span class="info-value" id="lastActivity">—</span>
+        </div>
+        <div class="toggle-row" style="margin-top:12px;">
+          <div class="toggle-info">
+            <span class="toggle-label">AUTO LOGOUT (30 MIN)</span>
+            <span class="toggle-desc">Automatically log out after inactivity</span>
+          </div>
+          <label class="toggle-switch">
+            <input type="checkbox" id="prefAutoLogout" onchange="savePref('autoLogout', this.checked)"/>
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <!-- About -->
+    <div class="settings-card" id="cardAbout">
+      <div class="card-header">
+        <span class="card-icon">ℹ️</span>
+        <span class="card-title">ABOUT</span>
+      </div>
+      <div class="card-body">
+        <div class="info-row">
+          <span class="info-label">SYSTEM</span>
+          <span class="info-value">SPUC Treasury Dashboard</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">VERSION</span>
+          <span class="info-value">1.0.0</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">ORGANIZATION</span>
+          <span class="info-value">Southwestern Philippines Union Conference</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">WEBSITE</span>
+          <span class="info-value"><a href="https://spucadventist.org" target="_blank" class="about-link">spucadventist.org</a></span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<!-- Logout confirmation -->
+<div class="logout-overlay hidden" id="logoutOverlay" onclick="closeLogout()"></div>
+<div class="logout-modal hidden" id="logoutModal">
+  <div class="logout-icon">🚪</div>
+  <h2 class="logout-title">LOG OUT</h2>
+  <p class="logout-desc">Are you sure you want to log out of the SPUC Treasury Dashboard?</p>
+  <div class="logout-actions">
+    <button class="btn-cancel" onclick="closeLogout()">CANCEL</button>
+    <button class="btn-logout-confirm" onclick="confirmLogout()">LOG OUT</button>
+  </div>
+</div>
+
+<!-- Toast notification -->
+<div class="toast hidden" id="toast"></div>
+
+<footer>
+  <a href="https://spucadventist.org" class="footer-link">spucadventist.org</a>
+  <div class="footer-buttons">
+    <button class="btn-nav" onclick="location.href='HomePage.html'">HOME</button>
+    <button class="btn-nav" onclick="location.href='Tithes.html'">TITHES</button>
+    <button class="btn-nav" onclick="location.href='Offering.html'">OFFERINGS</button>
+    <button class="btn-nav" onclick="location.href='Comparative.html'">COMPARATIVE</button>
+    <button class="btn-nav" onclick="location.href='FinancialStatement.html'">FINANCIAL STATEMENT</button>
+    <button class="btn-nav" onclick="location.href='MonthlyReport.html'">MONTHLY REPORT</button>
+    <button class="btn-nav btn-nav-logout" onclick="openLogout()">LOG OUT</button>
+  </div>
+</footer>
+
+<script src="../Script/Settings.js"></script>
+</body>
+</html>

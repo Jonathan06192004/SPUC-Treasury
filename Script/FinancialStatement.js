@@ -156,8 +156,7 @@
     }
 
     async function loadBalanceSheetMonth(mi) {
-      if (bsDataByYear[PREV_YEAR][mi] && bsDataByYear[CURRENT_YEAR][mi] && bsNoteState[mi]
-          && (bsNoteState[mi].sda.length > 0 || bsNoteState[mi].sdaAp.length > 0)) return;
+      if (bsDataByYear[PREV_YEAR][mi] && bsDataByYear[CURRENT_YEAR][mi] && bsNoteState[mi]) return;
       const month = mi + 1;
       const [
         bsPrevRows, bsCurrRows, cashRows, arRows, apRows, arEntityRows, apEntityRows
@@ -457,7 +456,7 @@
       (lineRows || []).forEach(r => { lineMap[r.line_key] = r; });
       const budgetByKey = {};
       (budgetRows || []).forEach(r => {
-        const key = r.line_key || r.income_statement_lines?.line_key;
+        const key = r.income_statement_lines?.line_key;
         if (!key) return;
         const yr = Number(r.budget_year);
         if (!budgetByKey[key] || yr > budgetByKey[key].budget_year) {
@@ -947,18 +946,23 @@
       const year = CURRENT_YEAR;
       const mn = MONTHS[mi];
       const [titheRows, offerRows] = await Promise.all([
-        supabaseRequest(`${SUPABASE_URL}/rest/v1/tithes?select=amount,missions(code,name)&year=eq.${year}&month=eq.${month}&order=mission_id.asc`),
-        supabaseRequest(`${SUPABASE_URL}/rest/v1/offerings?select=amount,missions(code,name)&year=eq.${year}&month=eq.${month}&order=mission_id.asc`)
+        supabaseRequest(`${SUPABASE_URL}/rest/v1/tithes?select=amount,churches!inner(districts!inner(missions!inner(code,name)))&year=eq.${year}&month=eq.${month}`),
+        supabaseRequest(`${SUPABASE_URL}/rest/v1/offerings?select=amount,churches!inner(districts!inner(missions!inner(code,name)))&year=eq.${year}&month=eq.${month}`)
       ]);
 
       const totals = {};
       (titheRows || []).forEach(r => {
-        const code = r.missions.code;
-        totals[code] = { code, name: r.missions.name, amt: (totals[code]?.amt || 0) + (Number(r.amount) || 0) };
+        const code = r.churches?.districts?.missions?.code;
+        const name = r.churches?.districts?.missions?.name;
+        if (!code) return;
+        if (!totals[code]) totals[code] = { code, name, amt: 0 };
+        totals[code].amt += (Number(r.amount) || 0);
       });
       (offerRows || []).forEach(r => {
-        const code = r.missions.code;
-        if (!totals[code]) totals[code] = { code, name: r.missions.name, amt: 0 };
+        const code = r.churches?.districts?.missions?.code;
+        const name = r.churches?.districts?.missions?.name;
+        if (!code) return;
+        if (!totals[code]) totals[code] = { code, name, amt: 0 };
         totals[code].amt += (Number(r.amount) || 0);
       });
 

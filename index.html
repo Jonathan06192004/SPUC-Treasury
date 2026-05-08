@@ -40,14 +40,21 @@
   </div>
 
   <script>
-    const CREDENTIALS = { username: 'admin', password: 'admin' };
+    function getCreds() {
+      return {
+        username: localStorage.getItem('spuc_username') || 'admin',
+        password: localStorage.getItem('spuc_password') || 'admin'
+      };
+    }
 
     function handleLogin(e) {
       e.preventDefault();
       const user = document.getElementById('username').value.trim();
       const pass = document.getElementById('password').value;
       const err  = document.getElementById('loginError');
-      if (user === CREDENTIALS.username && pass === CREDENTIALS.password) {
+      const creds = getCreds();
+      if (user === creds.username && pass === creds.password) {
+        sessionStorage.setItem('spuc_session_start', new Date().toISOString());
         location.href = 'Pages/HomePage.html';
       } else {
         err.classList.remove('hidden');

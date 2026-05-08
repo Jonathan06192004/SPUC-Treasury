@@ -48,38 +48,41 @@ async function supabaseRequest(url, options = {}) {
   return res.json();
 }
 
-// Fetch all tithes joined with mission name
+// Fetch all tithes joined with mission code via churches→districts→missions
 async function fetchTithes() {
   return supabaseRequest(
-    `${SUPABASE_URL}/rest/v1/tithes?select=*,missions(code,name)&order=mission_id.asc,year.asc,month.asc`
+    `${SUPABASE_URL}/rest/v1/tithes?select=year,month,amount,budget,churches!inner(districts!inner(missions!inner(code,name)))&order=year.asc,month.asc`
   );
 }
 
-// Fetch all offerings joined with mission name
+// Fetch all offerings joined with mission code via churches→districts→missions
 async function fetchOfferings() {
   return supabaseRequest(
-    `${SUPABASE_URL}/rest/v1/offerings?select=*,missions(code,name)&order=mission_id.asc,year.asc,month.asc`
+    `${SUPABASE_URL}/rest/v1/offerings?select=year,month,amount,budget,churches!inner(districts!inner(missions!inner(code,name)))&order=year.asc,month.asc`
   );
 }
 
 // Fetch tithes for a specific mission code and year
 async function fetchTithesByMission(missionCode, year) {
   return supabaseRequest(
-    `${SUPABASE_URL}/rest/v1/tithes?select=month,amount,budget,missions!inner(code)&missions.code=eq.${missionCode}&year=eq.${year}&order=month.asc`
+    `${SUPABASE_URL}/rest/v1/tithes?select=month,amount,budget,churches!inner(districts!inner(missions!inner(code)))&churches.districts.missions.code=eq.${missionCode}&year=eq.${year}&order=month.asc`
   );
 }
 
 // Fetch offerings for a specific mission code and year
 async function fetchOfferingsByMission(missionCode, year) {
   return supabaseRequest(
-    `${SUPABASE_URL}/rest/v1/offerings?select=month,amount,budget,missions!inner(code)&missions.code=eq.${missionCode}&year=eq.${year}&order=month.asc`
+    `${SUPABASE_URL}/rest/v1/offerings?select=month,amount,budget,churches!inner(districts!inner(missions!inner(code)))&churches.districts.missions.code=eq.${missionCode}&year=eq.${year}&order=month.asc`
   );
 }
 
-// Build a 12-element array from DB rows (null for missing months)
+// Build a 12-element array from DB rows (null for missing months), sums multiple churches per month
 function buildMonthArray(rows) {
   const arr = new Array(12).fill(null);
-  rows.forEach(r => { arr[r.month - 1] = r.amount; });
+  rows.forEach(r => {
+    const i = r.month - 1;
+    if (r.amount != null) arr[i] = (arr[i] || 0) + r.amount;
+  });
   return arr;
 }
 
@@ -91,10 +94,12 @@ function buildBudgetArray(rows) {
 }
 
 // Group rows by mission code → { NCMC: {2025:[...], 2026:[...]}, ... }
+// Handles nested path: churches.districts.missions.code
 function groupByMission(rows) {
   const result = {};
   rows.forEach(r => {
-    const code = r.missions.code;
+    const code = r.churches?.districts?.missions?.code;
+    if (!code) return;
     if (!result[code]) result[code] = {};
     if (!result[code][r.year]) result[code][r.year] = [];
     result[code][r.year].push(r);
@@ -115,29 +120,31 @@ function buildSpucTotal(grouped, year, field = 'amount') {
   return total;
 }
 
-// Fetch tithes for one mission by code, both years
+// Fetch tithes for one mission by code, both years (via churches→districts→missions)
 async function fetchTithesByCode(code) {
   return supabaseRequest(
-    `${SUPABASE_URL}/rest/v1/tithes?select=year,month,amount,budget,missions!inner(code)&missions.code=eq.${code}&order=year.asc,month.asc`
+    `${SUPABASE_URL}/rest/v1/tithes?select=year,month,amount,budget,churches!inner(districts!inner(missions!inner(code)))&churches.districts.missions.code=eq.${code}&order=year.asc,month.asc`
   );
 }
 
-// Fetch offerings for one mission by code, both years
+// Fetch offerings for one mission by code, both years (via churches→districts→missions)
 async function fetchOfferingsByCode(code) {
   return supabaseRequest(
-    `${SUPABASE_URL}/rest/v1/offerings?select=year,month,amount,budget,missions!inner(code)&missions.code=eq.${code}&order=year.asc,month.asc`
+    `${SUPABASE_URL}/rest/v1/offerings?select=year,month,amount,budget,churches!inner(districts!inner(missions!inner(code)))&churches.districts.missions.code=eq.${code}&order=year.asc,month.asc`
   );
 }
 
 // Split rows into {2025:[12], 2026:[12]} month arrays
+// Aggregates multiple churches per month (sums them)
 function splitYears(rows) {
   const y2025 = new Array(12).fill(null);
   const y2026 = new Array(12).fill(null);
   const budget = new Array(12).fill(null);
   rows.forEach(r => {
-    if (r.year === 2025) y2025[r.month - 1] = r.amount;
-    if (r.year === 2026) y2026[r.month - 1] = r.amount;
-    if (r.budget != null) budget[r.month - 1] = r.budget;
+    const i = r.month - 1;
+    if (r.year === 2025 && r.amount != null) y2025[i] = (y2025[i] || 0) + r.amount;
+    if (r.year === 2026 && r.amount != null) y2026[i] = (y2026[i] || 0) + r.amount;
+    if (r.budget != null) budget[i] = (budget[i] || 0) + r.budget;
   });
   return { y2025, y2026, budget };
 }
