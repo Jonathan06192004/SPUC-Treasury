@@ -28,87 +28,50 @@
 
   <div class="settings-grid">
 
-    <!-- Account Info -->
-    <div class="settings-card" id="cardAccount">
+    <!-- Profile (from DB) -->
+    <div class="settings-card" id="cardProfile" style="grid-column: span 2;">
       <div class="card-header">
         <span class="card-icon">👤</span>
-        <span class="card-title">ACCOUNT</span>
+        <span class="card-title">PROFILE</span>
+        <span class="profile-loading" id="profileLoading" style="margin-left:auto;font-size:0.72rem;color:rgba(255,255,255,0.45);letter-spacing:1px;">LOADING...</span>
       </div>
       <div class="card-body">
-        <div class="info-row">
-          <span class="info-label">USERNAME</span>
-          <span class="info-value" id="displayUsername">admin</span>
-        </div>
-        <div class="info-row">
-          <span class="info-label">ROLE</span>
-          <span class="info-value">Treasury Administrator</span>
-        </div>
-        <div class="info-row">
-          <span class="info-label">ORGANIZATION</span>
-          <span class="info-value">SPUC Treasury</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- Change Username -->
-    <div class="settings-card" id="cardUsername">
-      <div class="card-header">
-        <span class="card-icon">✏️</span>
-        <span class="card-title">CHANGE USERNAME</span>
-      </div>
-      <div class="card-body">
-        <div class="form-group">
-          <label class="form-label">CURRENT USERNAME</label>
-          <input type="text" class="form-input" id="currentUsernameInput" placeholder="Enter current username"/>
-        </div>
-        <div class="form-group">
-          <label class="form-label">NEW USERNAME</label>
-          <input type="text" class="form-input" id="newUsernameInput" placeholder="Enter new username"/>
-        </div>
-        <div class="form-group">
-          <label class="form-label">CONFIRM PASSWORD</label>
-          <div class="pw-wrap">
-            <input type="password" class="form-input" id="usernameConfirmPw" placeholder="Enter password to confirm"/>
-            <button class="pw-toggle" onclick="toggleVis('usernameConfirmPw', this)">👁</button>
+        <div class="profile-grid">
+          <div class="form-group">
+            <label class="form-label">FULL NAME</label>
+            <input type="text" class="form-input" id="profileFullName" placeholder="Full name"/>
+          </div>
+          <div class="form-group">
+            <label class="form-label">USERNAME</label>
+            <input type="text" class="form-input" id="profileUsername" placeholder="Username"/>
+          </div>
+          <div class="form-group">
+            <label class="form-label">EMAIL</label>
+            <input type="email" class="form-input" id="profileEmail" placeholder="Email address"/>
+          </div>
+          <div class="form-group">
+            <label class="form-label">PHONE</label>
+            <input type="text" class="form-input" id="profilePhone" placeholder="Phone number"/>
+          </div>
+          <div class="form-group">
+            <label class="form-label">NEW PASSWORD <span style="color:rgba(255,255,255,0.35);font-weight:400;">(leave blank to keep current)</span></label>
+            <div class="pw-wrap">
+              <input type="password" class="form-input" id="profileNewPw" placeholder="Enter new password"/>
+              <button class="pw-toggle" onclick="toggleVis('profileNewPw', this)">👁</button>
+            </div>
+            <div class="pw-strength-bar"><div class="pw-strength-fill" id="pwStrengthFill"></div></div>
+            <span class="pw-strength-label" id="pwStrengthLabel"></span>
+          </div>
+          <div class="form-group">
+            <label class="form-label">CONFIRM NEW PASSWORD</label>
+            <div class="pw-wrap">
+              <input type="password" class="form-input" id="profileConfirmPw" placeholder="Confirm new password"/>
+              <button class="pw-toggle" onclick="toggleVis('profileConfirmPw', this)">👁</button>
+            </div>
           </div>
         </div>
-        <p class="form-msg hidden" id="usernameMsg"></p>
-        <button class="btn-save" onclick="changeUsername()">SAVE USERNAME</button>
-      </div>
-    </div>
-
-    <!-- Change Password -->
-    <div class="settings-card" id="cardPassword">
-      <div class="card-header">
-        <span class="card-icon">🔒</span>
-        <span class="card-title">CHANGE PASSWORD</span>
-      </div>
-      <div class="card-body">
-        <div class="form-group">
-          <label class="form-label">CURRENT PASSWORD</label>
-          <div class="pw-wrap">
-            <input type="password" class="form-input" id="currentPwInput" placeholder="Enter current password"/>
-            <button class="pw-toggle" onclick="toggleVis('currentPwInput', this)">👁</button>
-          </div>
-        </div>
-        <div class="form-group">
-          <label class="form-label">NEW PASSWORD</label>
-          <div class="pw-wrap">
-            <input type="password" class="form-input" id="newPwInput" placeholder="Enter new password"/>
-            <button class="pw-toggle" onclick="toggleVis('newPwInput', this)">👁</button>
-          </div>
-          <div class="pw-strength-bar"><div class="pw-strength-fill" id="pwStrengthFill"></div></div>
-          <span class="pw-strength-label" id="pwStrengthLabel"></span>
-        </div>
-        <div class="form-group">
-          <label class="form-label">CONFIRM NEW PASSWORD</label>
-          <div class="pw-wrap">
-            <input type="password" class="form-input" id="confirmPwInput" placeholder="Confirm new password"/>
-            <button class="pw-toggle" onclick="toggleVis('confirmPwInput', this)">👁</button>
-          </div>
-        </div>
-        <p class="form-msg hidden" id="passwordMsg"></p>
-        <button class="btn-save" onclick="changePassword()">SAVE PASSWORD</button>
+        <p class="form-msg hidden" id="profileMsg"></p>
+        <button class="btn-save" onclick="saveProfile()">SAVE CHANGES</button>
       </div>
     </div>
 
@@ -168,7 +131,7 @@
       <div class="card-body">
         <div class="info-row">
           <span class="info-label">LOGGED IN AS</span>
-          <span class="info-value" id="sessionUsername">admin</span>
+          <span class="info-value" id="sessionUsername">—</span>
         </div>
         <div class="info-row">
           <span class="info-label">SESSION STARTED</span>
@@ -188,6 +151,7 @@
             <span class="toggle-slider"></span>
           </label>
         </div>
+        <button class="btn-logout-session" onclick="openLogout()">🚪 LOG OUT</button>
       </div>
     </div>
 
@@ -244,10 +208,10 @@
     <button class="btn-nav" onclick="location.href='Comparative.html'">COMPARATIVE</button>
     <button class="btn-nav" onclick="location.href='FinancialStatement.html'">FINANCIAL STATEMENT</button>
     <button class="btn-nav" onclick="location.href='MonthlyReport.html'">MONTHLY REPORT</button>
-    <button class="btn-nav btn-nav-logout" onclick="openLogout()">LOG OUT</button>
   </div>
 </footer>
 
+<script src="../Script/supabase.js"></script>
 <script src="../Script/Settings.js"></script>
 </body>
 </html>

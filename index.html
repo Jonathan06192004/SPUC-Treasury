@@ -10,61 +10,153 @@
 </head>
 <body>
 
-  <div class="login-card">
-    <div class="login-logo">
-      <img src="Assets/logo.png" alt="Logo"/>
-      <div class="login-org">
-        <strong>Southwestern Philippines</strong> Union Conference
+  <!-- LEFT PANEL -->
+  <div class="left-panel">
+    <div class="left-overlay"></div>
+
+    <div class="left-content">
+      <div class="brand-logo">
+        <img src="Assets/logo.png" alt="SPUC Logo"/>
+      </div>
+      <div class="brand-org">
+        <span class="brand-org-strong">Southwestern Philippines</span>
+        <span class="brand-org-sub">Union Conference</span>
+      </div>
+
+      <div class="brand-divider"></div>
+
+      <img src="Assets/Treasury Dep.png" alt="Treasury Department" class="brand-title-img"/>
+
+      <p class="brand-desc">
+        Centralized financial management system for tithes, offerings, and institutional reporting across all missions and conferences.
+      </p>
+
+      <div class="brand-stats">
+        <div class="brand-stat">
+          <span class="brand-stat-val">5</span>
+          <span class="brand-stat-label">MISSIONS</span>
+        </div>
+        <div class="brand-stat-divider"></div>
+        <div class="brand-stat">
+          <span class="brand-stat-val">21</span>
+          <span class="brand-stat-label">INSTITUTIONS</span>
+        </div>
+        <div class="brand-stat-divider"></div>
+        <div class="brand-stat">
+          <span class="brand-stat-val">2</span>
+          <span class="brand-stat-label">FISCAL YEARS</span>
+        </div>
       </div>
     </div>
 
-    <img src="Assets/Treasury Dep.png" alt="Treasury Department" class="login-title-img"/>
-
-    <form class="login-form" id="loginForm" onsubmit="handleLogin(event)">
-      <div class="input-group">
-        <label>USERNAME</label>
-        <input type="text" id="username" placeholder="Enter username" autocomplete="off" required/>
-      </div>
-      <div class="input-group">
-        <label>PASSWORD</label>
-        <div class="password-wrap">
-          <input type="password" id="password" placeholder="Enter password" required/>
-          <button type="button" class="toggle-pw" onclick="togglePassword()">👁</button>
-        </div>
-      </div>
-      <p class="login-error hidden" id="loginError">Invalid username or password.</p>
-      <button type="submit" class="btn-login">LOGIN</button>
-    </form>
-
-    <a href="https://spucadventist.org" class="login-footer-link">spucadventist.org</a>
+    <a href="https://spucadventist.org" class="left-footer-link" target="_blank">spucadventist.org</a>
   </div>
 
-  <script>
-    function getCreds() {
-      return {
-        username: localStorage.getItem('spuc_username') || 'admin',
-        password: localStorage.getItem('spuc_password') || 'admin'
-      };
-    }
+  <!-- RIGHT PANEL -->
+  <div class="right-panel">
+    <div class="login-box">
 
-    function handleLogin(e) {
+      <div class="login-welcome">
+        <span class="login-welcome-tag">TREASURY PORTAL</span>
+        <h1 class="login-heading">Welcome Back</h1>
+        <p class="login-subheading">Sign in to access the SPUC Treasury Dashboard</p>
+      </div>
+
+      <form class="login-form" id="loginForm" onsubmit="handleLogin(event)">
+
+        <div class="input-group">
+          <label for="username">USERNAME</label>
+          <div class="input-wrap">
+            <span class="input-icon">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            </span>
+            <input type="text" id="username" placeholder="Enter your username" autocomplete="off" required/>
+          </div>
+        </div>
+
+        <div class="input-group">
+          <label for="password">PASSWORD</label>
+          <div class="input-wrap">
+            <span class="input-icon">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            </span>
+            <input type="password" id="password" placeholder="Enter your password" required/>
+            <button type="button" class="toggle-pw" onclick="togglePassword()" tabindex="-1">
+              <svg id="eyeIcon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="login-error-wrap hidden" id="loginErrorWrap">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          <span id="loginError">Invalid username or password.</span>
+        </div>
+
+        <button type="submit" class="btn-login" id="btnLogin">
+          <span id="btnLoginText">SIGN IN</span>
+          <svg id="btnArrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </button>
+
+      </form>
+
+      <div class="login-box-footer">
+        <span>© 2026 SPUC Treasury</span>
+        <a href="https://spucadventist.org" target="_blank">spucadventist.org</a>
+      </div>
+
+    </div>
+  </div>
+
+  <script src="Script/supabase.js"></script>
+  <script>
+    async function handleLogin(e) {
       e.preventDefault();
       const user = document.getElementById('username').value.trim();
       const pass = document.getElementById('password').value;
-      const err  = document.getElementById('loginError');
-      const creds = getCreds();
-      if (user === creds.username && pass === creds.password) {
-        sessionStorage.setItem('spuc_session_start', new Date().toISOString());
-        location.href = 'Pages/HomePage.html';
-      } else {
-        err.classList.remove('hidden');
-        document.getElementById('password').value = '';
+      const errWrap = document.getElementById('loginErrorWrap');
+      const errMsg  = document.getElementById('loginError');
+      const btn     = document.getElementById('btnLogin');
+      const btnText = document.getElementById('btnLoginText');
+      const arrow   = document.getElementById('btnArrow');
+
+      btnText.textContent = 'SIGNING IN...';
+      arrow.style.display = 'none';
+      btn.disabled = true;
+      btn.classList.add('loading');
+      errWrap.classList.add('hidden');
+
+      try {
+        const profile = await loginUser(user, pass);
+        if (profile) {
+          btn.classList.remove('loading');
+          btn.classList.add('success');
+          btnText.textContent = '✓ SUCCESS';
+          sessionStorage.setItem('spuc_session_start', new Date().toISOString());
+          sessionStorage.setItem('spuc_user', JSON.stringify(profile));
+          setTimeout(() => location.href = 'Pages/HomePage.html', 600);
+        } else {
+          errMsg.textContent = 'Invalid username or password.';
+          errWrap.classList.remove('hidden');
+          document.getElementById('password').value = '';
+          document.getElementById('password').focus();
+        }
+      } catch {
+        errMsg.textContent = 'Connection error. Please try again.';
+        errWrap.classList.remove('hidden');
+      } finally {
+        if (!btn.classList.contains('success')) {
+          btnText.textContent = 'SIGN IN';
+          arrow.style.display = '';
+          btn.disabled = false;
+          btn.classList.remove('loading');
+        }
       }
     }
 
     function togglePassword() {
       const pw = document.getElementById('password');
       pw.type = pw.type === 'password' ? 'text' : 'password';
+      document.getElementById('eyeIcon').style.opacity = pw.type === 'text' ? '0.5' : '1';
     }
   </script>
 

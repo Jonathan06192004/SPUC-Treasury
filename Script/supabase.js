@@ -1,13 +1,22 @@
+// ─── DATABASE: tithes, offerings, financial data ──────────────────────────────
 const SUPABASE_URL = 'https://bchvcxkocdlrkkzivuun.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJjaHZjeGtvY2Rscmtreml2dXVuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcyODA3NjksImV4cCI6MjA5Mjg1Njc2OX0.oyfzu_VNk9nZocRcq02JTmxdgQEi3BqclZEKgHwqF5U';
+
+// ─── DATABASE: users (login / settings) ───────────────────────────────────────
+const USERS_URL = 'https://fczudbtgtpkxteppckwb.supabase.co';
+const USERS_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZjenVkYnRndHBreHRlcHBja3diIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc5NzczMzEsImV4cCI6MjA5MzU1MzMzMX0.AZKGqLFVB-VpBsDrg0ekOzX755t5kLfgWZPEJ92ELeU';
 
 const HEADERS = {
   'apikey': SUPABASE_KEY,
   'Authorization': `Bearer ${SUPABASE_KEY}`
 };
 
+const USERS_HEADERS = {
+  'apikey': USERS_KEY,
+  'Authorization': `Bearer ${USERS_KEY}`
+};
+
 // ─── IDEMPOTENCY ──────────────────────────────────────────────────────────────
-// Generates a unique key per logical operation (method + url + body hash).
 function generateIdempotencyKey(method, url, body) {
   const raw = `${method}:${url}:${body ?? ''}`;
   let hash = 0;
@@ -17,10 +26,8 @@ function generateIdempotencyKey(method, url, body) {
   return `${Math.abs(hash).toString(16)}-${Date.now()}`;
 }
 
-// In-flight GET request cache — deduplicates concurrent identical fetches.
 const _inflight = new Map();
 
-// Central fetch wrapper. Attaches Idempotency-Key for writes; deduplicates GETs.
 async function supabaseRequest(url, options = {}) {
   const method = (options.method || 'GET').toUpperCase();
   const isWrite = method !== 'GET' && method !== 'HEAD';
@@ -33,7 +40,6 @@ async function supabaseRequest(url, options = {}) {
     ...(isWrite ? { 'Idempotency-Key': idempotencyKey } : {})
   };
 
-  // For GET requests, reuse an in-flight promise for the same URL.
   if (!isWrite) {
     if (_inflight.has(url)) return _inflight.get(url);
     const promise = fetch(url, { ...options, headers })
@@ -43,40 +49,48 @@ async function supabaseRequest(url, options = {}) {
     return promise;
   }
 
-  // For writes, always send a fresh request with the idempotency key.
   const res = await fetch(url, { ...options, headers });
   return res.json();
 }
 
-// Fetch all tithes joined with mission code via churches→districts→missions
+// ─── TITHES & OFFERINGS ───────────────────────────────────────────────────────
 async function fetchTithes() {
   return supabaseRequest(
     `${SUPABASE_URL}/rest/v1/tithes?select=year,month,amount,budget,churches!inner(districts!inner(missions!inner(code,name)))&order=year.asc,month.asc`
   );
 }
 
-// Fetch all offerings joined with mission code via churches→districts→missions
 async function fetchOfferings() {
   return supabaseRequest(
     `${SUPABASE_URL}/rest/v1/offerings?select=year,month,amount,budget,churches!inner(districts!inner(missions!inner(code,name)))&order=year.asc,month.asc`
   );
 }
 
-// Fetch tithes for a specific mission code and year
 async function fetchTithesByMission(missionCode, year) {
   return supabaseRequest(
     `${SUPABASE_URL}/rest/v1/tithes?select=month,amount,budget,churches!inner(districts!inner(missions!inner(code)))&churches.districts.missions.code=eq.${missionCode}&year=eq.${year}&order=month.asc`
   );
 }
 
-// Fetch offerings for a specific mission code and year
 async function fetchOfferingsByMission(missionCode, year) {
   return supabaseRequest(
     `${SUPABASE_URL}/rest/v1/offerings?select=month,amount,budget,churches!inner(districts!inner(missions!inner(code)))&churches.districts.missions.code=eq.${missionCode}&year=eq.${year}&order=month.asc`
   );
 }
 
-// Build a 12-element array from DB rows (null for missing months), sums multiple churches per month
+async function fetchTithesByCode(code) {
+  return supabaseRequest(
+    `${SUPABASE_URL}/rest/v1/tithes?select=year,month,amount,budget,churches!inner(districts!inner(missions!inner(code)))&churches.districts.missions.code=eq.${code}&order=year.asc,month.asc`
+  );
+}
+
+async function fetchOfferingsByCode(code) {
+  return supabaseRequest(
+    `${SUPABASE_URL}/rest/v1/offerings?select=year,month,amount,budget,churches!inner(districts!inner(missions!inner(code)))&churches.districts.missions.code=eq.${code}&order=year.asc,month.asc`
+  );
+}
+
+// ─── ARRAY HELPERS ────────────────────────────────────────────────────────────
 function buildMonthArray(rows) {
   const arr = new Array(12).fill(null);
   rows.forEach(r => {
@@ -86,15 +100,12 @@ function buildMonthArray(rows) {
   return arr;
 }
 
-// Build budget array (same value repeated, or per-month)
 function buildBudgetArray(rows) {
   const arr = new Array(12).fill(null);
   rows.forEach(r => { arr[r.month - 1] = r.budget; });
   return arr;
 }
 
-// Group rows by mission code → { NCMC: {2025:[...], 2026:[...]}, ... }
-// Handles nested path: churches.districts.missions.code
 function groupByMission(rows) {
   const result = {};
   rows.forEach(r => {
@@ -107,7 +118,6 @@ function groupByMission(rows) {
   return result;
 }
 
-// Build SPUC total array by summing all 5 missions per month
 function buildSpucTotal(grouped, year, field = 'amount') {
   const total = new Array(12).fill(null);
   Object.values(grouped).forEach(missionYears => {
@@ -120,22 +130,6 @@ function buildSpucTotal(grouped, year, field = 'amount') {
   return total;
 }
 
-// Fetch tithes for one mission by code, both years (via churches→districts→missions)
-async function fetchTithesByCode(code) {
-  return supabaseRequest(
-    `${SUPABASE_URL}/rest/v1/tithes?select=year,month,amount,budget,churches!inner(districts!inner(missions!inner(code)))&churches.districts.missions.code=eq.${code}&order=year.asc,month.asc`
-  );
-}
-
-// Fetch offerings for one mission by code, both years (via churches→districts→missions)
-async function fetchOfferingsByCode(code) {
-  return supabaseRequest(
-    `${SUPABASE_URL}/rest/v1/offerings?select=year,month,amount,budget,churches!inner(districts!inner(missions!inner(code)))&churches.districts.missions.code=eq.${code}&order=year.asc,month.asc`
-  );
-}
-
-// Split rows into {2025:[12], 2026:[12]} month arrays
-// Aggregates multiple churches per month (sums them)
 function splitYears(rows) {
   const y2025 = new Array(12).fill(null);
   const y2026 = new Array(12).fill(null);
@@ -149,7 +143,6 @@ function splitYears(rows) {
   return { y2025, y2026, budget };
 }
 
-// Wait for DOM layout then run callback
 function onLayoutReady(cb) {
   if (document.readyState === 'complete') {
     requestAnimationFrame(() => requestAnimationFrame(cb));
@@ -208,9 +201,56 @@ async function fetchIncomeStatementBudgets(reportYear, reportMonth) {
   );
 }
 
-// ─── FINANCIAL INDICATOR ─────────────────────────────────────────────────────
+// ─── FINANCIAL INDICATOR ──────────────────────────────────────────────────────
 async function fetchFinancialIndicator(reportYear, reportMonth) {
   return supabaseRequest(
     `${SUPABASE_URL}/rest/v1/financial_indicator?report_year=eq.${reportYear}&report_month=eq.${reportMonth}&limit=1`
+  );
+}
+
+// ─── MONTHLY REPORT ───────────────────────────────────────────────────────────
+async function fetchMonthlyReport(year, month) {
+  return supabaseRequest(
+    `${SUPABASE_URL}/rest/v1/monthly_report?year=eq.${year}&month=eq.${month}&order=sort_order.asc`
+  );
+}
+
+// ─── UNION USERS (auth + profile) — uses USERS DB ────────────────────────────
+const _usersInflight = new Map();
+
+async function usersRequest(url, options = {}) {
+  const method = (options.method || 'GET').toUpperCase();
+  const headers = { ...USERS_HEADERS, 'Content-Type': 'application/json', ...(options.headers || {}) };
+  if (method === 'GET') {
+    if (_usersInflight.has(url)) return _usersInflight.get(url);
+    const p = fetch(url, { ...options, headers }).then(r => r.json()).finally(() => _usersInflight.delete(url));
+    _usersInflight.set(url, p);
+    return p;
+  }
+  return fetch(url, { ...options, headers }).then(r => r.json());
+}
+
+async function loginUser(username, password) {
+  const data = await usersRequest(
+    `${USERS_URL}/rest/v1/union_users?username=eq.${encodeURIComponent(username)}&password_hash=eq.${encodeURIComponent(password)}&is_active=eq.true&select=id,username,full_name,email,phone&limit=1`
+  );
+  return Array.isArray(data) && data.length ? data[0] : null;
+}
+
+async function fetchCurrentUser(id) {
+  const data = await usersRequest(
+    `${USERS_URL}/rest/v1/union_users?id=eq.${id}&select=id,username,full_name,email,phone&limit=1`
+  );
+  return Array.isArray(data) && data.length ? data[0] : null;
+}
+
+async function updateUserProfile(id, fields) {
+  return usersRequest(
+    `${USERS_URL}/rest/v1/union_users?id=eq.${id}`,
+    {
+      method: 'PATCH',
+      headers: { 'Prefer': 'return=representation' },
+      body: JSON.stringify(fields)
+    }
   );
 }

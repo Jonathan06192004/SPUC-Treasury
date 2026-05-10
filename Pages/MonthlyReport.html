@@ -8,6 +8,7 @@
   <link rel="stylesheet" href="../Styles/MonthlyReport.css" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Cinzel:wght@700;900&family=Montserrat:wght@700;800;900&display=swap" rel="stylesheet"/>
   <script src="../Script/utils.js"></script>
+  <script src="../Script/supabase.js"></script>
 </head>
 <body>
 
@@ -36,8 +37,13 @@
             <span class="mr-year-label" id="mrYearLabel">APRIL 2026</span>
           </div>
           <div class="mr-month-select-wrap">
+            <label class="mr-month-label">YEAR:</label>
+            <select class="mr-month-select" id="mrYearSelect" onchange="loadReport()">
+              <option value="2025">2025</option>
+              <option value="2026" selected>2026</option>
+            </select>
             <label class="mr-month-label">MONTH:</label>
-            <select class="mr-month-select" id="mrMonthSelect" onchange="updateMonthLabel()">
+            <select class="mr-month-select" id="mrMonthSelect" onchange="loadReport()">
               <option value="January">January</option>
               <option value="February">February</option>
               <option value="March">March</option>

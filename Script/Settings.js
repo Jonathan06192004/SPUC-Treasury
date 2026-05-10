@@ -1,16 +1,3 @@
-// ── Credential helpers (localStorage-backed) ──────────────────────────────────
-function getCreds() {
-  return {
-    username: localStorage.getItem('spuc_username') || 'admin',
-    password: localStorage.getItem('spuc_password') || 'admin'
-  };
-}
-
-function setCreds(username, password) {
-  localStorage.setItem('spuc_username', username);
-  localStorage.setItem('spuc_password', password);
-}
-
 // ── Preferences helpers ────────────────────────────────────────────────────────
 function getPref(key, def) {
   const v = localStorage.getItem('spuc_pref_' + key);
@@ -26,11 +13,7 @@ function savePref(key, value) {
 }
 
 // ── Init ───────────────────────────────────────────────────────────────────────
-(function init() {
-  const { username } = getCreds();
-  document.getElementById('displayUsername').textContent = username;
-  document.getElementById('sessionUsername').textContent = username;
-
+(async function init() {
   // Session start time
   if (!sessionStorage.getItem('spuc_session_start')) {
     sessionStorage.setItem('spuc_session_start', new Date().toISOString());
@@ -45,7 +28,7 @@ function savePref(key, value) {
     hour: '2-digit', minute: '2-digit'
   });
 
-  // Load preferences into toggles
+  // Load preferences
   document.getElementById('prefClock').checked      = getPref('showClock', true);
   document.getElementById('prefAnimations').checked = getPref('animations', true);
   document.getElementById('prefCompact').checked    = getPref('compactTable', false);
@@ -53,10 +36,81 @@ function savePref(key, value) {
   document.getElementById('prefCurrency').value     = getPref('currency', 'PHP');
 
   // Password strength listener
-  document.getElementById('newPwInput').addEventListener('input', function () {
+  document.getElementById('profileNewPw').addEventListener('input', function () {
     updateStrength(this.value);
   });
+
+  // Load profile from Supabase
+  await loadProfile();
 })();
+
+async function loadProfile() {
+  const loading = document.getElementById('profileLoading');
+  const stored = sessionStorage.getItem('spuc_user');
+  if (!stored) { loading.textContent = 'NOT LOGGED IN'; return; }
+
+  const user = JSON.parse(stored);
+  document.getElementById('sessionUsername').textContent = user.username || '—';
+
+  try {
+    const profile = await fetchCurrentUser(user.id);
+    if (!profile) { loading.textContent = 'FAILED TO LOAD'; return; }
+
+    // Store fresh data back
+    sessionStorage.setItem('spuc_user', JSON.stringify(profile));
+
+    document.getElementById('profileFullName').value = profile.full_name || '';
+    document.getElementById('profileUsername').value  = profile.username  || '';
+    document.getElementById('profileEmail').value     = profile.email     || '';
+    document.getElementById('profilePhone').value     = profile.phone     || '';
+    document.getElementById('sessionUsername').textContent = profile.username || '—';
+    loading.textContent = '';
+  } catch {
+    loading.textContent = 'ERROR';
+  }
+}
+
+// ── Save Profile ───────────────────────────────────────────────────────────────
+async function saveProfile() {
+  const stored = sessionStorage.getItem('spuc_user');
+  if (!stored) return showToast('Not logged in');
+
+  const user    = JSON.parse(stored);
+  const msg     = document.getElementById('profileMsg');
+  const newPw   = document.getElementById('profileNewPw').value;
+  const confPw  = document.getElementById('profileConfirmPw').value;
+
+  msg.className = 'form-msg';
+
+  if (newPw && newPw.length < 6) return showMsg(msg, 'error', 'Password must be at least 6 characters.');
+  if (newPw && newPw !== confPw) return showMsg(msg, 'error', 'Passwords do not match.');
+
+  const fields = {
+    full_name: document.getElementById('profileFullName').value.trim(),
+    username:  document.getElementById('profileUsername').value.trim(),
+    email:     document.getElementById('profileEmail').value.trim(),
+    phone:     document.getElementById('profilePhone').value.trim(),
+  };
+  if (!fields.username) return showMsg(msg, 'error', 'Username cannot be empty.');
+  if (newPw) fields.password_hash = newPw;
+
+  try {
+    const result = await updateUserProfile(user.id, fields);
+    if (Array.isArray(result) && result.length) {
+      sessionStorage.setItem('spuc_user', JSON.stringify(result[0]));
+      document.getElementById('sessionUsername').textContent = result[0].username;
+      document.getElementById('profileNewPw').value    = '';
+      document.getElementById('profileConfirmPw').value = '';
+      updateStrength('');
+      showMsg(msg, 'success', '✓ Profile updated successfully.');
+      showToast('Profile saved');
+    } else {
+      showMsg(msg, 'error', 'Update failed. Please try again.');
+    }
+  } catch {
+    showMsg(msg, 'error', 'Connection error. Please try again.');
+  }
+}
 
 // ── Toggle password visibility ─────────────────────────────────────────────────
 function toggleVis(inputId, btn) {
@@ -70,9 +124,9 @@ function updateStrength(pw) {
   const fill  = document.getElementById('pwStrengthFill');
   const label = document.getElementById('pwStrengthLabel');
   let score = 0;
-  if (pw.length >= 8)  score++;
-  if (/[A-Z]/.test(pw)) score++;
-  if (/[0-9]/.test(pw)) score++;
+  if (pw.length >= 8)          score++;
+  if (/[A-Z]/.test(pw))        score++;
+  if (/[0-9]/.test(pw))        score++;
   if (/[^A-Za-z0-9]/.test(pw)) score++;
 
   const levels = [
@@ -89,77 +143,6 @@ function updateStrength(pw) {
   label.style.color     = lvl.color;
 }
 
-// ── Change Username ────────────────────────────────────────────────────────────
-function changeUsername() {
-  const currentInput = document.getElementById('currentUsernameInput').value.trim();
-  const newInput     = document.getElementById('newUsernameInput').value.trim();
-  const pwInput      = document.getElementById('usernameConfirmPw').value;
-  const msg          = document.getElementById('usernameMsg');
-  const { username, password } = getCreds();
-
-  msg.className = 'form-msg';
-
-  if (!currentInput || !newInput || !pwInput) {
-    return showMsg(msg, 'error', 'All fields are required.');
-  }
-  if (currentInput !== username) {
-    return showMsg(msg, 'error', 'Current username is incorrect.');
-  }
-  if (pwInput !== password) {
-    return showMsg(msg, 'error', 'Password confirmation is incorrect.');
-  }
-  if (newInput.length < 3) {
-    return showMsg(msg, 'error', 'Username must be at least 3 characters.');
-  }
-  if (newInput === username) {
-    return showMsg(msg, 'error', 'New username is the same as current.');
-  }
-
-  setCreds(newInput, password);
-  document.getElementById('displayUsername').textContent = newInput;
-  document.getElementById('sessionUsername').textContent = newInput;
-  document.getElementById('currentUsernameInput').value = '';
-  document.getElementById('newUsernameInput').value = '';
-  document.getElementById('usernameConfirmPw').value = '';
-  showMsg(msg, 'success', '✓ Username updated successfully.');
-  showToast('Username changed successfully');
-}
-
-// ── Change Password ────────────────────────────────────────────────────────────
-function changePassword() {
-  const currentPw  = document.getElementById('currentPwInput').value;
-  const newPw      = document.getElementById('newPwInput').value;
-  const confirmPw  = document.getElementById('confirmPwInput').value;
-  const msg        = document.getElementById('passwordMsg');
-  const { username, password } = getCreds();
-
-  msg.className = 'form-msg';
-
-  if (!currentPw || !newPw || !confirmPw) {
-    return showMsg(msg, 'error', 'All fields are required.');
-  }
-  if (currentPw !== password) {
-    return showMsg(msg, 'error', 'Current password is incorrect.');
-  }
-  if (newPw.length < 6) {
-    return showMsg(msg, 'error', 'New password must be at least 6 characters.');
-  }
-  if (newPw !== confirmPw) {
-    return showMsg(msg, 'error', 'New passwords do not match.');
-  }
-  if (newPw === password) {
-    return showMsg(msg, 'error', 'New password is the same as current.');
-  }
-
-  setCreds(username, newPw);
-  document.getElementById('currentPwInput').value = '';
-  document.getElementById('newPwInput').value = '';
-  document.getElementById('confirmPwInput').value = '';
-  updateStrength('');
-  showMsg(msg, 'success', '✓ Password updated successfully.');
-  showToast('Password changed successfully');
-}
-
 // ── Logout ─────────────────────────────────────────────────────────────────────
 function openLogout() {
   document.getElementById('logoutOverlay').classList.remove('hidden');
@@ -172,7 +155,7 @@ function closeLogout() {
 }
 
 function confirmLogout() {
-  sessionStorage.removeItem('spuc_session_start');
+  sessionStorage.clear();
   location.href = '../index.html';
 }
 
@@ -199,7 +182,7 @@ function resetInactivity() {
   if (!getPref('autoLogout', false)) return;
   clearTimeout(_inactivityTimer);
   _inactivityTimer = setTimeout(() => {
-    sessionStorage.removeItem('spuc_session_start');
+    sessionStorage.clear();
     location.href = '../index.html';
   }, 30 * 60 * 1000);
 }
