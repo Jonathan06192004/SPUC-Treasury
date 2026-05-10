@@ -75,53 +75,6 @@
       </div>
     </div>
 
-    <!-- Display Preferences -->
-    <div class="settings-card" id="cardDisplay">
-      <div class="card-header">
-        <span class="card-icon">🎨</span>
-        <span class="card-title">DISPLAY PREFERENCES</span>
-      </div>
-      <div class="card-body">
-        <div class="toggle-row">
-          <div class="toggle-info">
-            <span class="toggle-label">SHOW CLOCK ON PAGES</span>
-            <span class="toggle-desc">Display live clock on all report pages</span>
-          </div>
-          <label class="toggle-switch">
-            <input type="checkbox" id="prefClock" checked onchange="savePref('showClock', this.checked)"/>
-            <span class="toggle-slider"></span>
-          </label>
-        </div>
-        <div class="toggle-row">
-          <div class="toggle-info">
-            <span class="toggle-label">ANIMATIONS</span>
-            <span class="toggle-desc">Enable chart and page animations</span>
-          </div>
-          <label class="toggle-switch">
-            <input type="checkbox" id="prefAnimations" checked onchange="savePref('animations', this.checked)"/>
-            <span class="toggle-slider"></span>
-          </label>
-        </div>
-        <div class="toggle-row">
-          <div class="toggle-info">
-            <span class="toggle-label">COMPACT TABLE VIEW</span>
-            <span class="toggle-desc">Reduce row height in data tables</span>
-          </div>
-          <label class="toggle-switch">
-            <input type="checkbox" id="prefCompact" onchange="savePref('compactTable', this.checked)"/>
-            <span class="toggle-slider"></span>
-          </label>
-        </div>
-        <div class="form-group" style="margin-top:16px;">
-          <label class="form-label">DEFAULT CURRENCY DISPLAY</label>
-          <select class="form-input form-select" id="prefCurrency" onchange="savePref('currency', this.value)">
-            <option value="PHP">Philippine Peso (₱)</option>
-            <option value="USD">US Dollar ($)</option>
-          </select>
-        </div>
-      </div>
-    </div>
-
     <!-- Session -->
     <div class="settings-card" id="cardSession">
       <div class="card-header">
@@ -155,6 +108,60 @@
       </div>
     </div>
 
+    <!-- Two-Factor Authentication -->
+    <div class="settings-card" id="card2fa">
+      <div class="card-header">
+        <span class="card-icon">🔐</span>
+        <span class="card-title">TWO-FACTOR AUTHENTICATION</span>
+        <span id="twoFaStatusDot" class="twofa-dot twofa-dot--off" style="margin-left:auto;"></span>
+      </div>
+      <div class="card-body">
+        <div class="info-row">
+          <span class="info-label">STATUS</span>
+          <span class="info-value" id="twoFaStatusText">Loading...</span>
+        </div>
+
+        <!-- Setup panel (shown when enabling) -->
+        <div id="twoFaSetupPanel" style="display:none;">
+          <p style="font-size:0.78rem;color:rgba(255,255,255,0.55);line-height:1.6;margin-bottom:12px;">Scan the QR code with your authenticator app, then enter the 6-digit code to confirm.</p>
+          <div style="background:#fff;border-radius:10px;padding:10px;display:inline-block;margin-bottom:12px;">
+            <img id="twoFaQrImg" src="" alt="QR Code" width="180" height="180" style="display:block;"/>
+          </div>
+          <div class="info-row">
+            <span class="info-label">MANUAL KEY</span>
+            <span class="info-value" id="twoFaManualKey" style="font-size:0.72rem;word-break:break-all;text-align:right;"></span>
+          </div>
+          <div class="form-group" style="margin-top:8px;">
+            <label class="form-label">ENTER 6-DIGIT CODE TO CONFIRM</label>
+            <input type="text" class="form-input" id="twoFaConfirmCode" inputmode="numeric" maxlength="6" placeholder="000000"
+              style="letter-spacing:6px;font-size:1.1rem;text-align:center;"
+              oninput="this.value=this.value.replace(/\D/g,'')"/>
+          </div>
+          <p class="form-msg hidden" id="twoFaSetupMsg"></p>
+          <div style="display:flex;gap:10px;margin-top:4px;">
+            <button class="btn-save" onclick="confirmEnable2fa()">CONFIRM &amp; ENABLE</button>
+            <button class="btn-cancel" onclick="cancel2faSetup()">CANCEL</button>
+          </div>
+        </div>
+
+        <!-- View QR panel (shown when 2FA is enabled) -->
+        <div id="twoFaViewPanel" style="display:none;">
+          <p style="font-size:0.78rem;color:rgba(255,255,255,0.55);line-height:1.6;margin-bottom:12px;">Re-scan this QR code to add your account to a new device.</p>
+          <div style="background:#fff;border-radius:10px;padding:10px;display:inline-block;margin-bottom:12px;">
+            <img id="twoFaViewQrImg" src="" alt="QR Code" width="180" height="180" style="display:block;"/>
+          </div>
+          <button class="btn-cancel" onclick="document.getElementById('twoFaViewPanel').style.display='none'">CLOSE</button>
+        </div>
+
+        <!-- Action buttons -->
+        <div id="twoFaActions" style="display:flex;gap:10px;flex-wrap:wrap;">
+          <button class="btn-save" id="btnEnable2fa" onclick="startEnable2fa()" style="display:none;">ENABLE 2FA</button>
+          <button class="btn-save" id="btnViewQr" onclick="viewQr2fa()" style="display:none;">VIEW QR</button>
+          <button class="btn-disable2fa" id="btnDisable2fa" onclick="openDisable2faModal()" style="display:none;">DISABLE 2FA</button>
+        </div>
+      </div>
+    </div>
+
     <!-- About -->
     <div class="settings-card" id="cardAbout">
       <div class="card-header">
@@ -184,6 +191,18 @@
   </div>
 </main>
 
+<!-- Disable 2FA confirmation modal -->
+<div class="logout-overlay hidden" id="disable2faOverlay" onclick="closeDisable2faModal()"></div>
+<div class="logout-modal hidden" id="disable2faModal">
+  <div class="logout-icon">🔓</div>
+  <h2 class="logout-title">DISABLE 2FA</h2>
+  <p class="logout-desc">This will remove two-factor authentication from your account. You will only need your password to log in.</p>
+  <div class="logout-actions">
+    <button class="btn-cancel" onclick="closeDisable2faModal()">CANCEL</button>
+    <button class="btn-logout-confirm" onclick="confirmDisable2fa()">DISABLE</button>
+  </div>
+</div>
+
 <!-- Logout confirmation -->
 <div class="logout-overlay hidden" id="logoutOverlay" onclick="closeLogout()"></div>
 <div class="logout-modal hidden" id="logoutModal">
@@ -211,6 +230,7 @@
   </div>
 </footer>
 
+<script src="https://cdn.jsdelivr.net/npm/otpauth@9.3.6/dist/otpauth.umd.min.js"></script>
 <script src="../Script/supabase.js"></script>
 <script src="../Script/Settings.js"></script>
 </body>

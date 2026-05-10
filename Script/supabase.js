@@ -232,16 +232,23 @@ async function usersRequest(url, options = {}) {
 
 async function loginUser(username, password) {
   const data = await usersRequest(
-    `${USERS_URL}/rest/v1/union_users?username=eq.${encodeURIComponent(username)}&password_hash=eq.${encodeURIComponent(password)}&is_active=eq.true&select=id,username,full_name,email,phone&limit=1`
+    `${USERS_URL}/rest/v1/union_users?username=eq.${encodeURIComponent(username)}&password_hash=eq.${encodeURIComponent(password)}&is_active=eq.true&select=id,username,full_name,email,phone,two_fa_enabled,totp_secret&limit=1`
   );
   return Array.isArray(data) && data.length ? data[0] : null;
 }
 
 async function fetchCurrentUser(id) {
   const data = await usersRequest(
-    `${USERS_URL}/rest/v1/union_users?id=eq.${id}&select=id,username,full_name,email,phone&limit=1`
+    `${USERS_URL}/rest/v1/union_users?id=eq.${id}&select=id,username,full_name,email,phone,two_fa_enabled,totp_secret&limit=1`
   );
   return Array.isArray(data) && data.length ? data[0] : null;
+}
+
+async function updateTwoFa(id, fields) {
+  return usersRequest(
+    `${USERS_URL}/rest/v1/union_users?id=eq.${id}`,
+    { method: 'PATCH', headers: { 'Prefer': 'return=representation' }, body: JSON.stringify(fields) }
+  );
 }
 
 async function updateUserProfile(id, fields) {

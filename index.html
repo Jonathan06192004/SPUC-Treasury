@@ -107,8 +107,26 @@
     </div>
   </div>
 
+  <!-- 2FA Step Overlay -->
+  <div id="twoFaOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);backdrop-filter:blur(6px);z-index:200;display:none;align-items:center;justify-content:center;">
+    <div style="background:linear-gradient(160deg,rgba(20,40,120,0.97),rgba(10,20,80,0.99));border:1px solid rgba(245,166,35,0.35);border-radius:16px;padding:40px 44px;text-align:center;min-width:320px;max-width:380px;box-shadow:0 20px 60px rgba(0,0,0,0.6);">
+      <div style="font-size:2.4rem;margin-bottom:10px;">🔐</div>
+      <h2 style="font-family:'Montserrat',sans-serif;font-weight:900;font-size:1.2rem;letter-spacing:3px;color:#fff;margin-bottom:8px;">TWO-FACTOR AUTH</h2>
+      <p style="font-size:0.82rem;color:rgba(255,255,255,0.6);margin-bottom:24px;line-height:1.6;">Enter the 6-digit code from your authenticator app.</p>
+      <input id="totpInput" type="text" inputmode="numeric" maxlength="6" placeholder="000000"
+        style="width:100%;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.2);border-radius:8px;color:#fff;padding:12px;font-size:1.5rem;letter-spacing:8px;text-align:center;outline:none;font-family:'Montserrat',sans-serif;font-weight:700;margin-bottom:12px;"
+        oninput="this.value=this.value.replace(/\D/g,'')" onkeydown="if(event.key==='Enter')verifyTotpLogin()"/>
+      <div id="totpError" style="display:none;font-size:0.78rem;color:#f87171;margin-bottom:12px;background:rgba(239,68,68,0.12);border:1px solid rgba(239,68,68,0.3);border-radius:6px;padding:8px;">Invalid code. Please try again.</div>
+      <button onclick="verifyTotpLogin()" style="width:100%;padding:12px;background:linear-gradient(to bottom,#f5c842,#e8a020,#7a4500);border:1px solid rgba(245,180,40,0.4);border-radius:8px;color:#fff5d6;font-family:'Montserrat',sans-serif;font-weight:800;font-size:0.78rem;letter-spacing:2px;cursor:pointer;margin-bottom:10px;">VERIFY</button>
+      <button onclick="cancelTwoFa()" style="width:100%;padding:10px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.2);border-radius:8px;color:rgba(255,255,255,0.7);font-family:'Montserrat',sans-serif;font-weight:700;font-size:0.75rem;letter-spacing:1.5px;cursor:pointer;">CANCEL</button>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/otpauth@9.3.6/dist/otpauth.umd.min.js"></script>
   <script src="Script/supabase.js"></script>
   <script>
+    let _pendingProfile = null;
+
     async function handleLogin(e) {
       e.preventDefault();
       const user = document.getElementById('username').value.trim();
@@ -128,29 +146,68 @@
       try {
         const profile = await loginUser(user, pass);
         if (profile) {
-          btn.classList.remove('loading');
-          btn.classList.add('success');
-          btnText.textContent = '✓ SUCCESS';
-          sessionStorage.setItem('spuc_session_start', new Date().toISOString());
-          sessionStorage.setItem('spuc_user', JSON.stringify(profile));
-          setTimeout(() => location.href = 'Pages/HomePage.html', 600);
+          if (profile.two_fa_enabled && profile.totp_secret) {
+            _pendingProfile = profile;
+            btn.classList.remove('loading');
+            btnText.textContent = 'SIGN IN';
+            arrow.style.display = '';
+            btn.disabled = false;
+            const overlay = document.getElementById('twoFaOverlay');
+            overlay.style.display = 'flex';
+            document.getElementById('totpInput').value = '';
+            document.getElementById('totpError').style.display = 'none';
+            setTimeout(() => document.getElementById('totpInput').focus(), 100);
+          } else {
+            completeLogin(profile, btn, btnText);
+          }
         } else {
           errMsg.textContent = 'Invalid username or password.';
           errWrap.classList.remove('hidden');
           document.getElementById('password').value = '';
           document.getElementById('password').focus();
-        }
-      } catch {
-        errMsg.textContent = 'Connection error. Please try again.';
-        errWrap.classList.remove('hidden');
-      } finally {
-        if (!btn.classList.contains('success')) {
           btnText.textContent = 'SIGN IN';
           arrow.style.display = '';
           btn.disabled = false;
           btn.classList.remove('loading');
         }
+      } catch {
+        errMsg.textContent = 'Connection error. Please try again.';
+        errWrap.classList.remove('hidden');
+        btnText.textContent = 'SIGN IN';
+        arrow.style.display = '';
+        btn.disabled = false;
+        btn.classList.remove('loading');
       }
+    }
+
+    function verifyTotpLogin() {
+      if (!_pendingProfile) return;
+      const code = document.getElementById('totpInput').value.trim();
+      const totp = new OTPAuth.TOTP({ secret: OTPAuth.Secret.fromBase32(_pendingProfile.totp_secret), algorithm: 'SHA1', digits: 6, period: 30 });
+      if (totp.validate({ token: code, window: 1 }) !== null) {
+        document.getElementById('twoFaOverlay').style.display = 'none';
+        const btn = document.getElementById('btnLogin');
+        const btnText = document.getElementById('btnLoginText');
+        completeLogin(_pendingProfile, btn, btnText);
+      } else {
+        document.getElementById('totpError').style.display = 'block';
+        document.getElementById('totpInput').value = '';
+        document.getElementById('totpInput').focus();
+      }
+    }
+
+    function cancelTwoFa() {
+      _pendingProfile = null;
+      document.getElementById('twoFaOverlay').style.display = 'none';
+    }
+
+    function completeLogin(profile, btn, btnText) {
+      btn.classList.remove('loading');
+      btn.classList.add('success');
+      btnText.textContent = '✓ SUCCESS';
+      sessionStorage.setItem('spuc_session_start', new Date().toISOString());
+      sessionStorage.setItem('spuc_user', JSON.stringify(profile));
+      setTimeout(() => location.href = 'Pages/HomePage.html', 600);
     }
 
     function togglePassword() {

@@ -29,11 +29,7 @@ function savePref(key, value) {
   });
 
   // Load preferences
-  document.getElementById('prefClock').checked      = getPref('showClock', true);
-  document.getElementById('prefAnimations').checked = getPref('animations', true);
-  document.getElementById('prefCompact').checked    = getPref('compactTable', false);
   document.getElementById('prefAutoLogout').checked = getPref('autoLogout', false);
-  document.getElementById('prefCurrency').value     = getPref('currency', 'PHP');
 
   // Password strength listener
   document.getElementById('profileNewPw').addEventListener('input', function () {
@@ -42,6 +38,7 @@ function savePref(key, value) {
 
   // Load profile from Supabase
   await loadProfile();
+  render2faStatus();
 })();
 
 async function loadProfile() {
@@ -190,3 +187,102 @@ function resetInactivity() {
 document.addEventListener('mousemove', resetInactivity);
 document.addEventListener('keydown', resetInactivity);
 resetInactivity();
+
+// ── Two-Factor Authentication ──────────────────────────────────────────────────
+let _pendingSecret = null;
+
+function render2faStatus() {
+  const stored = sessionStorage.getItem('spuc_user');
+  if (!stored) return;
+  const user = JSON.parse(stored);
+  const enabled = !!user.two_fa_enabled;
+
+  document.getElementById('twoFaStatusText').textContent = enabled ? 'Enabled' : 'Disabled';
+  const dot = document.getElementById('twoFaStatusDot');
+  dot.className = 'twofa-dot ' + (enabled ? 'twofa-dot--on' : 'twofa-dot--off');
+
+  document.getElementById('btnEnable2fa').style.display  = enabled ? 'none' : '';
+  document.getElementById('btnViewQr').style.display     = enabled ? '' : 'none';
+  document.getElementById('btnDisable2fa').style.display = enabled ? '' : 'none';
+  document.getElementById('twoFaSetupPanel').style.display = 'none';
+  document.getElementById('twoFaViewPanel').style.display  = 'none';
+}
+
+function startEnable2fa() {
+  const secret = new OTPAuth.Secret();
+  _pendingSecret = secret.base32;
+  const stored = sessionStorage.getItem('spuc_user');
+  const user = JSON.parse(stored);
+  const label = encodeURIComponent('SPUC Treasury:' + (user.username || user.email || 'user'));
+  const issuer = encodeURIComponent('SPUC Treasury');
+  const uri = `otpauth://totp/${label}?secret=${_pendingSecret}&issuer=${issuer}&algorithm=SHA1&digits=6&period=30`;
+
+  document.getElementById('twoFaQrImg').src = 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=' + encodeURIComponent(uri);
+  document.getElementById('twoFaManualKey').textContent = _pendingSecret;
+  document.getElementById('twoFaConfirmCode').value = '';
+  document.getElementById('twoFaSetupMsg').className = 'form-msg hidden';
+  document.getElementById('twoFaSetupPanel').style.display = 'block';
+  document.getElementById('twoFaActions').style.display = 'none';
+}
+
+async function confirmEnable2fa() {
+  const code = document.getElementById('twoFaConfirmCode').value.trim();
+  const msg  = document.getElementById('twoFaSetupMsg');
+  if (code.length !== 6) return showMsg(msg, 'error', 'Enter a 6-digit code.');
+
+  const totp = new OTPAuth.TOTP({ secret: OTPAuth.Secret.fromBase32(_pendingSecret), algorithm: 'SHA1', digits: 6, period: 30 });
+  if (totp.validate({ token: code, window: 1 }) === null) return showMsg(msg, 'error', 'Invalid code. Try again.');
+
+  const stored = sessionStorage.getItem('spuc_user');
+  const user = JSON.parse(stored);
+  const result = await updateTwoFa(user.id, { totp_secret: _pendingSecret, two_fa_enabled: true });
+  if (Array.isArray(result) && result.length) {
+    sessionStorage.setItem('spuc_user', JSON.stringify(result[0]));
+    _pendingSecret = null;
+    document.getElementById('twoFaActions').style.display = 'flex';
+    render2faStatus();
+    showToast('2FA enabled successfully');
+  } else {
+    showMsg(msg, 'error', 'Failed to save. Please try again.');
+  }
+}
+
+function cancel2faSetup() {
+  _pendingSecret = null;
+  document.getElementById('twoFaSetupPanel').style.display = 'none';
+  document.getElementById('twoFaActions').style.display = 'flex';
+}
+
+function viewQr2fa() {
+  const stored = sessionStorage.getItem('spuc_user');
+  const user = JSON.parse(stored);
+  const label = encodeURIComponent('SPUC Treasury:' + (user.username || user.email || 'user'));
+  const issuer = encodeURIComponent('SPUC Treasury');
+  const uri = `otpauth://totp/${label}?secret=${user.totp_secret}&issuer=${issuer}&algorithm=SHA1&digits=6&period=30`;
+  document.getElementById('twoFaViewQrImg').src = 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=' + encodeURIComponent(uri);
+  document.getElementById('twoFaViewPanel').style.display = 'block';
+}
+
+function openDisable2faModal() {
+  document.getElementById('disable2faOverlay').classList.remove('hidden');
+  document.getElementById('disable2faModal').classList.remove('hidden');
+}
+
+function closeDisable2faModal() {
+  document.getElementById('disable2faOverlay').classList.add('hidden');
+  document.getElementById('disable2faModal').classList.add('hidden');
+}
+
+async function confirmDisable2fa() {
+  closeDisable2faModal();
+  const stored = sessionStorage.getItem('spuc_user');
+  const user = JSON.parse(stored);
+  const result = await updateTwoFa(user.id, { totp_secret: null, two_fa_enabled: false });
+  if (Array.isArray(result) && result.length) {
+    sessionStorage.setItem('spuc_user', JSON.stringify(result[0]));
+    render2faStatus();
+    showToast('2FA disabled');
+  } else {
+    showToast('Failed to disable 2FA');
+  }
+}
