@@ -251,6 +251,17 @@ async function updateTwoFa(id, fields) {
   );
 }
 
+// ─── CROSS-TAB LOGOUT ────────────────────────────────────────────────────────
+window.addEventListener('storage', e => {
+  if (e.key !== 'spuc_logout') return;
+  sessionStorage.clear();
+  const path = location.pathname;
+  const isIndex = path.endsWith('index.html') || path.endsWith('/');
+  if (isIndex) return;
+  const depth = (path.match(/\/Pages\/[^/]+\//) ? '../../' : '../');
+  location.href = depth + 'index.html';
+});
+
 async function updateUserProfile(id, fields) {
   return usersRequest(
     `${USERS_URL}/rest/v1/union_users?id=eq.${id}`,

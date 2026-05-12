@@ -152,6 +152,7 @@ function closeLogout() {
 }
 
 function confirmLogout() {
+  localStorage.setItem('spuc_logout', Date.now());
   sessionStorage.clear();
   location.href = '../index.html';
 }

@@ -205,6 +205,7 @@
       btn.classList.remove('loading');
       btn.classList.add('success');
       btnText.textContent = '✓ SUCCESS';
+      localStorage.removeItem('spuc_logout');
       sessionStorage.setItem('spuc_session_start', new Date().toISOString());
       sessionStorage.setItem('spuc_user', JSON.stringify(profile));
       setTimeout(() => location.href = 'Pages/HomePage.html', 600);
