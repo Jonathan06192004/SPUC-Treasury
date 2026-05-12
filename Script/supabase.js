@@ -56,37 +56,37 @@ async function supabaseRequest(url, options = {}) {
 // ─── TITHES & OFFERINGS ───────────────────────────────────────────────────────
 async function fetchTithes() {
   return supabaseRequest(
-    `${SUPABASE_URL}/rest/v1/tithes?select=year,month,amount,budget,churches!inner(districts!inner(missions!inner(code,name)))&order=year.asc,month.asc`
+    `${SUPABASE_URL}/rest/v1/tithes?status=eq.confirmed&select=year,month,amount,budget,churches!inner(districts!inner(missions!inner(code,name)))&order=year.asc,month.asc`
   );
 }
 
 async function fetchOfferings() {
   return supabaseRequest(
-    `${SUPABASE_URL}/rest/v1/offerings?select=year,month,amount,budget,churches!inner(districts!inner(missions!inner(code,name)))&order=year.asc,month.asc`
+    `${SUPABASE_URL}/rest/v1/offerings?status=eq.confirmed&select=year,month,amount,budget,churches!inner(districts!inner(missions!inner(code,name)))&order=year.asc,month.asc`
   );
 }
 
 async function fetchTithesByMission(missionCode, year) {
   return supabaseRequest(
-    `${SUPABASE_URL}/rest/v1/tithes?select=month,amount,budget,churches!inner(districts!inner(missions!inner(code)))&churches.districts.missions.code=eq.${missionCode}&year=eq.${year}&order=month.asc`
+    `${SUPABASE_URL}/rest/v1/tithes?status=eq.confirmed&select=month,amount,budget,churches!inner(districts!inner(missions!inner(code)))&churches.districts.missions.code=eq.${missionCode}&year=eq.${year}&order=month.asc`
   );
 }
 
 async function fetchOfferingsByMission(missionCode, year) {
   return supabaseRequest(
-    `${SUPABASE_URL}/rest/v1/offerings?select=month,amount,budget,churches!inner(districts!inner(missions!inner(code)))&churches.districts.missions.code=eq.${missionCode}&year=eq.${year}&order=month.asc`
+    `${SUPABASE_URL}/rest/v1/offerings?status=eq.confirmed&select=month,amount,budget,churches!inner(districts!inner(missions!inner(code)))&churches.districts.missions.code=eq.${missionCode}&year=eq.${year}&order=month.asc`
   );
 }
 
 async function fetchTithesByCode(code) {
   return supabaseRequest(
-    `${SUPABASE_URL}/rest/v1/tithes?select=year,month,amount,budget,churches!inner(districts!inner(missions!inner(code)))&churches.districts.missions.code=eq.${code}&order=year.asc,month.asc`
+    `${SUPABASE_URL}/rest/v1/tithes?status=eq.confirmed&select=year,month,amount,budget,churches!inner(districts!inner(missions!inner(code)))&churches.districts.missions.code=eq.${code}&order=year.asc,month.asc`
   );
 }
 
 async function fetchOfferingsByCode(code) {
   return supabaseRequest(
-    `${SUPABASE_URL}/rest/v1/offerings?select=year,month,amount,budget,churches!inner(districts!inner(missions!inner(code)))&churches.districts.missions.code=eq.${code}&order=year.asc,month.asc`
+    `${SUPABASE_URL}/rest/v1/offerings?status=eq.confirmed&select=year,month,amount,budget,churches!inner(districts!inner(missions!inner(code)))&churches.districts.missions.code=eq.${code}&order=year.asc,month.asc`
   );
 }
 
