@@ -18,7 +18,23 @@
       <strong>Southwestern Philippines</strong> Union Conference
     </div>
   </div>
+  <button class="btn-logout-header" onclick="confirmLogout()">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+    LOG OUT
+  </button>
 </header>
+
+<!-- Logout confirmation overlay -->
+<div class="logout-overlay" id="logoutOverlay" onclick="closeLogout()"></div>
+<div class="logout-modal" id="logoutModal">
+  <div class="logout-icon">🚪</div>
+  <h2 class="logout-title">LOG OUT</h2>
+  <p class="logout-desc">Are you sure you want to log out of the SPUC Treasury Dashboard?</p>
+  <div class="logout-actions">
+    <button class="logout-btn-cancel" onclick="closeLogout()">CANCEL</button>
+    <button class="logout-btn-confirm" onclick="doLogout()">LOG OUT</button>
+  </div>
+</div>
 
 <main>
 
@@ -74,12 +90,26 @@
     <button class="btn-nav" onclick="location.href='Comparative.html'">COMPARATIVE</button>
     <button class="btn-nav" onclick="location.href='FinancialStatement.html'">FINANCIAL STATEMENT</button>
     <button class="btn-nav" onclick="location.href='MonthlyReport.html'">MONTHLY REPORT</button>
-    <button class="btn-nav btn-nav-settings" onclick="location.href='Settings.html'">⚙ SETTINGS</button>
   </div>
 </footer>
 
 <script src="../Script/supabase.js"></script>
 <script src="../Script/HomePage.js"></script>
+<script>
+  function confirmLogout() {
+    document.getElementById('logoutOverlay').style.display = 'block';
+    document.getElementById('logoutModal').style.display = 'block';
+  }
+  function closeLogout() {
+    document.getElementById('logoutOverlay').style.display = 'none';
+    document.getElementById('logoutModal').style.display = 'none';
+  }
+  function doLogout() {
+    localStorage.setItem('spuc_logout', Date.now());
+    sessionStorage.clear();
+    location.href = '../index.html';
+  }
+</script>
 
 </body>
 </html>

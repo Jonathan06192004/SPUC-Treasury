@@ -1,4 +1,4 @@
-fetchOfferingsByCode('ZPM').then(rows => {
+fetchDupOfferingsByCode('ZPM').then(rows => {
   const { y2025, y2026, budget } = splitYears(rows);
   onLayoutReady(() => initMissionPage({
     canvasId: 'zpmOfferingChart',

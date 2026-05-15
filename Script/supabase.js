@@ -90,6 +90,31 @@ async function fetchOfferingsByCode(code) {
   );
 }
 
+// ─── DUP TABLES (dup-tithes, dup-offerings, dup-mission) ─────────────────────
+async function fetchDupTithes() {
+  return supabaseRequest(
+    `${SUPABASE_URL}/rest/v1/dup-tithes?status=eq.confirmed&select=year,month,amount,budget,mission_code&order=year.asc,month.asc`
+  );
+}
+
+async function fetchDupOfferings() {
+  return supabaseRequest(
+    `${SUPABASE_URL}/rest/v1/dup-offerings?status=eq.confirmed&select=year,month,amount,budget,mission_code&order=year.asc,month.asc`
+  );
+}
+
+async function fetchDupTithesByCode(code) {
+  return supabaseRequest(
+    `${SUPABASE_URL}/rest/v1/dup-tithes?status=eq.confirmed&mission_code=eq.${code}&select=year,month,amount,budget,mission_code&order=year.asc,month.asc`
+  );
+}
+
+async function fetchDupOfferingsByCode(code) {
+  return supabaseRequest(
+    `${SUPABASE_URL}/rest/v1/dup-offerings?status=eq.confirmed&mission_code=eq.${code}&select=year,month,amount,budget,mission_code&order=year.asc,month.asc`
+  );
+}
+
 // ─── ARRAY HELPERS ────────────────────────────────────────────────────────────
 function buildMonthArray(rows) {
   const arr = new Array(12).fill(null);
@@ -109,7 +134,7 @@ function buildBudgetArray(rows) {
 function groupByMission(rows) {
   const result = {};
   rows.forEach(r => {
-    const code = r.churches?.districts?.missions?.code;
+    const code = r.churches?.districts?.missions?.code ?? r.mission_code;
     if (!code) return;
     if (!result[code]) result[code] = {};
     if (!result[code][r.year]) result[code][r.year] = [];
@@ -244,12 +269,6 @@ async function fetchCurrentUser(id) {
   return Array.isArray(data) && data.length ? data[0] : null;
 }
 
-async function updateTwoFa(id, fields) {
-  return usersRequest(
-    `${USERS_URL}/rest/v1/union_users?id=eq.${id}`,
-    { method: 'PATCH', headers: { 'Prefer': 'return=representation' }, body: JSON.stringify(fields) }
-  );
-}
 
 // ─── CROSS-TAB LOGOUT ────────────────────────────────────────────────────────
 window.addEventListener('storage', e => {
@@ -262,13 +281,3 @@ window.addEventListener('storage', e => {
   location.href = depth + 'index.html';
 });
 
-async function updateUserProfile(id, fields) {
-  return usersRequest(
-    `${USERS_URL}/rest/v1/union_users?id=eq.${id}`,
-    {
-      method: 'PATCH',
-      headers: { 'Prefer': 'return=representation' },
-      body: JSON.stringify(fields)
-    }
-  );
-}

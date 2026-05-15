@@ -1,4 +1,4 @@
-fetchOfferingsByCode('CMM').then(rows => {
+fetchDupOfferingsByCode('CMM').then(rows => {
   const { y2025, y2026, budget } = splitYears(rows);
   onLayoutReady(() => initMissionPage({
     canvasId: 'cmmOfferingChart',

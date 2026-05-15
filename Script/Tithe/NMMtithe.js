@@ -1,4 +1,4 @@
-fetchTithesByCode('NMM').then(rows => {
+fetchDupTithesByCode('NMM').then(rows => {
   const { y2025, y2026, budget } = splitYears(rows);
   onLayoutReady(() => initMissionPage({
     canvasId: 'nmmChart',

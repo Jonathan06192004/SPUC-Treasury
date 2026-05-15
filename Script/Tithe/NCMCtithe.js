@@ -1,4 +1,4 @@
-fetchTithesByCode('NCMC').then(rows => {
+fetchDupTithesByCode('NCMC').then(rows => {
   const { y2025, y2026, budget } = splitYears(rows);
   onLayoutReady(() => initMissionPage({
     canvasId: 'ncmcChart',

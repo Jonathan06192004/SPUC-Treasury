@@ -77,7 +77,7 @@ function renderPage(data2025, data2026, budgetData, missionData, missionData2026
   initViewAllMonths({ canvasId:'tithesChart', datasets, missionData, missionData2026, labels, VISIBLE_MONTHS });
 }
 
-fetchTithes().then(rows => {
+fetchDupTithes().then(rows => {
   const grouped       = groupByMission(rows);
   const data2025      = buildSpucTotal(grouped, 2025);
   const data2026      = buildSpucTotal(grouped, 2026);
@@ -94,7 +94,7 @@ fetchTithes().then(rows => {
     }
   });
   ro.observe(scrollEl);
-}).catch(err => console.error('Supabase error:', err));
+}).catch(err => console.error('dup-tithes error:', err));
 
 updateSideClock();
 setInterval(updateSideClock, 1000);

@@ -78,7 +78,7 @@ function renderPage(data2025, data2026, budgetData, missionData, missionData2026
   initViewAllMonths({ canvasId:'offeringChart', datasets, missionData, missionData2026, labels, VISIBLE_MONTHS });
 }
 
-fetchOfferings().then(rows => {
+fetchDupOfferings().then(rows => {
   const grouped         = groupByMission(rows);
   const data2025        = buildSpucTotal(grouped, 2025);
   const data2026        = buildSpucTotal(grouped, 2026);
@@ -95,7 +95,7 @@ fetchOfferings().then(rows => {
     }
   });
   ro.observe(scrollEl);
-}).catch(err => console.error('Supabase fetch error:', err));
+}).catch(err => console.error('dup-offerings error:', err));
 
 updateSideClock();
 setInterval(updateSideClock, 1000);

@@ -157,9 +157,11 @@ function toggleYear() {
 }
 
 async function initData() {
-  const [tithesRows, offeringsRows] = await Promise.all([fetchTithes(), fetchOfferings()]);
-  const tGrouped = groupByMission(tithesRows);
-  const oGrouped = groupByMission(offeringsRows);
+  const [dupTithesRows, dupOfferingsRows] = await Promise.all([
+    fetchDupTithes(), fetchDupOfferings()
+  ]);
+  const tGrouped = groupByMission(dupTithesRows);
+  const oGrouped = groupByMission(dupOfferingsRows);
   dataTithes2025    = buildSpucTotal(tGrouped, 2025);
   dataOfferings2025 = buildSpucTotal(oGrouped, 2025);
   dataTithes2026    = buildSpucTotal(tGrouped, 2026);
